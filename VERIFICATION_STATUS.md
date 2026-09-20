@@ -6,9 +6,9 @@
 - Stable GenVM lint, validate, schema, and typecheck: PASS against runner `v0.2.16` matching the contract dependency.
 - Complete Direct Mode suite: PASS, 46 tests. On Windows the installed test runner has a temporary-file lock incompatibility; `run_direct_windows.py` applies a process-local unlink retry shim and invokes the unchanged pytest suite.
 - Python compile, static release guards, and deployment-helper TypeScript check: PASS.
-- Stable frontend/client pins: `genlayer-js==1.1.8`, Node 20 in CI, local CLI `0.39.1`; the global CLI was not changed.
+- Stable frontend/client pins: `genlayer-js==1.1.8`, Node 22 in CI and Vercel, local CLI `0.39.1`; the global CLI was not changed.
 - Root/frontend `npm ci`, frontend tests (4 passed), typecheck and production build: PASS.
 
 ## Not verified
 
-There is not yet a canonical deployment address/transaction or hosted frontend URL in this checkout. The opt-in Studionet smoke test skipped because no canonical address is configured. Therefore this verification does not claim deployed-source/schema comparison, real validator consensus, native GEN movement, public frontend hosting, live positive/negative economic demo, green CI, or repository cleanliness. The live release gates are explicitly marked not run in `docs/REVIEW_EVIDENCE.md`.
+The canonical Studionet deployment and public frontend are recorded in `deployments/studionet.json` and `docs/REVIEW_EVIDENCE.md`. Initial deployed reads show zero agreements/incidents and balanced zero accounting. The full live SLA lifecycle and native GEN movement remain unproven; see `docs/REVIEW_EVIDENCE.md` for exact boundaries. CI passed on the deployed source commit; this final Node 22/documentation commit still requires its own CI run.

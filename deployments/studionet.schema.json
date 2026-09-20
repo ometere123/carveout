@@ -1,0 +1,333 @@
+{
+  "ctor": {
+    "params": [],
+    "kwparams": {}
+  },
+  "methods": {
+    "accept_agreement": {
+      "params": [
+        [
+          "agreement_id",
+          "string"
+        ]
+      ],
+      "kwparams": {},
+      "readonly": false,
+      "ret": "null",
+      "payable": false
+    },
+    "adjudicate_exception": {
+      "params": [
+        [
+          "incident_id",
+          "string"
+        ]
+      ],
+      "kwparams": {},
+      "readonly": false,
+      "ret": "dict",
+      "payable": false
+    },
+    "challenge_exception": {
+      "params": [
+        [
+          "incident_id",
+          "string"
+        ],
+        [
+          "challenge_text",
+          "string"
+        ],
+        [
+          "evidence_url",
+          "string"
+        ]
+      ],
+      "kwparams": {},
+      "readonly": false,
+      "ret": "null",
+      "payable": true
+    },
+    "claim_exception": {
+      "params": [
+        [
+          "incident_id",
+          "string"
+        ],
+        [
+          "exception_code",
+          "string"
+        ],
+        [
+          "exception_evidence_json",
+          "string"
+        ]
+      ],
+      "kwparams": {},
+      "readonly": false,
+      "ret": "null",
+      "payable": false
+    },
+    "create_agreement": {
+      "params": [
+        [
+          "customer",
+          "string"
+        ],
+        [
+          "service_name",
+          "string"
+        ],
+        [
+          "service_url",
+          "string"
+        ],
+        [
+          "metric_name",
+          "string"
+        ],
+        [
+          "target_bps",
+          "int"
+        ],
+        [
+          "max_credit_atto",
+          "int"
+        ],
+        [
+          "window_start",
+          "int"
+        ],
+        [
+          "window_end",
+          "int"
+        ],
+        [
+          "exceptions_json",
+          "string"
+        ],
+        [
+          "evidence_policy",
+          "string"
+        ],
+        [
+          "source_policy_json",
+          "string"
+        ],
+        [
+          "challenge_window_seconds",
+          "int"
+        ]
+      ],
+      "kwparams": {},
+      "readonly": false,
+      "ret": "string",
+      "payable": true
+    },
+    "dismiss_unproven_measurement": {
+      "params": [
+        [
+          "incident_id",
+          "string"
+        ]
+      ],
+      "kwparams": {},
+      "readonly": false,
+      "ret": "null",
+      "payable": false
+    },
+    "expire_agreement": {
+      "params": [
+        [
+          "agreement_id",
+          "string"
+        ]
+      ],
+      "kwparams": {},
+      "readonly": false,
+      "ret": "null",
+      "payable": false
+    },
+    "expire_challenge": {
+      "params": [
+        [
+          "incident_id",
+          "string"
+        ]
+      ],
+      "kwparams": {},
+      "readonly": false,
+      "ret": "null",
+      "payable": false
+    },
+    "expire_proposal": {
+      "params": [
+        [
+          "agreement_id",
+          "string"
+        ]
+      ],
+      "kwparams": {},
+      "readonly": false,
+      "ret": "null",
+      "payable": false
+    },
+    "finalize_default_breach": {
+      "params": [
+        [
+          "incident_id",
+          "string"
+        ]
+      ],
+      "kwparams": {},
+      "readonly": false,
+      "ret": "dict",
+      "payable": false
+    },
+    "finalize_incident": {
+      "params": [
+        [
+          "incident_id",
+          "string"
+        ]
+      ],
+      "kwparams": {},
+      "readonly": false,
+      "ret": "dict",
+      "payable": false
+    },
+    "get_agreement": {
+      "params": [
+        [
+          "agreement_id",
+          "string"
+        ]
+      ],
+      "kwparams": {},
+      "readonly": true,
+      "ret": "dict"
+    },
+    "get_credit": {
+      "params": [
+        [
+          "address",
+          "string"
+        ]
+      ],
+      "kwparams": {},
+      "readonly": true,
+      "ret": "string"
+    },
+    "get_incident": {
+      "params": [
+        [
+          "incident_id",
+          "string"
+        ]
+      ],
+      "kwparams": {},
+      "readonly": true,
+      "ret": "dict"
+    },
+    "get_stats": {
+      "params": [],
+      "kwparams": {},
+      "readonly": true,
+      "ret": "dict"
+    },
+    "list_agreements": {
+      "params": [
+        [
+          "offset",
+          "int"
+        ],
+        [
+          "limit",
+          "int"
+        ]
+      ],
+      "kwparams": {},
+      "readonly": true,
+      "ret": "dict"
+    },
+    "list_incidents": {
+      "params": [
+        [
+          "offset",
+          "int"
+        ],
+        [
+          "limit",
+          "int"
+        ]
+      ],
+      "kwparams": {},
+      "readonly": true,
+      "ret": "dict"
+    },
+    "open_incident": {
+      "params": [
+        [
+          "agreement_id",
+          "string"
+        ],
+        [
+          "actual_bps",
+          "int"
+        ],
+        [
+          "observed_from",
+          "int"
+        ],
+        [
+          "observed_to",
+          "int"
+        ],
+        [
+          "measurement_evidence_json",
+          "string"
+        ]
+      ],
+      "kwparams": {},
+      "readonly": false,
+      "ret": "string",
+      "payable": false
+    },
+    "resolve_challenge": {
+      "params": [
+        [
+          "incident_id",
+          "string"
+        ]
+      ],
+      "kwparams": {},
+      "readonly": false,
+      "ret": "dict",
+      "payable": false
+    },
+    "verify_measurement": {
+      "params": [
+        [
+          "incident_id",
+          "string"
+        ]
+      ],
+      "kwparams": {},
+      "readonly": false,
+      "ret": "dict",
+      "payable": false
+    },
+    "withdraw_credit": {
+      "params": [
+        [
+          "recipient",
+          "string"
+        ]
+      ],
+      "kwparams": {},
+      "readonly": false,
+      "ret": "string",
+      "payable": false
+    }
+  }
+}

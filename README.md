@@ -12,7 +12,7 @@ There is no 61997/Studio-dev release path, Snaps path, WalletConnect path, embed
 
 ## Stable Studionet toolchain
 
-The release toolchain is pinned to stable Studionet 61999: Python 3.12, local GenLayer CLI 0.39.1, `genlayer-js==1.1.8`, `genlayer-test==0.29.2`, `genlayer-py==0.16.3`, `genvm-linter==0.11.0`, Node 20 in CI, and the stable `py-genlayer` runtime hash in the contract.
+The release toolchain is pinned to stable Studionet 61999: Python 3.12, local GenLayer CLI 0.39.1, `genlayer-js==1.1.8`, `genlayer-test==0.29.2`, `genlayer-py==0.16.3`, `genvm-linter==0.11.0`, Node 22 in CI and Vercel, and the stable `py-genlayer` runtime hash in the contract.
 
 Use the repository-local CLI binary for CARVEOUT; do not use or change a global CLI:
 
@@ -75,8 +75,10 @@ npm ci
 cd frontend && npm ci && npm test && npm run typecheck && npm run build
 ```
 
-Then confirm the built-in network resolves to **61999** / `https://studio.genlayer.com/api`, deploy the exact final source, wait for FINALIZED plus successful execution, compare deployed schema/source with this repository, wire the finalized address into the frontend, publish it, and run `docs/LIVE_DEMO.md` with real evidence and real transaction hashes.
+The contract deployment, source/schema comparison, initial `get_stats()` read and public frontend deployment are complete and recorded in `deployments/studionet.json`. Run `docs/LIVE_DEMO.md` only with a genuine SLA and actual public measurement evidence; record finalized transaction hashes and state reads. The complete adjudication/challenge/settlement/withdrawal lifecycle is not yet demonstrated.
 
-## Release honesty
+## Live release
 
-This checkout has Git metadata, but no canonical deployment address or deployment record. Local lint, Direct Mode, static checks and frontend build have been run in this environment; see `docs/REVIEW_EVIDENCE.md` for exact results and the live gates that remain unproven. No deployment or transaction evidence is claimed here.
+The current canonical contract is deployed on Studionet 61999 at [`0x75f2e473E6f010B510F1d281C8E4679fD2043054`](https://explorer-studio.genlayer.com/address/0x75f2e473E6f010B510F1d281C8E4679fD2043054). Its finalized deployment transaction is [`0x07ed7c7495129adc7ed26091c673b37dfe9dbd9b50fa85d21dd6a63b29722ddf`](https://explorer-studio.genlayer.com/tx/0x07ed7c7495129adc7ed26091c673b37dfe9dbd9b50fa85d21dd6a63b29722ddf). The public frontend is [carveout-sla.vercel.app](https://carveout-sla.vercel.app). Deployment source, schema, initial `get_stats()` result, hosted routes and verification limits are recorded in [deployments/studionet.json](deployments/studionet.json) and [docs/REVIEW_EVIDENCE.md](docs/REVIEW_EVIDENCE.md).
+
+The live contract is fresh and currently has no agreements or incidents. The full economic lifecycle—including evidence measurement, exception adjudication, challenge, settlement, credits and withdrawals—has not yet been demonstrated on-chain; see [docs/LIVE_DEMO.md](docs/LIVE_DEMO.md). A deployment and a green CI run are not evidence that those lifecycle transactions occurred.

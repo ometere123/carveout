@@ -1,0 +1,78 @@
+{
+  "product": "CARVEOUT",
+  "network": "studionet",
+  "networkName": "GenLayer Studionet",
+  "chainId": 61999,
+  "rpc": "https://studio.genlayer.com/api",
+  "explorer": "https://explorer-studio.genlayer.com",
+  "deployer": {
+    "account": "party_b",
+    "address": "0xA7EeAE0E93793e3146Cb14b0700251B8b0EBADFB"
+  },
+  "source": {
+    "commit": "8f1302f10e0fee65f79187241e7da853225240d4",
+    "path": "contracts/carveout.py",
+    "sha256": "144caccbd8b6daa8cbebc72ae9a4a5737c44147cbc100e8f7f1cb23cadf35f98"
+  },
+  "schema": {
+    "path": "deployments/studionet.schema.json",
+    "sha256": "26de6f5a55a686fb6f38bffd320d14ba53d4b74162a2ad15bdb123aed6f345fd",
+    "constructorArgs": []
+  },
+  "deployment": {
+    "address": "0x75f2e473E6f010B510F1d281C8E4679fD2043054",
+    "transaction": "0x07ed7c7495129adc7ed26091c673b37dfe9dbd9b50fa85d21dd6a63b29722ddf",
+    "createdAt": "2026-09-20T10:19:20.505918+00:00",
+    "status": "FINALIZED",
+    "consensus": "MAJORITY_AGREE",
+    "execution": "SUCCESS",
+    "constructorArgs": [],
+    "contractValueProvidedGen": "0"
+  },
+  "frontend": {
+    "url": "https://carveout-sla.vercel.app",
+    "project": "carveout",
+    "projectId": "prj_Lb1NXf709xZ4WX5oWus6RNfqhuMp",
+    "productionDeploymentId": "dpl_CTNSiqy8pNGLtH8E9xQhiqnF4zo2",
+    "productionDeploymentUrl": "https://carveout-lfbxc1k6v-delealufejoel-4184s-projects.vercel.app",
+    "status": "READY",
+    "nodeVersion": "22.x",
+    "installCommand": "npm ci",
+    "publicRoutesVerified": ["/", "/agreements", "/open", "/account", "/protocol", "/agreements/1"],
+    "clientContractAddressVerified": true,
+    "clientChainIdVerified": "61999",
+    "clientRpcVerified": "https://studio.genlayer.com/api",
+    "ssoProtectionDisabledForPublicAccess": true
+  },
+  "verification": {
+    "schemaMatchesLocal": true,
+    "deployedSourceSha256MatchesLocal": true,
+    "readOnlyIntegrationTest": {
+      "method": "get_stats",
+      "status": "PASS",
+      "observedAt": "2026-09-20",
+      "network": "studionet",
+      "chainId": 61999,
+      "accountingBalanced": true,
+      "adminControls": false,
+      "reader": "ephemeral in-memory address; no signing key persisted"
+    },
+    "getStats": {
+      "version": "0.1.0-studionet",
+      "network": "Studionet",
+      "chainId": "61999",
+      "rpc": "https://studio.genlayer.com/api",
+      "agreements": 0,
+      "incidents": 0,
+      "finalizedBreaches": 0,
+      "provenExceptions": 0,
+      "totalDeposited": "0",
+      "agreementEscrow": "0",
+      "challengeEscrow": "0",
+      "claimable": "0",
+      "withdrawn": "0",
+      "accountingBalanced": true,
+      "adminControls": false
+    }
+  }
+}

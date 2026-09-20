@@ -10,6 +10,7 @@ configuration assertion proves network integration.
 import os
 
 import pytest
+from eth_account import Account
 
 from genlayer_py import create_client
 from genlayer_py.chains import studionet
@@ -27,7 +28,10 @@ def test_canonical_deployment_reports_studionet_and_balanced_accounting():
     assert studionet.id == EXPECTED_CHAIN_ID
     assert studionet.rpc_urls["default"]["http"][0] == EXPECTED_RPC
 
-    client = create_client(chain=studionet)
+    # The pinned genlayer-py read API requires a sender address but does not sign
+    # a view request. Generate an ephemeral in-memory account for this read-only
+    # integration check instead of depending on or persisting a deployment key.
+    client = create_client(chain=studionet, account=Account.create())
     stats = client.read_contract(
         address=address,
         function_name="get_stats",

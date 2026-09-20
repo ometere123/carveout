@@ -5,6 +5,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       GENVM_VERSION: v0.2.16
+      CARVEOUT_CONTRACT: '0x75f2e473E6f010B510F1d281C8E4679fD2043054'
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -26,7 +27,7 @@ jobs:
       - run: python scripts/check_contract_patterns.py
       - run: python scripts/check_frontend_surface.py
       - uses: actions/setup-node@v4
-        with: {node-version: '20'}
+        with: {node-version: '22'}
       - run: npm ci
       - run: npm run check:deploy
       - run: cd frontend && npm ci && npm test && npm run typecheck && npm run build
