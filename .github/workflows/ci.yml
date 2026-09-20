@@ -13,6 +13,11 @@ jobs:
       - run: genvm-lint validate contracts/carveout.py
       - run: genvm-lint schema contracts/carveout.py --output /tmp/carveout.schema.json
       - run: genvm-lint typecheck contracts/carveout.py
+      - name: Pin Direct Mode GenVM runner
+        run: |
+          mkdir -p ~/.cache/gltest-direct
+          curl --fail --location --silent --show-error https://github.com/genlayerlabs/genvm/releases/download/v0.2.16/genvm-universal.tar.xz --output ~/.cache/gltest-direct/genvm-universal-v0.2.16.tar.xz
+          echo "4f0b358ec98ec148be9b95cdfb0f0e1a6cbe64da0194fdfac3fffc6f5d1d93e2  ~/.cache/gltest-direct/genvm-universal-v0.2.16.tar.xz" | sha256sum --check
       - run: python -m pytest tests/direct/ -v
       - run: python -m pytest tests/integration/ -v
       - run: python scripts/check_release.py
