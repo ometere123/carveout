@@ -9,27 +9,31 @@ import { TxNotice } from "@/components/TxNotice";
 const now = () => Math.floor(Date.now()/1000);
 const genText = (v:any) => `${(Number(v || 0)/1e18).toFixed(4)} GEN`;
 const short = (v="") => v.length > 18 ? `${v.slice(0,9)}…${v.slice(-6)}` : v;
-const defaultMeasurement = JSON.stringify([
-  {kind:"INDEPENDENT_PROBE",url:"https://example.com/probe",note:"Independent availability record for the exact service and observation window."},
-  {kind:"PROVIDER_STATUS",url:"https://status.example.com",note:"Provider status history for the exact service and observation window."}
-], null, 2);
-const defaultExceptionEvidence = JSON.stringify([
-  {kind:"UPSTREAM_STATUS",url:"https://status.example.net",note:"Official upstream incident record and timestamps."},
-  {kind:"INDEPENDENT_TIMELINE",url:"https://example.org/timeline",note:"Independent timing evidence linking the service impact to the invoked exception."}
-], null, 2);
+function defaultEvidence(policy:any,group:string){
+  const entries=policy?.[group]||[];
+  return JSON.stringify(entries.slice(0,group==="measurement"?2:2).map((x:any,i:number)=>({
+    kind:x.kind,url:`https://${x.host}${x.path_prefix==="/"?`/${group}`:x.path_prefix}`,
+    note:`${group} source ${i+1} listed in the agreement's frozen source policy.`
+  })),null,2);
+}
+function defaultChallengeUrl(policy:any){const x=policy?.challenge?.[0];return x?`https://${x.host}${x.path_prefix==="/"?"/evidence":x.path_prefix}`:"";}
+
 
 export default function AgreementDetail(){
   const {id}=useParams<{id:string}>();
   const wallet=useInjectedWallet();
   const [agreement,setAgreement]=useState<any>(null),[incident,setIncident]=useState<any>(null);
   const [phase,setPhase]=useState(""),[hash,setHash]=useState(""),[error,setError]=useState("");
-  const [miss,setMiss]=useState({actual:"9900",from:"",to:"",evidence:defaultMeasurement});
-  const [claim,setClaim]=useState({code:"",evidence:defaultExceptionEvidence});
-  const [challenge,setChallenge]=useState({text:"",url:"https://"});
+  const [miss,setMiss]=useState({actual:"9900",from:"",to:"",evidence:"[]"});
+  const [claim,setClaim]=useState({code:"",evidence:"[]"});
+  const [challenge,setChallenge]=useState({text:"",url:""});
 
   const refresh=useCallback(async()=>{
     try{
       const a=await read("get_agreement",[id]);setAgreement(a);
+      setMiss(x=>({...x,evidence:x.evidence==="[]"?defaultEvidence(a.source_policy,"measurement"):x.evidence}));
+      setClaim(x=>({...x,evidence:x.evidence==="[]"?defaultEvidence(a.source_policy,"exception"):x.evidence}));
+      setChallenge(x=>({...x,url:x.url||defaultChallengeUrl(a.source_policy)}));
       if(a.incident_id){setIncident(await read("get_incident",[a.incident_id]));}else setIncident(null);
       setError("");
     }catch(e:any){setError(e?.message||String(e));}
@@ -45,6 +49,7 @@ export default function AgreementDetail(){
 
   async function transact(name:string,args:any[]=[],value?:bigint){
     if(!wallet.address)throw new Error("Connect an injected EIP-1193 wallet first");
+    if(!wallet.correctNetwork)throw new Error("Switch the injected wallet to GenLayer Studionet (61999) before signing.");
     setError("");setPhase("signing");setHash("");
     const tx=await write(wallet.address,name,args,value);setHash(String(tx));setPhase("finalizing");await waitFinal(String(tx));setPhase("finalized");await refresh();
   }
@@ -74,9 +79,19 @@ export default function AgreementDetail(){
         <h3>permitted carve-outs</h3>
         {(agreement.exceptions||[]).map((x:any)=><div className="clause" key={x.code}><b>{x.code}</b><strong>{x.title}</strong><p>{x.rule}</p><small>proof · {x.proof}</small></div>)}
         <div className="basis">evidence policy · {agreement.evidence_policy}</div>
+        <h3>frozen source policy</h3>
+        {Object.entries(agreement.source_policy||{}).map(([group,items]:any)=><div className="basis" key={group}>{group} · {(items||[]).map((x:any)=>`${x.kind} @ ${x.host}${x.path_prefix}`).join(" · ")}</div>)}
       </aside>
 
       <main className="incident-panel">
+        {!incident && agreement.status==="PROPOSED" && <div className="incident-empty">
+          <div className="kicker">awaiting customer signature</div><h2>The provider has proposed a frozen covenant.</h2>
+          <p>The bond is escrowed, but this agreement cannot open incidents until the named customer accepts the exact specification before the formation deadline.</p>
+          <div className="basis">formation deadline · {new Date(Number(agreement.formation_deadline)*1000).toISOString()}</div>
+          <div className="basis">spec commitment · {agreement.spec_hash}</div>
+          {role==="customer"&&now()<Number(agreement.formation_deadline)&&<button className="button red" onClick={()=>doTx("accept_agreement",[id])}>accept frozen covenant</button>}
+          {now()>=Number(agreement.formation_deadline)&&<button className="button primary" onClick={()=>doTx("expire_proposal",[id])}>return expired proposal bond</button>}
+        </div>}
         {!incident && agreement.status==="ACTIVE" && <div className="incident-empty">
           <div className="kicker">no live incident</div><h2>The service covenant is active.</h2><p>A customer can open a measured miss, but collateral is not exposed until independent evidence verifies the service and exact observation window.</p>
           {role==="customer" && <div className="form-sheet compact">
@@ -105,6 +120,10 @@ export default function AgreementDetail(){
           </div>
           {incident.facts?.length>0&&<div className="fact-sheet">{incident.facts.map((f:string,i:number)=><p key={i}><b>{String(i+1).padStart(2,"0")}</b>{f}</p>)}</div>}
           {incident.basis&&<div className="basis">judgment basis · {incident.basis}</div>}
+          <div className="basis" title={incident.measurement_case_hash}>measurement case commitment · {incident.measurement_case_hash||"pending"}</div>
+          {incident.exception_case_hash&&<div className="basis" title={incident.exception_case_hash}>exception case commitment · {incident.exception_case_hash}</div>}
+          {incident.challenge_case_hash&&<div className="basis" title={incident.challenge_case_hash}>challenge case commitment · {incident.challenge_case_hash}</div>}
+          {incident.excused_intervals?.length>0&&<div className="fact-sheet"><div className="kicker">excused intervals · liability is deterministic</div>{incident.excused_intervals.map((x:any,i:number)=><p key={i}><b>{String(i+1).padStart(2,"0")}</b>{new Date(Number(x.from_ts)*1000).toISOString()} → {new Date(Number(x.to_ts)*1000).toISOString()} · evidence {x.evidence_ids.join(", ")}</p>)}</div>}
           {challengeData&&<div className="challenge-record"><b>challenge · {challengeData.status}</b><p>{challengeData.text}</p>{challengeData.basis&&<small>{challengeData.basis}</small>}</div>}
 
           <div className="action-row">

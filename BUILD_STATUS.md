@@ -1,24 +1,18 @@
 # CARVEOUT build status
 
-| Gate | Status in this ZIP |
+| Gate | Verified result |
 | --- | --- |
-| Contract implementation | ✅ |
-| Studionet 61999 / exact RPC hard lock | ✅ |
-| Generic injected EIP-1193 frontend | ✅ |
-| Multipage Next.js UI + hero + dynamic detail route | ✅ |
-| Authored Direct Mode tests (21) | ✅ |
-| Public contract method surface (19) | ✅ |
-| Python syntax compilation | ✅ |
-| Contract trust-boundary static guard | ✅ |
-| Static forbidden-network/wallet release scan | ✅ |
-| Frontend route/action/injected-wallet surface guard | ✅ |
-| TypeScript/TSX parser pass | ✅ |
-| `genvm-lint` | ⬜ run in finishing environment |
-| Direct Mode execution | ⬜ run in finishing environment |
-| Next dependency install/typecheck/build | ⬜ run in finishing environment |
-| Real Studionet integration/consensus | ⬜ |
-| Canonical deployment | ⬜ |
-| Live full economic flow | ⬜ |
-| Public frontend | ⬜ |
+| GenLayer dependency resolution | PASS: `genlayer-test==0.29.2`, `genlayer-py==0.16.3`; frontend uses stable `genlayer-js@1.2.0` |
+| GenVM lint | PASS: `ok=true`, 3 checks |
+| Direct Mode | PASS: 46 tests |
+| Release/static guards | PASS: release, contract patterns, frontend surface |
+| Frontend install | PASS |
+| Frontend typecheck | PASS |
+| Next production build | PASS: six app routes generated |
+| Studionet integration smoke | SKIPPED: no deployed address |
+| Required RPC accessibility | BLOCKED: prior preflight returned HTTP 403; no transaction submitted |
+| Deployment/source-schema/live economic demo | NOT RUN |
+| Public frontend / hosted address | NOT CONFIGURED |
+| Source commit / CI / clean status | PENDING: release clone has Git metadata; validated changes are not yet committed or pushed |
 
-No unchecked gate is represented elsewhere in the repository as completed.
+See [`docs/REVIEW_EVIDENCE.md`](docs/REVIEW_EVIDENCE.md) for exact local results and live-release gates that remain unproven. No live claims are inferred from local tests.

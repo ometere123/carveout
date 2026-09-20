@@ -1,25 +1,14 @@
 # Verification status
 
-## Verified while packaging this artifact
+## Passed in this checkout (2026-09-20)
 
-- `python -m py_compile` succeeds for the contract, Direct Mode tests and integration smoke test.
-- `scripts/check_contract_patterns.py` passes. It statically guards the contract network lock, consensus-closure trust boundary, nondeterministic-call placement and consensus-time rule.
-- `scripts/check_release.py` passes. Executable/config source is locked to chain `61999` and `https://studio.genlayer.com/api` and rejects 61997, Studio-dev, Snaps, WalletConnect and Privy release paths.
-- `scripts/check_frontend_surface.py` passes. Required routes, protocol write actions, injected-wallet methods, fee estimation and finalized-execution handling are present.
-- every current frontend TypeScript/TSX source file (17) passes a TypeScript compiler-API parse-diagnostic pass with zero syntax errors.
-- the current contract parses to 19 public methods and the authored Direct Mode suite contains 21 test functions.
-- the browser integration is generic injected EIP-1193, reads finalized state, estimates fees before writes, waits for finalized receipts and rejects finalized executions that did not return successfully.
+- Official compatible pins install: `genlayer-test==0.29.2`, `genlayer-py==0.16.3`, `genvm-linter==0.11.1rc2`, `pytest==9.0.2`.
+- `genvm-lint check contracts/carveout.py --json`: PASS (3 checks; informational newer runner available notice).
+- Complete Direct Mode suite: PASS, 46 tests. On Windows the installed test runner has a temporary-file lock incompatibility; `run_direct_windows.py` applies a process-local unlink retry shim and invokes the unchanged pytest suite.
+- `npm run check:static` (Python compilation, release guards and deployment-helper TypeScript): PASS.
+- Stable GenLayerJS `1.2.0` compatibility: PASS; package `studionet` chain definition is 61999. The latest stable CLI tag is 0.39.2; CLI built-in Studionet reports the required RPC. No 2.x RC was installed or committed.
+- Frontend `npm install`: PASS; `npm run typecheck`: PASS; `npm run build`: PASS.
 
-## Not claimed
+## Not verified
 
-This packaging environment cannot resolve/install the GenLayer Python packages or the frontend npm dependency tree. Therefore this ZIP does **not** claim that the following have run here:
-
-- `genvm-lint`;
-- executed `pytest tests/direct/` under `genlayer-test`;
-- real-network `gltest`/Studionet consensus;
-- `npm run typecheck` with the installed Next/React/GenLayer dependency graph;
-- `next build`;
-- canonical deployment, deployed-source comparison or live GEN value movement;
-- public hosting.
-
-Those are mandatory finishing-agent gates, not optional recommendations. The repository includes CI, deployment tooling, an opt-in live smoke test, `AGENT_HANDOFF.md` and `docs/LIVE_DEMO.md` for completing them without changing the product into an easier demo.
+There is not yet a canonical deployment address/transaction or hosted frontend URL in this checkout. The opt-in Studionet smoke test skipped because no canonical address is configured. Therefore this verification does not claim deployed-source/schema comparison, real validator consensus, native GEN movement, public frontend hosting, live positive/negative economic demo, green CI, or repository cleanliness. The live release gates are explicitly marked not run in `docs/REVIEW_EVIDENCE.md`.

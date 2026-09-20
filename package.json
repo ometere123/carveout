@@ -3,16 +3,18 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "check:python": "python -m py_compile contracts/carveout.py tests/direct/*.py tests/integration/*.py",
+    "check:python": "python -m compileall -q contracts tests/direct tests/integration",
     "check:release": "python scripts/check_release.py",
     "check:contract-patterns": "python scripts/check_contract_patterns.py",
-    "check:static": "npm run check:python && npm run check:contract-patterns && npm run check:release && npm run check:frontend-surface",
-    "check:frontend-surface": "python scripts/check_frontend_surface.py"
+    "check:static": "npm run check:python && npm run check:contract-patterns && npm run check:release && npm run check:frontend-surface && npm run check:deploy",
+    "check:frontend-surface": "python scripts/check_frontend_surface.py",
+    "check:deploy": "tsc --noEmit --target ES2022 --module NodeNext --moduleResolution NodeNext --skipLibCheck deploy/deployScript.ts"
   },
   "dependencies": {
-    "genlayer-js": "^1.1.8"
+    "genlayer-js": "1.2.0"
   },
   "devDependencies": {
+    "@types/node": "^24.9.1",
     "tsx": "^4.20.6",
     "typescript": "^5.9.3"
   }

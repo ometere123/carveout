@@ -1,12 +1,14 @@
 import { readFileSync, writeFileSync, mkdirSync } from "fs";
 import path from "path";
-import { ExecutionResult, type DecodedDeployData, type GenLayerClient, type GenLayerChain, type TransactionHash } from "genlayer-js/types";
+import { ExecutionResult, TransactionStatus, type DecodedDeployData, type GenLayerClient, type GenLayerChain, type TransactionHash } from "genlayer-js/types";
 const EXPECTED_CHAIN=61999; const EXPECTED_RPC="https://studio.genlayer.com/api";
 export default async function main(client:GenLayerClient<any>){
-  if((client.chain as GenLayerChain).id!==EXPECTED_CHAIN) throw new Error("CARVEOUT is locked to Studionet 61999");
+  const chain=client.chain as GenLayerChain;
+  if(chain.id!==EXPECTED_CHAIN) throw new Error("CARVEOUT is locked to Studionet 61999");
+  if(chain.rpcUrls.default.http[0]!==EXPECTED_RPC) throw new Error("CARVEOUT deploy RPC must be https://studio.genlayer.com/api");
   const code=new Uint8Array(readFileSync(path.resolve(process.cwd(),"contracts/carveout.py")));
   const tx=await client.deployContract({code,args:[]});
-  const receipt=await client.waitForTransactionReceipt({hash:tx as TransactionHash,waitUntil:"finalized",retries:240,interval:15000});
+  const receipt=await client.waitForTransactionReceipt({hash:tx as TransactionHash,status:TransactionStatus.FINALIZED,retries:240,interval:15000});
   if(receipt.txExecutionResultName!==ExecutionResult.FINISHED_WITH_RETURN)throw new Error(`Deployment failed: ${receipt.statusName} / ${receipt.txExecutionResultName}`);
   const address=(receipt.txDataDecoded as DecodedDeployData)?.contractAddress||receipt.data?.contract_address;if(!address)throw new Error("No contract address in finalized receipt");
   const stats=await client.readContract({address:address as `0x${string}`,functionName:"get_stats",args:[]}) as any;

@@ -18,13 +18,13 @@ Changing web evidence and semantic questions use custom leader/validator consens
 
 ## Main lifecycle
 
-`create_agreement → open_incident → verify_measurement → claim_exception → adjudicate_exception → optional challenge_exception/resolve_challenge → finalize_incident (or bounded default breach) → withdraw_credit`
+`create_agreement → accept_agreement → open_incident → verify_measurement → claim_exception → adjudicate_exception → optional challenge_exception/resolve_challenge → finalize_incident (or bounded default breach) → withdraw_credit`
 
 ## Repository
 
 ```text
 contracts/carveout.py       one substantial Intelligent Contract
-21 Direct Mode tests        authored behavioural/adversarial coverage
+46 Direct Mode tests        authored behavioural/adversarial coverage
 tests/integration/              opt-in live Studionet smoke against a deployed address
 frontend/                       multipage Next.js application
 deploy/deployScript.ts          61999-locked deployment script
@@ -34,7 +34,7 @@ GOAL_PROMPT.txt                 compact finishing-agent goal
 STATIC_VERIFICATION.md          checks actually run while packaging
 ```
 
-Current contract surface: **19 public methods**, **490 source lines**.
+Current contract surface: **21 public methods**. Direct Mode, genvm-lint and frontend release gate results are recorded in [docs/REVIEW_EVIDENCE.md](docs/REVIEW_EVIDENCE.md).
 
 ## Frontend
 
@@ -50,7 +50,7 @@ python scripts/check_contract_patterns.py
 python scripts/check_release.py
 ```
 
-The packaging pass also parses every current frontend `.ts`/`.tsx` file with the TypeScript compiler API. See `STATIC_VERIFICATION.md`.
+Current results, the compatible Python pins, and live-release blockers are recorded in `VERIFICATION_STATUS.md` and `docs/REVIEW_EVIDENCE.md`. `STATIC_VERIFICATION.md` describes the static release guards.
 
 ## Real release gates for the finishing environment
 
@@ -65,4 +65,4 @@ Then confirm the built-in network resolves to **61999** / `https://studio.genlay
 
 ## Release honesty
 
-This ZIP is a source-complete implementation handoff, not a fabricated deployment report. The packaging environment did not have the GenLayer Python toolchain or frontend dependency tree available, so it does **not** claim `genvm-lint`, executed Direct Mode, Next production build, deployment, live validator consensus, native GEN settlement or public hosting. `VERIFICATION_STATUS.md` and `STATIC_VERIFICATION.md` separate what was actually checked from what the finishing agent must prove.
+This checkout has no `.git` metadata, canonical deployment address, or deployment record. Local lint, Direct Mode, static checks and frontend build have been run in this environment; see `docs/REVIEW_EVIDENCE.md` for exact results and the live gates that remain unproven. No deployment or transaction evidence is claimed here.

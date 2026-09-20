@@ -50,8 +50,12 @@ for node in ast.walk(tree):
     if callee == "_fetch":
         assert fn and fn.name == "leader_fn", f"_fetch outside leader_fn at line {node.lineno}"
 
-# No wall-clock shortcuts: protocol timing must come from consensus message time.
-for forbidden in ("time.time(", "datetime.now(", "datetime.utcnow("):
+# GenVM provides deterministic transaction-scoped UTC datetime to the contract.
+# Keep it isolated in _now(); direct wall-clock shortcuts elsewhere are forbidden.
+now_helper = next(node for node in ast.walk(tree) if isinstance(node, ast.FunctionDef) and node.name == "_now")
+now_calls = [(node, enclosing_function(node)) for node in ast.walk(tree) if isinstance(node, ast.Call) and ast.unparse(node.func) == "datetime.now"]
+assert len(now_calls) == 1 and now_calls[0][1] is now_helper, "transaction clock must only be read in _now()"
+for forbidden in ("time.time(", "datetime.utcnow("):
     assert forbidden not in source, f"wall clock use forbidden: {forbidden}"
 
 print("CARVEOUT_CONTRACT_PATTERN_CHECK=PASS")

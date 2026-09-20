@@ -9,8 +9,10 @@ The provider funds the maximum service credit when the agreement is created. The
 ## Lifecycle
 
 ```text
-provider bond + frozen SLA/exceptions
+provider bond + frozen SLA, source policy and exceptions
           ↓
+       PROPOSED
+          ↓ customer signs before the formation deadline
        ACTIVE
           ↓ customer submits claimed miss + measurement packet
  MEASUREMENT_PENDING
@@ -35,7 +37,9 @@ reject      bounded retry        OPEN INCIDENT
 
 ## Measurement gate
 
-`open_incident()` records only a **claimed** miss. The packet must contain 2..8 unique HTTPS sources, at least two allowed source families, and an `INDEPENDENT_PROBE`. Allowed measurement families are:
+`open_incident()` records only a **claimed** miss. The provider first proposes and bonds the complete specification. The named customer must accept at least 300 seconds before the window and before the proposal deadline. Unaccepted proposals can be expired for a provider bond refund. Agreement terms and the structured source policy are committed in `spec_hash` and cannot be changed.
+
+The measurement packet must contain 2..8 unique HTTPS origins, at least two allowed source families, and an `INDEPENDENT_PROBE` whose frozen host is not the service host or a subdomain. Evidence origins and path prefixes must match the policy accepted at formation; a self-applied family label is insufficient. Allowed measurement families are:
 
 - `INDEPENDENT_PROBE`
 - `STATUS_AGGREGATOR`
@@ -63,14 +67,14 @@ If exception evidence remains unavailable/inconclusive past the adjudication gra
 
 - `PROVEN` → `liable_bps = 0`
 - `NOT_PROVEN` → `liable_bps = 10000`
-- `PARTIAL` → `liable_bps = 1..9999`
+- `PARTIAL` → bounded evidence-supported excused intervals; deterministic `liable_bps = 10000 - (excused_duration * 10000 // observed_duration)`, restricted to `1..9999`
 - `INCONCLUSIVE` / `SOURCE_UNAVAILABLE` → non-decision
 
-The normalizer rejects internally contradictory result/liable combinations. Validators independently repeat the web/semantic task and compare the status plus liable basis points. Natural-language fact/basis text remains auditable but is not required to match word-for-word.
+The normalizer rejects internally contradictory result/liable combinations. Validators independently repeat the web/semantic task and compare status plus the evidence-bound excused intervals; contract code derives all basis points. Natural-language fact/basis text remains auditable but is not required to match word-for-word. Measurement and exception evidence origins are checked against the frozen agreement source policy.
 
 ## Symmetric challenge
 
-Either agreement party may file the one in-contract challenge while a settlement is pending. This matters because a customer may challenge an over-broad excuse and a provider may challenge a full-liability finding. The challenge must cite a public source and post the exact bond.
+Either agreement party may file the one in-contract challenge while a settlement is pending. This matters because a customer may challenge an over-broad excuse and a provider may challenge a full-liability finding. The challenge must cite an origin/path allowed by the frozen challenge source policy and post the exact bond. On resolution, the leader and validators re-fetch the original measurement evidence, original exception evidence, and challenge evidence, then compare structured outcomes and any bounded interval revision against the same frozen clause and case context. `INCONCLUSIVE` and `SOURCE_UNAVAILABLE` do not alter liability. Measurement, exception and challenge inputs receive deterministic case commitments exposed in views.
 
 - upheld: the challenger receives their bond back and `liable_bps` is revised;
 - rejected: the bond goes to the opposing agreement party;
@@ -78,7 +82,7 @@ Either agreement party may file the one in-contract challenge while a settlement
 
 ## Deterministic settlement
 
-The LLM never chooses GEN. The customer credit is:
+The LLM never chooses GEN or partial percentages. It can only propose supported, bounded excused intervals; the contract rejects malformed, overlapping, unsupported or out-of-window intervals and computes liability from their union. The LLM never chooses GEN. The customer credit is:
 
 ```text
 payout = min(provider_bond, max_credit * liable_bps / 10000)

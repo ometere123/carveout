@@ -4,7 +4,7 @@ forbidden = ["61997", "studio-dev.genlayer.com", "wallet_getSnaps", "wallet_requ
 scan = [root / "contracts", root / "frontend", root / "deploy", root / "gltest.config.yaml"]
 failures=[]
 for entry in scan:
-    paths = [entry] if entry.is_file() else [x for x in entry.rglob("*") if x.is_file() and x.suffix in {".py",".ts",".tsx",".js",".json",".yaml",".yml",".env",".example"}]
+    paths = [entry] if entry.is_file() else [x for x in entry.rglob("*") if x.is_file() and x.suffix in {".py",".ts",".tsx",".js",".json",".yaml",".yml",".env",".example"} and "node_modules" not in x.parts and ".next" not in x.parts]
     for path in paths:
         text=path.read_text(encoding="utf-8", errors="ignore")
         for token in forbidden:

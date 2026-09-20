@@ -20,7 +20,7 @@ A provider-backed SLA exception protocol: independently prove the miss first, th
 
 CARVEOUT deliberately keeps SLA arithmetic deterministic. A customer cannot expose provider collateral merely by typing a poor availability number, and a provider cannot invent an exception after failure. Independent measurement consensus opens the incident; only then can a frozen exception be adjudicated and challenged.
 
-Current lifecycle: `create_agreement → open_incident → verify_measurement → claim_exception → adjudicate_exception → optional challenge_exception/resolve_challenge → finalize_incident (or bounded default breach) → withdraw_credit`.
+Current lifecycle: `create_agreement → accept_agreement → open_incident → verify_measurement → claim_exception → adjudicate_exception → optional challenge_exception/resolve_challenge → finalize_incident (or bounded default breach) → withdraw_credit`.
 
 ## Start here
 
@@ -38,7 +38,7 @@ pytest tests/direct/ -v
 
 Fix genuine GenVM/storage/closure/type/toolchain failures without weakening the economic or semantic rules. Keep or expand tests for exact payable checks, access control, state transitions, evidence unavailable/inconclusive states, malformed model output, substantive validator agreement/disagreement, replay/duplicate protection, bounded liveness, challenge outcomes, pull-credit withdrawal and accounting conservation.
 
-Then run the integration/real-network checks that are appropriate to current tooling. The included `tests/integration/test_studionet_smoke.py` is opt-in and must point to the final deployed address; do not mistake it for full semantic consensus proof.
+Then run the integration/real-network checks that are appropriate to current tooling. The included `tests/integration/test_studionet_smoke.py` is opt-in and must point to the final deployed address; it skipped in this checkout because there is no deployment record. Do not mistake a skipped smoke test for real consensus proof. See `docs/REVIEW_EVIDENCE.md` for the live network and deployment blocks encountered here.
 
 ## Frontend gates
 
