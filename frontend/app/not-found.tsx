@@ -1,0 +1,1 @@
+import Link from "next/link"; export default function NotFound(){return <section className="shell page"><div className="kicker">404</div><h1>That carveout object is not here.</h1><Link className="button" href="/">return home</Link></section>}

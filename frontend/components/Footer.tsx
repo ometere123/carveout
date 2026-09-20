@@ -1,0 +1,1 @@
+export function Footer(){return <footer className="site-foot"><span>CARVEOUT / GenLayer Studionet 61999</span><span>consensus where judgment matters. deterministic money everywhere else.</span></footer>}
