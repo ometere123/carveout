@@ -1,4 +1,5 @@
 name: Import final CARVEOUT source
+# verified canonical archive chunks
 on:
   push:
     paths:
@@ -14,7 +15,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          cat             .bootstrap2/carveout.part00             .bootstrap2/carveout.part01a             .bootstrap2/carveout.part01b             .bootstrap2/carveout.part01c             .bootstrap2/carveout.part02             .bootstrap2/carveout.part03             .bootstrap2/carveout.part04             .bootstrap2/carveout.part05a             .bootstrap2/carveout.part05b             .bootstrap2/carveout.part05c             .bootstrap2/carveout.part05d0             .bootstrap2/carveout.part05e0a             .bootstrap2/carveout.part05e1a             .bootstrap2/carveout.part05e1b             .bootstrap2/carveout.part05f             .bootstrap2/carveout.part06             | base64 -d > /tmp/source.zip
+          cat .bootstrap2/carveout.part00 .bootstrap2/carveout.part01a .bootstrap2/carveout.part01b .bootstrap2/carveout.part01c .bootstrap2/carveout.part02 .bootstrap2/carveout.part03 .bootstrap2/carveout.part04 .bootstrap2/carveout.part05a .bootstrap2/carveout.part05b .bootstrap2/carveout.part05c .bootstrap2/carveout.part05d0 .bootstrap2/carveout.part05e0a .bootstrap2/carveout.part05e1a .bootstrap2/carveout.part05e1b .bootstrap2/carveout.part05f .bootstrap2/carveout.part06 | base64 -d > /tmp/source.zip
           echo "ba7867f96cba42c29dc5ca703a868a1eeae9b849b84da1b1af23863dab1ffa0e  /tmp/source.zip" | sha256sum -c -
           rm -rf /tmp/import
           mkdir -p /tmp/import
