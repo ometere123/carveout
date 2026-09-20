@@ -61,7 +61,7 @@ Execute `docs/LIVE_DEMO.md` with real, stable public evidence. The positive path
 
 ## Publish and freeze
 
-The public production frontend is `https://frontend-neon-six-65.vercel.app`, deployment `dpl_EULyvUQAzYyGSD3qMnNA7bGyypcE`, and it is wired to the recorded canonical address on chain 61999. Do not redeploy the contract for UI-only changes. The full live SLA lifecycle and native GEN withdrawal still require genuine evidence; use `docs/LIVE_DEMO.md` and record only finalized receipts and canonical reads.
+The public production frontend is `https://carve-out.vercel.app`, with the 100%-zoom UI from source commit `351d283` deployed as Vercel deployment `dpl_DvNdou86SF8oGDqF3Ya1kidSVEco`. It is wired to the canonical address on chain 61999. Do not redeploy the contract for UI-only changes. The full live SLA lifecycle and native GEN withdrawal still require genuine evidence; use `docs/LIVE_DEMO.md` and record only finalized receipts and canonical reads.
 
 ## Definition of done
 
