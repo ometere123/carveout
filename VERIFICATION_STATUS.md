@@ -8,8 +8,8 @@
 - Python compile, static release guards, and deployment-helper TypeScript check: PASS.
 - Stable frontend/client pins: `genlayer-js==1.1.8`, Node 22 in CI and Vercel, local CLI `0.39.1`; the global CLI was not changed.
 - Root/frontend `npm ci`, frontend tests (6 passed), typecheck and production build: PASS for the current UI changes.
-- Release/static gates and local HTTP checks for all six routes: PASS. Screenshot-based viewport verification is unavailable because the Windows computer-use helper exits with an ACL error.
+- Release/static gates and local HTTP checks for all six routes: PASS. At 100% browser zoom, screenshots were visually reviewed for the home page and agreement form at 1366×768; desktop widths 1366/1440/1536/1600/1920, tablet 820 and mobile 390 showed no horizontal overflow. Automated WCAG 2.1 AA scans reported zero violations on all six routes.
 
 ## Not verified
 
-The canonical Studionet deployment and public frontend are recorded in `deployments/studionet.json` and `docs/REVIEW_EVIDENCE.md`; direct stable-CLI reads confirm source/schema and balanced zero accounting. The latest prior GitHub Actions run passed before these UI-only edits; CI for the current revision is pending. The full live SLA lifecycle and native GEN movement remain unproven. The current UI revision also still needs its production redeploy and browser viewport screenshot checks.
+The canonical Studionet deployment and public frontend are recorded in `deployments/studionet.json` and `docs/REVIEW_EVIDENCE.md`; direct stable-CLI reads confirm source/schema and balanced zero accounting. GitHub Actions run 35517271797 passed on main commit `e618163`. Production deployment `dpl_EULyvUQAzYyGSD3qMnNA7bGyypcE` is READY at `https://frontend-neon-six-65.vercel.app`; all six routes return HTTP 200 and public client bundles contain the canonical address, chain `61999`, and Studionet RPC. The full live SLA lifecycle/native GEN movement and screenshot-based viewport inspection remain unverified.

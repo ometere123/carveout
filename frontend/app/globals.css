@@ -109,3 +109,71 @@
   .ledger-row>*:nth-child(3){grid-column:2;padding-top:0;}
   .protocol-flow div{padding:18px;min-height:unset;}
 }
+
+/* Desktop density tuned for a comfortable 100% browser zoom. Mobile rules above remain independent. */
+@media (min-width: 851px) {
+  .site-head { height: 60px; padding-inline: clamp(24px, calc((100vw - 1200px) / 2), 96px); }
+  .brand { gap: 8px; font-size: 14px; letter-spacing: .1em; }
+  .brand-mark { width: 16px; height: 16px; border-width: 1.75px; }
+  .brand-mark:after { width: 8px; height: 1.75px; right: -6px; bottom: -2px; }
+  .site-head nav { gap: clamp(12px, 1.35vw, 20px); font-size: 12px; letter-spacing: .02em; }
+  .wallet,.wallet-mini,.button { padding: 8px 12px; font-size: 12px; letter-spacing: .02em; }
+  .wallet-mini { padding: 8px; }
+  .shell { width: min(1200px, calc(100% - clamp(48px, 8vw, 144px))); }
+  .hero { min-height: calc(100svh - 60px); grid-template-columns: minmax(0, 1.12fr) minmax(310px, .88fr); gap: clamp(28px, 3vw, 44px); padding-block: clamp(36px, 5vh, 60px); }
+  .hero h1 { max-width: 680px; font-size: clamp(48px, 4.1vw, 72px); line-height: 1; letter-spacing: -.045em; }
+  .hero p { max-width: 54ch; font-size: clamp(15px, 1.05vw, 16px); line-height: 1.52; }
+  .kicker { margin-bottom: 13px; font-size: 10px; letter-spacing: .13em; }
+  .hero-actions { gap: 8px; margin-top: 22px; }
+  .dossier { box-shadow: 7px 7px 0 rgba(23,23,19,.12); }
+  .dossier-head { padding: 10px 13px; font-size: 11px; }
+  .dossier-body { padding: clamp(20px, 2.2vw, 28px); }
+  .big-metric { font-size: 60px; }
+  .strike { height: 6px; margin: 7px 0 18px; }
+  .exception-stamp { border-width: 2px; font-size: 16px; padding: 6px 9px; }
+  .sample-caption { margin-top: 14px; font-size: 10px; }
+  .manifest { margin-bottom: 64px; }
+  .manifest div { padding: 18px; }
+  .manifest span { font-size: 16px; }
+  .page { padding: 46px 0 72px; }
+  .page h1 { font-size: clamp(42px, 4.05vw, 64px); line-height: .98; }
+  .page-intro { grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr); gap: 28px; padding-bottom: 22px; margin-bottom: 26px; }
+  .page-intro p { max-width: 58ch; font-size: 15px; }
+  .ledger-row { min-height: 76px; }
+  .ledger-row>* { padding: 14px; }
+  .title { font-size: 20px; }
+  .empty { padding: 42px 0; font-size: 23px; }
+  .form-grid { gap: 24px; }
+  .form-sheet { padding: 22px; }
+  .side-note,.contract-panel { padding: 18px; }
+  .form-heading { gap: 16px; padding-bottom: 15px; margin-bottom: 18px; }
+  .form-section-label { padding-top: 15px; margin: 18px 0 14px; font-size: 11px; }
+  .field { gap: 5px; margin-bottom: 14px; }
+  .field label { font-size: 12px; }
+  .field input,.field textarea,.field select { padding: 9px 3px; font-size: 14px; }
+  .field input::placeholder,.field textarea::placeholder { font-size: 12px; }
+  .field textarea { min-height: 82px; }
+  .two { gap: 14px; }
+  .form-sheet .button { min-height: 38px; }
+  .sample-warning { padding: 10px 12px; margin-bottom: 17px; font-size: 12px; }
+  .form-sheet.compact { margin-top: 16px; padding: 16px; }
+  .case-grid { gap: 22px; }
+  .incident-empty { padding: 21px; }
+  .incident-empty h2,.incident-head h2 { font-size: 29px; }
+  .metric-badge b { font-size: 34px; }
+  .incident-head { gap: 14px; padding-bottom: 12px; }
+  .incident-facts>div { padding: 11px; }
+  .timeline { margin: 18px 0; padding-block: 20px; }
+  .tick { grid-template-columns: 34px 142px minmax(0,1fr); gap: 10px; padding: 11px 0; }
+  .action-row { gap: 7px; margin: 14px 0; }
+  .actions { gap: 9px; margin-top: 14px; }
+
+.kicker { color: #b52b22; }
+  .protocol-flow b { color: #b52b22; }
+  .site-foot { padding: 18px clamp(24px, calc((100vw - 1200px) / 2), 96px); }
+
+  .protocol-flow div { min-height: 126px; padding: 17px; }
+  .protocol-flow p { font-size: 16px; }
+}
+
+@media (max-width: 850px) { .kicker, .protocol-flow b { color: #b52b22; } }

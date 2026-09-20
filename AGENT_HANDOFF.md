@@ -61,7 +61,7 @@ Execute `docs/LIVE_DEMO.md` with real, stable public evidence. The positive path
 
 ## Publish and freeze
 
-The public frontend is currently `https://carveout-sla.vercel.app` and is wired to the recorded canonical address. For UI-only changes, rebuild and deploy the frontend without redeploying the contract. Retest with a generic injected wallet on 61999. Confirm finalized reads, writes, wrong-network recovery, explorer links and understandable failures. Remove stale addresses, screenshots, test-only claims and unverified language. Make CI green and leave the working tree clean.
+The public production frontend is `https://frontend-neon-six-65.vercel.app`, deployment `dpl_EULyvUQAzYyGSD3qMnNA7bGyypcE`, and it is wired to the recorded canonical address on chain 61999. Do not redeploy the contract for UI-only changes. The full live SLA lifecycle and native GEN withdrawal still require genuine evidence; use `docs/LIVE_DEMO.md` and record only finalized receipts and canonical reads.
 
 ## Definition of done
 

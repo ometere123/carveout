@@ -30,11 +30,11 @@
     "contractValueProvidedGen": "0"
   },
   "frontend": {
-    "url": "https://carveout-sla.vercel.app",
+    "url": "https://frontend-neon-six-65.vercel.app",
     "project": "carveout",
     "projectId": "prj_Lb1NXf709xZ4WX5oWus6RNfqhuMp",
-    "productionDeploymentId": "dpl_CTNSiqy8pNGLtH8E9xQhiqnF4zo2",
-    "productionDeploymentUrl": "https://carveout-lfbxc1k6v-delealufejoel-4184s-projects.vercel.app",
+    "productionDeploymentId": "dpl_EULyvUQAzYyGSD3qMnNA7bGyypcE",
+    "productionDeploymentUrl": "https://carveout-cdljbnwwo-delealufejoel-4184s-projects.vercel.app",
     "status": "READY",
     "nodeVersion": "22.x",
     "installCommand": "npm ci",

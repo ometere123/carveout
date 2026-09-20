@@ -8,7 +8,7 @@
 - Deployed source SHA-256: `144caccbd8b6daa8cbebc72ae9a4a5737c44147cbc100e8f7f1cb23cadf35f98`, matching `contracts/carveout.py` at source commit `8f1302f10e0fee65f79187241e7da853225240d4`.
 - Constructor arguments: none. Deployer: local stable CLI account `party_b`, `0xA7EeAE0E93793e3146Cb14b0700251B8b0EBADFB`.
 - Schema SHA-256: `26de6f5a55a686fb6f38bffd320d14ba53d4b74162a2ad15bdb123aed6f345fd`; deployed schema matched the local generated schema (21 methods: 6 views, 15 writes).
-- Production frontend: [https://carveout-sla.vercel.app](https://carveout-sla.vercel.app), Vercel deployment `dpl_CTNSiqy8pNGLtH8E9xQhiqnF4zo2`, READY, Node 22, `npm ci`; verified public route responses for `/`, `/agreements`, `/open`, `/account`, `/protocol`, and `/agreements/1` all returned HTTP 200 and CARVEOUT branding. Downloaded client bundles include the canonical contract address, chain `61999`, and Studionet RPC.
+- Production frontend: [https://frontend-neon-six-65.vercel.app](https://frontend-neon-six-65.vercel.app), Vercel deployment `dpl_EULyvUQAzYyGSD3qMnNA7bGyypcE`, READY on main commit `e618163`, Node 22, `npm ci`; verified routes `/`, `/agreements`, `/open`, `/account`, `/protocol`, and `/agreements/1` all return HTTP 200 with CARVEOUT branding. Public client bundles contain the canonical contract address, chain `61999`, and Studionet RPC.
 - Initial `get_stats()`: version `0.1.0-studionet`; network `Studionet`; chain `61999`; agreements `0`; incidents `0`; finalized breaches `0`; proven exceptions `0`; total deposited, agreement escrow, challenge escrow, claimable, and withdrawn all `0`; `accountingBalanced=true`; `adminControls=false`.
 
 ## Local quality gates
@@ -28,7 +28,7 @@
 - Frontend `npm test`: PASS, 6 tests, including blank-by-default and explicit illustrative-sample form regression coverage; `npm run typecheck`: PASS; `npm run build`: PASS for the UI revision.
 - Deploy helper `npm run check:deploy`: PASS; it locks both chain ID and RPC and waits for `FINALIZED` plus successful execution.
 - Stable release pins: local GenLayer CLI `0.39.1`; `genlayer-js@1.1.8`; Node 22 in CI and Vercel; Studionet alias `studionet`, chain `61999`, RPC `https://studio.genlayer.com/api`; the contract runtime is pinned in `contracts/carveout.py`. The global CLI was not changed.
-- GitHub Actions on the preceding release commit `cc48ffc4bc1537088e1030fba2465d67d8f2708a`: [run 35507310425](https://github.com/ometere123/carveout/actions/runs/35507310425), **PASS**. That exact run passed Python compile, GenVM lint/check/validate/schema/typecheck, the SHA-pinned runner, all 46 Direct Mode tests, the canonical live Studionet read integration test, static release/security/frontend checks, root and frontend `npm ci`, deploy-helper typecheck, 4 frontend tests, frontend typecheck and production build. CI for the current UI-only revision is pending.
+- GitHub Actions on main commit `e618163`: [run 35517271797](https://github.com/ometere123/carveout/actions/runs/35517271797), **PASS** in 2m48s. It ran Python compile, GenVM lint/check/validate/schema/typecheck, the pinned GenVM runner, all 46 Direct Mode tests, the live Studionet read integration test, release/contract/frontend static checks, root `npm ci`, deploy-helper checks, frontend `npm ci`, frontend tests, typecheck, and production build.
 - The read-only integration test targets the public canonical address; `get_stats()` returned the expected 61999 network identity, balanced accounting and disabled admin controls. It uses an ephemeral in-memory reader address only; it does not sign or submit a transaction.
 - `pytest tests/integration/ -v` without `CARVEOUT_CONTRACT`: intentionally skips. CI supplies the canonical address; 1 live Studionet read test passed locally and in run 35507310425.
 
@@ -38,7 +38,7 @@
 - The `/open` agreement form is blank by default; `Load Sample Agreement` is explicit opt-in, marked illustrative, and has regression tests.
 - Layout CSS now defines desktop/tablet/mobile breakpoints and 100%-zoom editorial type without global scaling. The local production server returned HTTP 200 with CARVEOUT branding on `/`, `/agreements`, `/open`, `/account`, `/protocol`, and `/agreements/1`.
 - Local frontend checks: `npm ci`, 6 tests, typecheck and `next build` PASS. Python 3.12 Direct Mode: 46 passed. Live integration read: 1 passed. Static release gates PASS.
-- Screenshot-based viewport review at 1366/1440/1536/1728 widths could not be performed because the Windows computer-use helper exited during initialization with `apply deny-read ACLs`; visual inspection is not claimed. The current UI revision still requires exact-commit CI and production redeployment verification.
+- Local 100%-zoom screenshots were captured and visually reviewed for the home page and agreement form at 1366×768. The home layout was checked at 1366, 1440, 1536, 1600 and 1920px; 820px tablet and 390px mobile layouts were also checked. No horizontal overflow was found. Axe WCAG 2.1 AA scans reported zero violations across `/`, `/agreements`, `/agreements/1`, `/open`, `/account` and `/protocol`. The remaining unverified release evidence is the real SLA economic lifecycle listed below.
 
 ## Live semantic/economic gates (not demonstrated)
 
