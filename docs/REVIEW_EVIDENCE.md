@@ -28,9 +28,9 @@
 - Frontend `npm test`: PASS, 4 tests; `npm run typecheck`: PASS; `npm run build`: PASS.
 - Deploy helper `npm run check:deploy`: PASS; it locks both chain ID and RPC and waits for `FINALIZED` plus successful execution.
 - Stable release pins: local GenLayer CLI `0.39.1`; `genlayer-js@1.1.8`; Node 22 in CI and Vercel; Studionet alias `studionet`, chain `61999`, RPC `https://studio.genlayer.com/api`; the contract runtime is pinned in `contracts/carveout.py`. The global CLI was not changed.
-- GitHub Actions for deployed source commit `8f1302f10e0fee65f79187241e7da853225240d4`: [run 35504469286](https://github.com/ometere123/carveout/actions/runs/35504469286), PASS for direct tests, GenVM checks and web build. Integration test was skipped because no lifecycle deployment address was configured at that commit. CI for later evidence/Node changes must be checked separately.
-- The read-only integration test now targets the public canonical address in CI and passed locally against Studionet: `get_stats()` returned the expected 61999 network identity, balanced accounting and disabled admin controls. It uses an ephemeral in-memory reader address only; it does not sign or submit a transaction.
-- `pytest tests/integration/ -v` without `CARVEOUT_CONTRACT`: intentionally skips. With the canonical address set, 1 live Studionet read test passed on 2026-09-20.
+- GitHub Actions for release commit `af809ff0f180aebe9b43601b5f74d83f55525856`: [run 35507064544](https://github.com/ometere123/carveout/actions/runs/35507064544), **PASS**. This exact run passed Python compile, GenVM lint/check/validate/schema/typecheck, the SHA-pinned runner, all 46 Direct Mode tests, the canonical live Studionet read integration test, static release/security/frontend checks, root and frontend `npm ci`, deploy-helper typecheck, all 4 frontend tests, frontend typecheck and production build.
+- The read-only integration test targets the public canonical address; `get_stats()` returned the expected 61999 network identity, balanced accounting and disabled admin controls. It uses an ephemeral in-memory reader address only; it does not sign or submit a transaction.
+- `pytest tests/integration/ -v` without `CARVEOUT_CONTRACT`: intentionally skips. CI supplies the canonical address; 1 live Studionet read test passed locally and in run 35507064544.
 
 ## Live semantic/economic gates (not demonstrated)
 

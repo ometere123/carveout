@@ -11,4 +11,4 @@
 
 ## Not verified
 
-The canonical Studionet deployment and public frontend are recorded in `deployments/studionet.json` and `docs/REVIEW_EVIDENCE.md`. Initial deployed reads show zero agreements/incidents and balanced zero accounting. The full live SLA lifecycle and native GEN movement remain unproven; see `docs/REVIEW_EVIDENCE.md` for exact boundaries. CI passed on the deployed source commit; this final Node 22/documentation commit still requires its own CI run.
+The canonical Studionet deployment and public frontend are recorded in `deployments/studionet.json` and `docs/REVIEW_EVIDENCE.md`. Initial deployed reads show zero agreements/incidents and balanced zero accounting. GitHub Actions passed on release commit `af809ff0f180aebe9b43601b5f74d83f55525856` (run `35507064544`), including the live read integration test. The full live SLA lifecycle and native GEN movement remain unproven; see `docs/REVIEW_EVIDENCE.md` for exact boundaries.
