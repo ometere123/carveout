@@ -1,5 +1,5 @@
 name: Import final CARVEOUT source
-# verified canonical archive chunks
+# source import leaves workflow files untouched; cleanup follows via GitHub API
 on:
   push:
     paths:
@@ -20,8 +20,8 @@ jobs:
           rm -rf /tmp/import
           mkdir -p /tmp/import
           unzip -q /tmp/source.zip -d /tmp/import
-          rsync -a --delete --exclude='.git/' /tmp/import/carveout-studionet/ ./
-      - name: Commit exact source tree
+          rsync -a --delete --exclude='.git/' --exclude='.github/' /tmp/import/carveout-studionet/ ./
+      - name: Commit exact source tree except workflows
         shell: bash
         run: |
           set -euo pipefail
