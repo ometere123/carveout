@@ -8,13 +8,18 @@ jobs:
       - uses: actions/setup-python@v5
         with: {python-version: '3.12'}
       - run: pip install -r requirements.txt
+      - run: python -m py_compile contracts/carveout.py
       - run: genvm-lint check contracts/carveout.py --json
-      - run: pytest tests/direct/ -v
+      - run: genvm-lint validate contracts/carveout.py
+      - run: genvm-lint schema contracts/carveout.py --output /tmp/carveout.schema.json
+      - run: genvm-lint typecheck contracts/carveout.py
+      - run: python -m pytest tests/direct/ -v
+      - run: python -m pytest tests/integration/ -v
       - run: python scripts/check_release.py
       - run: python scripts/check_contract_patterns.py
       - run: python scripts/check_frontend_surface.py
       - uses: actions/setup-node@v4
         with: {node-version: '22'}
-      - run: npm install
+      - run: npm ci
       - run: npm run check:deploy
-      - run: cd frontend && npm install && npm run typecheck && npm run build
+      - run: cd frontend && npm ci && npm test && npm run typecheck && npm run build

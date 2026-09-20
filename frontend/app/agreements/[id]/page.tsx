@@ -3,11 +3,12 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useParams } from "next/navigation";
 import { read, waitFinal, write } from "@/lib/contract";
+import { formatGenAmount } from "@/lib/amount";
 import { useInjectedWallet } from "@/lib/wallet";
 import { TxNotice } from "@/components/TxNotice";
 
 const now = () => Math.floor(Date.now()/1000);
-const genText = (v:any) => `${(Number(v || 0)/1e18).toFixed(4)} GEN`;
+const genText = (v:any) => `${formatGenAmount(BigInt(String(v || 0)), 6)} GEN`;
 const short = (v="") => v.length > 18 ? `${v.slice(0,9)}…${v.slice(-6)}` : v;
 function defaultEvidence(policy:any,group:string){
   const entries=policy?.[group]||[];
@@ -36,9 +37,9 @@ export default function AgreementDetail(){
       setChallenge(x=>({...x,url:x.url||defaultChallengeUrl(a.source_policy)}));
       if(a.incident_id){setIncident(await read("get_incident",[a.incident_id]));}else setIncident(null);
       setError("");
-    }catch(e:any){setError(e?.message||String(e));}
+    }catch(e:any){setError(e?.message||String(e));throw e;}
   },[id]);
-  useEffect(()=>{refresh()},[refresh]);
+  useEffect(()=>{refresh().catch(()=>{})},[refresh]);
 
   const role=useMemo(()=>{
     const a=wallet.address?.toLowerCase(); if(!a||!agreement)return "observer";
@@ -51,9 +52,9 @@ export default function AgreementDetail(){
     if(!wallet.address)throw new Error("Connect an injected EIP-1193 wallet first");
     if(!wallet.correctNetwork)throw new Error("Switch the injected wallet to GenLayer Studionet (61999) before signing.");
     setError("");setPhase("signing");setHash("");
-    const tx=await write(wallet.address,name,args,value);setHash(String(tx));setPhase("finalizing");await waitFinal(String(tx));setPhase("finalized");await refresh();
+    const tx=await write(wallet.address,name,args,value);setHash(String(tx));setPhase("finalizing");await waitFinal(String(tx));setPhase("readback");try{await refresh()}catch(e:any){setPhase("readback-failed");throw Object.assign(new Error(e?.message||String(e)),{finalized:true})}setPhase("finalized");
   }
-  async function doTx(name:string,args:any[]=[],value?:bigint){try{await transact(name,args,value)}catch(e:any){setError(e?.message||String(e));setPhase("")}}
+  async function doTx(name:string,args:any[]=[],value?:bigint){try{await transact(name,args,value)}catch(e:any){setError(e?.message||String(e));setPhase(e?.finalized?"readback-failed":"")}}
 
   if(!agreement)return <section className="shell page"><div className="kicker">agreement file</div><h1>loading covenant…</h1>{error&&<div className="tx tx-error">{error}</div>}</section>;
   const maxCredit=BigInt(agreement.max_credit_atto||0);
