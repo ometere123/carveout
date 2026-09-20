@@ -25,12 +25,20 @@
 - `npm run check:static`: PASS, Python compilation, all static release guards and deploy-helper TypeScript check.
 - `scripts/check_frontend_surface.py`: PASS, six routes and required protocol actions including bilateral acceptance and proposal expiry.
 - Root and frontend `npm ci`: PASS. Direct frontend dependencies are exact-version pinned and lockfiles are committed.
-- Frontend `npm test`: PASS, 4 tests; `npm run typecheck`: PASS; `npm run build`: PASS.
+- Frontend `npm test`: PASS, 6 tests, including blank-by-default and explicit illustrative-sample form regression coverage; `npm run typecheck`: PASS; `npm run build`: PASS for the UI revision.
 - Deploy helper `npm run check:deploy`: PASS; it locks both chain ID and RPC and waits for `FINALIZED` plus successful execution.
 - Stable release pins: local GenLayer CLI `0.39.1`; `genlayer-js@1.1.8`; Node 22 in CI and Vercel; Studionet alias `studionet`, chain `61999`, RPC `https://studio.genlayer.com/api`; the contract runtime is pinned in `contracts/carveout.py`. The global CLI was not changed.
-- GitHub Actions for release commit `af809ff0f180aebe9b43601b5f74d83f55525856`: [run 35507064544](https://github.com/ometere123/carveout/actions/runs/35507064544), **PASS**. This exact run passed Python compile, GenVM lint/check/validate/schema/typecheck, the SHA-pinned runner, all 46 Direct Mode tests, the canonical live Studionet read integration test, static release/security/frontend checks, root and frontend `npm ci`, deploy-helper typecheck, all 4 frontend tests, frontend typecheck and production build.
+- GitHub Actions on the preceding release commit `cc48ffc4bc1537088e1030fba2465d67d8f2708a`: [run 35507310425](https://github.com/ometere123/carveout/actions/runs/35507310425), **PASS**. That exact run passed Python compile, GenVM lint/check/validate/schema/typecheck, the SHA-pinned runner, all 46 Direct Mode tests, the canonical live Studionet read integration test, static release/security/frontend checks, root and frontend `npm ci`, deploy-helper typecheck, 4 frontend tests, frontend typecheck and production build. CI for the current UI-only revision is pending.
 - The read-only integration test targets the public canonical address; `get_stats()` returned the expected 61999 network identity, balanced accounting and disabled admin controls. It uses an ephemeral in-memory reader address only; it does not sign or submit a transaction.
-- `pytest tests/integration/ -v` without `CARVEOUT_CONTRACT`: intentionally skips. CI supplies the canonical address; 1 live Studionet read test passed locally and in run 35507064544.
+- `pytest tests/integration/ -v` without `CARVEOUT_CONTRACT`: intentionally skips. CI supplies the canonical address; 1 live Studionet read test passed locally and in run 35507310425.
+
+## UI finishing pass (2026-09-20)
+
+- Navigation is limited to Agreements, New Agreement, Account, and Protocol; contextual lifecycle actions remain on their agreement workflow. The logo links to `/`.
+- The `/open` agreement form is blank by default; `Load Sample Agreement` is explicit opt-in, marked illustrative, and has regression tests.
+- Layout CSS now defines desktop/tablet/mobile breakpoints and 100%-zoom editorial type without global scaling. The local production server returned HTTP 200 with CARVEOUT branding on `/`, `/agreements`, `/open`, `/account`, `/protocol`, and `/agreements/1`.
+- Local frontend checks: `npm ci`, 6 tests, typecheck and `next build` PASS. Python 3.12 Direct Mode: 46 passed. Live integration read: 1 passed. Static release gates PASS.
+- Screenshot-based viewport review at 1366/1440/1536/1728 widths could not be performed because the Windows computer-use helper exited during initialization with `apply deny-read ACLs`; visual inspection is not claimed. The current UI revision still requires exact-commit CI and production redeployment verification.
 
 ## Live semantic/economic gates (not demonstrated)
 

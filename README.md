@@ -53,7 +53,7 @@ Current contract surface: **21 public methods**. Direct Mode, genvm-lint and fro
 
 The UI is intentionally product-specific rather than a reusable crypto/AI dashboard. Visual direction: **forensic SLA dossier: ivory ruled sheets, red examiner marks, evidence tabs and incident timelines**.
 
-Routes: `/`, `/agreements`, `/agreements/[id]`, `/open`, `/account`, `/protocol`. The dynamic detail route reads finalized on-chain state and exposes the complete protocol write path with signing/finalizing/finalized/error feedback.
+Routes: `/`, `/agreements`, `/agreements/[id]`, `/open`, `/account`, and `/protocol`. Primary navigation is limited to Agreements, New Agreement, Account, and Protocol; incident-specific actions stay within the agreement workflow. The New Agreement form starts blank. **Load Sample Agreement** is an explicit opt-in and its illustrative terms must be checked and replaced before a real proposal. The dynamic detail route reads on-chain state and keeps signing, finality, readback, and error feedback beside the relevant workflow.
 
 ## Static checks included in the handoff
 
@@ -75,7 +75,7 @@ npm ci
 cd frontend && npm ci && npm test && npm run typecheck && npm run build
 ```
 
-The contract deployment, source/schema comparison, initial `get_stats()` read and public frontend deployment are complete and recorded in `deployments/studionet.json`. Run `docs/LIVE_DEMO.md` only with a genuine SLA and actual public measurement evidence; record finalized transaction hashes and state reads. The complete adjudication/challenge/settlement/withdrawal lifecycle is not yet demonstrated.
+The canonical contract deployment, source/schema comparison, `get_stats()` read, and public frontend deployment are recorded in `deployments/studionet.json`. The canonical website is [https://carveout-sla.vercel.app](https://carveout-sla.vercel.app). Run `docs/LIVE_DEMO.md` only with a genuine SLA and actual public measurement evidence; record finalized transaction hashes and state reads. A complete adjudication/challenge/settlement/withdrawal lifecycle is not yet demonstrated.
 
 ## Live release
 

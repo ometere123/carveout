@@ -38,7 +38,7 @@ pytest tests/direct/ -v
 
 Fix genuine GenVM/storage/closure/type/toolchain failures without weakening the economic or semantic rules. Keep or expand tests for exact payable checks, access control, state transitions, evidence unavailable/inconclusive states, malformed model output, substantive validator agreement/disagreement, replay/duplicate protection, bounded liveness, challenge outcomes, pull-credit withdrawal and accounting conservation.
 
-Then run the integration/real-network checks that are appropriate to current tooling. The included `tests/integration/test_studionet_smoke.py` is opt-in and must point to the final deployed address; it skipped in this checkout because there is no deployment record. Do not mistake a skipped smoke test for real consensus proof. See `docs/REVIEW_EVIDENCE.md` for the live network and deployment blocks encountered here.
+Then run integration/real-network checks that are appropriate to current tooling. The included `tests/integration/test_studionet_smoke.py` points to the canonical address in CI and has passed as a read-only `get_stats()` check. That verifies deployed reads only; it is not real consensus or lifecycle proof. See `docs/REVIEW_EVIDENCE.md` for the exact boundary.
 
 ## Frontend gates
 
@@ -53,7 +53,7 @@ Preserve the current design system: **forensic SLA dossier: ivory ruled sheets, 
 
 ## Deployment
 
-Use the built-in Studionet network. Before deploying, explicitly verify chain ID `61999` and RPC `https://studio.genlayer.com/api`. Deploy only the exact final lint/test-passing source. Wait for FINALIZED **and** successful execution. Then inspect deployed code/schema and `get_stats()` and compare them with this repository. Record the final address, deployment transaction and source commit in `deployments/studionet.json` and `docs/REVIEW_EVIDENCE.md`.
+The repository already records a finalized Studionet deployment. Do not redeploy for frontend-only changes. If the contract source genuinely changes, use only the built-in Studionet network, explicitly verify chain ID `61999` and RPC `https://studio.genlayer.com/api`, and deploy only after lint/tests pass. Wait for FINALIZED **and** successful execution. Inspect deployed code/schema and `get_stats()` and compare them with this repository. Record any new canonical deployment in `deployments/studionet.json` and `docs/REVIEW_EVIDENCE.md`.
 
 ## Live proof
 
@@ -61,7 +61,7 @@ Execute `docs/LIVE_DEMO.md` with real, stable public evidence. The positive path
 
 ## Publish and freeze
 
-Wire the exact final address into the frontend environment, build again, publish it, and retest in a clean browser with a generic injected wallet on 61999. Confirm finalized reads, writes, wrong-network recovery, explorer links and understandable failures. Remove stale addresses, stale screenshots, test-only claims and unverified language. Make CI green and leave the working tree clean.
+The public frontend is currently `https://carveout-sla.vercel.app` and is wired to the recorded canonical address. For UI-only changes, rebuild and deploy the frontend without redeploying the contract. Retest with a generic injected wallet on 61999. Confirm finalized reads, writes, wrong-network recovery, explorer links and understandable failures. Remove stale addresses, screenshots, test-only claims and unverified language. Make CI green and leave the working tree clean.
 
 ## Definition of done
 

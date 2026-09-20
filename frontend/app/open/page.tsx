@@ -3,19 +3,19 @@ import {useState} from "react";
 import Link from "next/link";
 import {write,waitFinal,gen,read} from "@/lib/contract";
 import {parseGenAmount} from "@/lib/amount";
+import {emptyAgreementDraft,sampleAgreementDraft} from "@/lib/agreementForm";
 import {useInjectedWallet} from "@/lib/wallet";
 import {TxNotice} from "@/components/TxNotice";
 
-const exceptions=`[{"code":"MAINT","title":"Scheduled maintenance","rule":"48 hour notice and matching window are required","proof":"Dated public notice and timeline"},{"code":"UPSTREAM","title":"Upstream outage","rule":"A named dependency outage must materially cause impact","proof":"Official upstream plus service timeline"}]`;
-const sourcePolicy=JSON.stringify({measurement:[],exception:[],challenge:[]},null,2);
-
 export default function Open(){
   const wallet=useInjectedWallet();
-  const [form,setForm]=useState({customer:"",service:"",url:"",metric:"",target:"9995",credit:"0.001",exceptions,policy:"Use only the agreed public origins and paths below. Unavailable evidence is not proof.",sourcePolicy,startAfterHours:"24",durationDays:"30",challenge:"1800"});
+  const [form,setForm]=useState(emptyAgreementDraft);
+  const [sampleLoaded,setSampleLoaded]=useState(false);
   const [phase,setPhase]=useState(""),[hash,setHash]=useState(""),[error,setError]=useState("");
   const [validation,setValidation]=useState<string[]>([]);
   const [createdId,setCreatedId]=useState("");
-  const update=(key:string,value:string)=>setForm(current=>({...current,[key]:value}));
+  const update=(key:string,value:string)=>{setForm(current=>({...current,[key]:value}));setSampleLoaded(false)};
+  function loadSample(){setForm(sampleAgreementDraft());setSampleLoaded(true);setValidation([]);setError("");setCreatedId("");setPhase("");setHash("")}
   async function submit(){
     const issues:string[]=[];
     const customer=form.customer.trim();
@@ -58,7 +58,7 @@ export default function Open(){
         customer,form.service.trim(),form.url.trim(),form.metric.trim(),Number(form.target),credit.toString(),start,end,
         form.exceptions,form.policy,form.sourcePolicy,Number(form.challenge)
       ],credit);
-      setHash(String(tx));setPhase("finalizing");await waitFinal(String(tx));finalized=true;setPhase("readback");
+      setHash(String(tx));setPhase("submitted");await new Promise(resolve=>setTimeout(resolve,500));setPhase("finalizing");await waitFinal(String(tx));finalized=true;setPhase("readback");
       const list=await read("list_agreements",[0,30]);
       if(!Number(list?.total))throw new Error("Finalized transaction did not produce a readable agreement record.");
       const page=await read("list_agreements",[Math.max(0,Number(list.total)-1),1]);
@@ -70,26 +70,29 @@ export default function Open(){
     }catch(e:any){setError(finalized?"Transaction finalized, but canonical readback verification failed. Do not resubmit until you inspect the transaction. "+(e?.message||String(e)):(e?.message||String(e)));setPhase(finalized?"readback-failed":"");}
   }
   return <section className="shell page">
-    <div className="page-intro"><div><div className="kicker">new service covenant</div><h1>freeze the exception.</h1></div><p>The provider bonds the maximum credit and proposes the exact SLA, exception clauses, and public source origins. The named customer must accept before the exposure window begins.</p></div>
+    <div className="page-intro"><div><div className="kicker">New agreement</div><h1>Freeze the exception.</h1></div><p>The provider bonds the maximum credit and proposes the exact SLA, exception clauses, and public source origins. The named customer must accept before the exposure window begins.</p></div>
     <div className="form-grid"><div className="form-sheet">
-      <div className="two"><Field label="named customer address" value={form.customer} set={v=>update("customer",v)}/><Field label="service name" value={form.service} set={v=>update("service",v)}/></div>
-      <Field label="service URL" value={form.url} set={v=>update("url",v)}/>
-      <div className="two"><Field label="metric" value={form.metric} set={v=>update("metric",v)}/><Field label="target bps" value={form.target} set={v=>update("target",v)}/></div>
-      <div className="two"><Field label="provider bond / max credit · GEN" value={form.credit} set={v=>update("credit",v)}/><Field label="challenge window seconds" value={form.challenge} set={v=>update("challenge",v)}/></div>
-      <div className="two"><Field label="SLA starts after · hours" value={form.startAfterHours} set={v=>update("startAfterHours",v)}/><Field label="SLA duration · days" value={form.durationDays} set={v=>update("durationDays",v)}/></div>
-      <Area label="frozen exception clauses · JSON" value={form.exceptions} set={v=>update("exceptions",v)}/>
-      <Area label="measurement / adjudication policy" value={form.policy} set={v=>update("policy",v)}/>
-      <Area label="frozen source families, origins and path prefixes · JSON" value={form.sourcePolicy} set={v=>update("sourcePolicy",v)}/>
-      <p className="micro-note">Use actual public evidence origins that can publish the measurement, exception, and counter-evidence for this specific service. Placeholder domains are rejected; the customer accepts this frozen source policy with the SLA.</p>
+      <div className="form-heading"><div><div className="kicker">Agreement details</div><p>Set the parties, covered service, and measurable SLA.</p></div><button className="button sample-button" type="button" onClick={loadSample}>Load Sample Agreement</button></div>
+      {sampleLoaded&&<div className="sample-warning" role="status"><b>Illustrative sample loaded.</b> The customer address and evidence sources are examples, not verified incident evidence. Replace them and verify every source before creating a real agreement.</div>}
+      <div className="two"><Field label="Customer wallet address" placeholder="0x… (40 hexadecimal characters)" value={form.customer} set={v=>update("customer",v)}/><Field label="Service name" placeholder="e.g. Payments API" value={form.service} set={v=>update("service",v)}/></div>
+      <Field label="Service URL" placeholder="https://service.example (use the real public service host)" value={form.url} set={v=>update("url",v)}/>
+      <div className="two"><Field label="SLA metric" placeholder="e.g. monthly availability" value={form.metric} set={v=>update("metric",v)}/><Field label="Target (basis points)" placeholder="e.g. 9995 = 99.95%" value={form.target} set={v=>update("target",v)}/></div>
+      <div className="two"><Field label="Provider bond / maximum credit (GEN)" placeholder="0.001–50 GEN" value={form.credit} set={v=>update("credit",v)}/><Field label="Challenge window (seconds)" placeholder="600–86400" value={form.challenge} set={v=>update("challenge",v)}/></div>
+      <div className="two"><Field label="SLA begins after (hours)" placeholder="At least 1 hour" value={form.startAfterHours} set={v=>update("startAfterHours",v)}/><Field label="SLA duration (days)" placeholder="At least 1 day" value={form.durationDays} set={v=>update("durationDays",v)}/></div>
+      <div className="form-section-label">Frozen terms and evidence policy</div>
+      <Area label="Exception clauses (JSON)" placeholder='[{"code":"…","title":"…","rule":"…","proof":"…"}]' value={form.exceptions} set={v=>update("exceptions",v)}/>
+      <Area label="Measurement and adjudication policy" placeholder="State what evidence can establish the miss or excuse it. Unavailable evidence is not proof." value={form.policy} set={v=>update("policy",v)}/>
+      <Area label="Source families, origins, and path prefixes (JSON)" placeholder={'{"measurement":[{"kind":"PROVIDER_STATUS","host":"status.your-service.com","path_prefix":"/incidents"},{"kind":"INDEPENDENT_PROBE","host":"probe.your-service.org","path_prefix":"/"}],"exception":[{"kind":"PUBLIC_NOTICE","host":"notices.your-service.org","path_prefix":"/"}],"challenge":[{"kind":"COUNTER_EVIDENCE","host":"evidence.your-service.org","path_prefix":"/"}]}'} value={form.sourcePolicy} set={v=>update("sourcePolicy",v)}/>
+      <p className="micro-note">Use real, public HTTPS origins relevant to this service. Each policy group requires 1–8 distinct origins. Measurement needs at least two source families, including an independent probe on a separate origin. The customer accepts this exact frozen policy.</p>
       {validation.length>0&&<ul className="tx tx-error" role="alert">{validation.map((item,i)=><li key={i}>{item}</li>)}</ul>}
-      <button className="button red" onClick={submit} disabled={phase==="signing"||phase==="finalizing"}>fund + propose covenant</button>
+      <button className="button red" onClick={submit} disabled={phase==="signing"||phase==="finalizing"||phase==="readback"}>Fund and propose agreement</button>
       {createdId&&<p className="micro-note" role="status">Proposal persisted and verified: <Link href={"/agreements/"+createdId}>{createdId} · open agreement</Link></p>}
       <TxNotice phase={phase} hash={hash} error={error}/>
-    </div><aside className="side-note"><div className="kicker">formation rule</div><h2>Neither party can change the file after acceptance.</h2><p>Agreement creation leaves the bond in a proposed state. The customer accepts the same specification at least five minutes before SLA exposure. An unaccepted proposal has a bounded bond refund.</p><p>The source policy pins evidence families to exact HTTPS hosts and path prefixes. Measurement requires separate origins, including an independent probe origin.</p></aside></div>
+    </div><aside className="side-note"><div className="kicker">Formation rule</div><h2>Neither party can change the agreement after acceptance.</h2><p>Creating an agreement escrows the provider bond in a proposed state. The named customer must accept the same specification at least five minutes before SLA exposure. An unaccepted proposal has a bounded bond refund.</p><p>The source policy pins evidence families to exact HTTPS hosts and path prefixes. Measurement requires distinct origins, including an independent probe.</p><p className="micro-note">The form starts blank. Nothing is sent to the contract until you submit and approve the wallet transaction.</p></aside></div>
   </section>
 }
-function Field({label,value,set}:{label:string,value:string,set:(v:string)=>void}){return <div className="field"><label>{label}</label><input value={value} onChange={e=>set(e.target.value)}/></div>}
-function Area({label,value,set}:{label:string,value:string,set:(v:string)=>void}){return <div className="field"><label>{label}</label><textarea value={value} onChange={e=>set(e.target.value)}/></div>}
+function Field({label,value,set,placeholder=""}:{label:string,value:string,set:(v:string)=>void,placeholder?:string}){const id=`field-${label.toLowerCase().replace(/[^a-z0-9]+/g,"-")}`;return <div className="field"><label htmlFor={id}>{label}</label><input id={id} value={value} placeholder={placeholder} onChange={e=>set(e.target.value)}/></div>}
+function Area({label,value,set,placeholder=""}:{label:string,value:string,set:(v:string)=>void,placeholder?:string}){const id=`field-${label.toLowerCase().replace(/[^a-z0-9]+/g,"-")}`;return <div className="field"><label htmlFor={id}>{label}</label><textarea id={id} value={value} placeholder={placeholder} onChange={e=>set(e.target.value)}/></div>}
 
 function isPlaceholderHost(host:string){return ["example.com","example.org","example.net","localhost","local","internal"].includes(host)||host.endsWith(".example.com")||host.endsWith(".example.org")||host.endsWith(".example.net")||host.endsWith(".example")||host.endsWith(".invalid")||host.endsWith(".test")||host.endsWith(".localhost")||host.endsWith(".local")||host.endsWith(".internal")}
 function sameServiceDomain(host:string,serviceHost:string){const tail=(x:string)=>x.split(".").slice(-2).join(".");return host===serviceHost||host.endsWith("."+serviceHost)||serviceHost.endsWith("."+host)||tail(host)===tail(serviceHost)}

@@ -52,11 +52,11 @@ export default function AgreementDetail(){
     if(!wallet.address)throw new Error("Connect an injected EIP-1193 wallet first");
     if(!wallet.correctNetwork)throw new Error("Switch the injected wallet to GenLayer Studionet (61999) before signing.");
     setError("");setPhase("signing");setHash("");
-    const tx=await write(wallet.address,name,args,value);setHash(String(tx));setPhase("finalizing");await waitFinal(String(tx));setPhase("readback");try{await refresh()}catch(e:any){setPhase("readback-failed");throw Object.assign(new Error(e?.message||String(e)),{finalized:true})}setPhase("finalized");
+    const tx=await write(wallet.address,name,args,value);setHash(String(tx));setPhase("submitted");await new Promise(resolve=>setTimeout(resolve,500));setPhase("finalizing");await waitFinal(String(tx));setPhase("readback");try{await refresh()}catch(e:any){setPhase("readback-failed");throw Object.assign(new Error(e?.message||String(e)),{finalized:true})}setPhase("finalized");
   }
   async function doTx(name:string,args:any[]=[],value?:bigint){try{await transact(name,args,value)}catch(e:any){setError(e?.message||String(e));setPhase(e?.finalized?"readback-failed":"")}}
 
-  if(!agreement)return <section className="shell page"><div className="kicker">agreement file</div><h1>loading covenant…</h1>{error&&<div className="tx tx-error">{error}</div>}</section>;
+  if(!agreement)return <section className="shell page"><div className="kicker">Agreement file</div><h1>{error?"Agreement unavailable":"Loading agreement…"}</h1>{error&&<div className="tx tx-error" role="alert">{error}</div>}</section>;
   const maxCredit=BigInt(agreement.max_credit_atto||0);
   const challengeBond=maxCredit/100n>100000000000000n?maxCredit/100n:100000000000000n;
   const exception=incident?.exception_code?(agreement.exceptions||[]).find((x:any)=>x.code===incident.exception_code):null;
@@ -64,68 +64,68 @@ export default function AgreementDetail(){
 
   return <section className="shell page">
     <div className="page-intro">
-      <div><div className="kicker">{agreement.id} / service covenant</div><h1>{agreement.service_name}</h1></div>
+      <div><div className="kicker">Agreement {agreement.id}</div><h1>{agreement.service_name}</h1></div>
       <div className="contract-summary"><span className={`tag ${agreement.status}`}>{agreement.status}</span><b>{genText(agreement.bond_atto)}</b><small>{agreement.metric_name} · target {(Number(agreement.target_bps)/100).toFixed(2)}%</small></div>
     </div>
 
     <div className="case-grid">
       <aside className="contract-panel">
-        <div className="kicker">frozen law</div>
-        <div className="docket-line"><span>provider</span><b>{short(agreement.provider)}</b></div>
-        <div className="docket-line"><span>customer</span><b>{short(agreement.customer)}</b></div>
-        <div className="docket-line"><span>service</span><b>{agreement.service_url}</b></div>
-        <div className="docket-line"><span>maximum credit</span><b>{genText(agreement.max_credit_atto)}</b></div>
-        <div className="docket-line"><span>window</span><b>{new Date(Number(agreement.window_start)*1000).toISOString().slice(0,10)} → {new Date(Number(agreement.window_end)*1000).toISOString().slice(0,10)}</b></div>
-        <div className="basis">spec hash · {agreement.spec_hash}</div>
-        <h3>permitted carve-outs</h3>
-        {(agreement.exceptions||[]).map((x:any)=><div className="clause" key={x.code}><b>{x.code}</b><strong>{x.title}</strong><p>{x.rule}</p><small>proof · {x.proof}</small></div>)}
-        <div className="basis">evidence policy · {agreement.evidence_policy}</div>
-        <h3>frozen source policy</h3>
+        <div className="kicker">Frozen terms</div>
+        <div className="docket-line"><span>Provider</span><b>{short(agreement.provider)}</b></div>
+        <div className="docket-line"><span>Customer</span><b>{short(agreement.customer)}</b></div>
+        <div className="docket-line"><span>Service</span><b>{agreement.service_url}</b></div>
+        <div className="docket-line"><span>Maximum credit</span><b>{genText(agreement.max_credit_atto)}</b></div>
+        <div className="docket-line"><span>Performance window</span><b>{new Date(Number(agreement.window_start)*1000).toISOString().slice(0,10)} → {new Date(Number(agreement.window_end)*1000).toISOString().slice(0,10)}</b></div>
+        <div className="basis">Specification hash · {agreement.spec_hash}</div>
+        <h3>Permitted carve-outs</h3>
+        {(agreement.exceptions||[]).map((x:any)=><div className="clause" key={x.code}><b>{x.code}</b><strong>{x.title}</strong><p>{x.rule}</p><small>Proof · {x.proof}</small></div>)}
+        <div className="basis">Evidence policy · {agreement.evidence_policy}</div>
+        <h3>Frozen source policy</h3>
         {Object.entries(agreement.source_policy||{}).map(([group,items]:any)=><div className="basis" key={group}>{group} · {(items||[]).map((x:any)=>`${x.kind} @ ${x.host}${x.path_prefix}`).join(" · ")}</div>)}
       </aside>
 
       <main className="incident-panel">
         {!incident && agreement.status==="PROPOSED" && <div className="incident-empty">
-          <div className="kicker">awaiting customer signature</div><h2>The provider has proposed a frozen covenant.</h2>
-          <p>The bond is escrowed, but this agreement cannot open incidents until the named customer accepts the exact specification before the formation deadline.</p>
-          <div className="basis">formation deadline · {new Date(Number(agreement.formation_deadline)*1000).toISOString()}</div>
-          <div className="basis">spec commitment · {agreement.spec_hash}</div>
-          {role==="customer"&&now()<Number(agreement.formation_deadline)&&<button className="button red" onClick={()=>doTx("accept_agreement",[id])}>accept frozen covenant</button>}
-          {now()>=Number(agreement.formation_deadline)&&<button className="button primary" onClick={()=>doTx("expire_proposal",[id])}>return expired proposal bond</button>}
+          <div className="kicker">Awaiting customer acceptance</div><h2>The provider proposed a frozen agreement.</h2>
+          <p>The bond is escrowed, but incidents remain unavailable until the named customer accepts the exact specification before the formation deadline.</p>
+          <div className="basis">Formation deadline · {new Date(Number(agreement.formation_deadline)*1000).toISOString()}</div>
+          <div className="basis">Specification commitment · {agreement.spec_hash}</div>
+          {role==="customer"&&now()<Number(agreement.formation_deadline)&&<button className="button red" onClick={()=>doTx("accept_agreement",[id])}>Accept agreement</button>}
+          {now()>=Number(agreement.formation_deadline)&&<button className="button primary" onClick={()=>doTx("expire_proposal",[id])}>Return expired proposal bond</button>}
         </div>}
         {!incident && agreement.status==="ACTIVE" && <div className="incident-empty">
-          <div className="kicker">no live incident</div><h2>The service covenant is active.</h2><p>A customer can open a measured miss, but collateral is not exposed until independent evidence verifies the service and exact observation window.</p>
+          <div className="kicker">No open incident</div><h2>The service agreement is active.</h2><p>The customer can report a measured miss. Liability is not established until independent evidence verifies the service and observation window.</p>
           {role==="customer" && <div className="form-sheet compact">
-            <div className="two"><Field label="claimed availability bps" value={miss.actual} set={v=>setMiss({...miss,actual:v})}/><Field label="observed from · unix" value={miss.from} set={v=>setMiss({...miss,from:v})}/></div>
-            <Field label="observed to · unix" value={miss.to} set={v=>setMiss({...miss,to:v})}/>
-            <Area label="measurement evidence JSON" value={miss.evidence} set={v=>setMiss({...miss,evidence:v})}/>
-            <button className="button red" onClick={()=>doTx("open_incident",[id,Number(miss.actual),Number(miss.from),Number(miss.to),miss.evidence])}>open measured miss</button>
+            <div className="two"><Field label="Claimed availability (basis points)" value={miss.actual} set={v=>setMiss({...miss,actual:v})}/><Field label="Observation start (Unix time)" value={miss.from} set={v=>setMiss({...miss,from:v})}/></div>
+            <Field label="Observation end (Unix time)" value={miss.to} set={v=>setMiss({...miss,to:v})}/>
+            <Area label="Measurement evidence (JSON)" value={miss.evidence} set={v=>setMiss({...miss,evidence:v})}/>
+            <button className="button red" onClick={()=>doTx("open_incident",[id,Number(miss.actual),Number(miss.from),Number(miss.to),miss.evidence])}>Open measured miss</button>
           </div>}
-          {now()>Number(agreement.window_end)&&<button className="button primary" onClick={()=>doTx("expire_agreement",[id])}>expire clean agreement</button>}
+          {now()>Number(agreement.window_end)&&<button className="button primary" onClick={()=>doTx("expire_agreement",[id])}>Close expired agreement</button>}
         </div>}
 
         {incident && <>
-          <div className="incident-head"><div><div className="kicker">incident {incident.id}</div><h2>{incident.status.replaceAll("_"," ")}</h2></div><div className="metric-badge"><span>verified / claimed</span><b>{(Number(incident.actual_bps)/100).toFixed(2)}%</b></div></div>
+          <div className="incident-head"><div><div className="kicker">Incident {incident.id}</div><h2>{incident.status.replaceAll("_"," ").toLowerCase().replace(/\b\w/g,(c:string)=>c.toUpperCase())}</h2></div><div className="metric-badge"><span>Verified / claimed</span><b>{(Number(incident.actual_bps)/100).toFixed(2)}%</b></div></div>
           <div className="timeline">
-            <div className="tick"><b>01</b><span>miss asserted</span><small>{incident.claimed_actual_bps} bps</small></div>
-            <div className={`tick ${["MEASUREMENT_REJECTED"].includes(incident.status)?"bad":"done"}`}><b>02</b><span>measurement proof</span><small>{incident.measurement_basis||"awaiting consensus"}</small></div>
-            <div className={`tick ${incident.exception_code?"done":""}`}><b>03</b><span>exception claim</span><small>{incident.exception_code||"not invoked"}</small></div>
-            <div className={`tick ${incident.exception_result?"done":""}`}><b>04</b><span>exception judgment</span><small>{incident.exception_result||"pending"}</small></div>
-            <div className={`tick ${incident.status==="FINAL"?"done":""}`}><b>05</b><span>settlement</span><small>{incident.payout_atto?genText(incident.payout_atto):"not final"}</small></div>
+            <div className="tick"><b>01</b><span>Miss asserted</span><small>{incident.claimed_actual_bps} bps</small></div>
+            <div className={`tick ${["MEASUREMENT_REJECTED"].includes(incident.status)?"bad":"done"}`}><b>02</b><span>Measurement proof</span><small>{incident.measurement_basis||"Awaiting consensus"}</small></div>
+            <div className={`tick ${incident.exception_code?"done":""}`}><b>03</b><span>Exception claim</span><small>{incident.exception_code||"Not invoked"}</small></div>
+            <div className={`tick ${incident.exception_result?"done":""}`}><b>04</b><span>Exception judgment</span><small>{incident.exception_result||"Pending"}</small></div>
+            <div className={`tick ${incident.status==="FINAL"?"done":""}`}><b>05</b><span>Settlement</span><small>{incident.payout_atto?genText(incident.payout_atto):"Not final"}</small></div>
           </div>
 
           <div className="incident-facts">
-            <div><span>observation</span><b>{new Date(Number(incident.observed_from)*1000).toISOString()}<br/>→ {new Date(Number(incident.observed_to)*1000).toISOString()}</b></div>
-            <div><span>provider liable</span><b>{(Number(incident.liable_bps)/100).toFixed(2)}%</b></div>
-            <div><span>exception</span><b>{exception?`${exception.code} / ${exception.title}`:"none"}</b></div>
+            <div><span>Observation</span><b>{new Date(Number(incident.observed_from)*1000).toISOString()}<br/>→ {new Date(Number(incident.observed_to)*1000).toISOString()}</b></div>
+            <div><span>Provider liability</span><b>{(Number(incident.liable_bps)/100).toFixed(2)}%</b></div>
+            <div><span>Exception</span><b>{exception?`${exception.code} / ${exception.title}`:"None"}</b></div>
           </div>
           {incident.facts?.length>0&&<div className="fact-sheet">{incident.facts.map((f:string,i:number)=><p key={i}><b>{String(i+1).padStart(2,"0")}</b>{f}</p>)}</div>}
-          {incident.basis&&<div className="basis">judgment basis · {incident.basis}</div>}
-          <div className="basis" title={incident.measurement_case_hash}>measurement case commitment · {incident.measurement_case_hash||"pending"}</div>
-          {incident.exception_case_hash&&<div className="basis" title={incident.exception_case_hash}>exception case commitment · {incident.exception_case_hash}</div>}
-          {incident.challenge_case_hash&&<div className="basis" title={incident.challenge_case_hash}>challenge case commitment · {incident.challenge_case_hash}</div>}
-          {incident.excused_intervals?.length>0&&<div className="fact-sheet"><div className="kicker">excused intervals · liability is deterministic</div>{incident.excused_intervals.map((x:any,i:number)=><p key={i}><b>{String(i+1).padStart(2,"0")}</b>{new Date(Number(x.from_ts)*1000).toISOString()} → {new Date(Number(x.to_ts)*1000).toISOString()} · evidence {x.evidence_ids.join(", ")}</p>)}</div>}
-          {challengeData&&<div className="challenge-record"><b>challenge · {challengeData.status}</b><p>{challengeData.text}</p>{challengeData.basis&&<small>{challengeData.basis}</small>}</div>}
+          {incident.basis&&<div className="basis">Judgment basis · {incident.basis}</div>}
+          <div className="basis" title={incident.measurement_case_hash}>Measurement case commitment · {incident.measurement_case_hash||"Pending"}</div>
+          {incident.exception_case_hash&&<div className="basis">Exception case commitment · {incident.exception_case_hash}</div>}
+          {incident.challenge_case_hash&&<div className="basis">Challenge case commitment · {incident.challenge_case_hash}</div>}
+          {incident.excused_intervals?.length>0&&<div className="fact-sheet"><div className="kicker">Excused intervals · liability is deterministic</div>{incident.excused_intervals.map((x:any,i:number)=><p key={i}><b>{String(i+1).padStart(2,"0")}</b>{new Date(Number(x.from_ts)*1000).toISOString()} → {new Date(Number(x.to_ts)*1000).toISOString()} · Evidence {x.evidence_ids.join(", ")}</p>)}</div>}
+          {challengeData&&<div className="challenge-record"><b>Challenge · {challengeData.status}</b><p>{challengeData.text}</p>{challengeData.basis&&<small>{challengeData.basis}</small>}</div>}
 
           <div className="action-row">
             {["MEASUREMENT_PENDING","MEASUREMENT_INCONCLUSIVE"].includes(incident.status)&&<button className="button primary" onClick={()=>doTx("verify_measurement",[incident.id])}>verify measurement</button>}
