@@ -3,6 +3,8 @@ on: [push, pull_request]
 jobs:
   verify:
     runs-on: ubuntu-latest
+    env:
+      GENVM_VERSION: v0.2.16
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -17,14 +19,14 @@ jobs:
         run: |
           mkdir -p ~/.cache/gltest-direct
           curl --fail --location --silent --show-error https://github.com/genlayerlabs/genvm/releases/download/v0.2.16/genvm-universal.tar.xz --output ~/.cache/gltest-direct/genvm-universal-v0.2.16.tar.xz
-          echo "4f0b358ec98ec148be9b95cdfb0f0e1a6cbe64da0194fdfac3fffc6f5d1d93e2  ~/.cache/gltest-direct/genvm-universal-v0.2.16.tar.xz" | sha256sum --check
+          (cd "$HOME/.cache/gltest-direct" && echo "4f0b358ec98ec148be9b95cdfb0f0e1a6cbe64da0194fdfac3fffc6f5d1d93e2  genvm-universal-v0.2.16.tar.xz" | sha256sum --check)
       - run: python -m pytest tests/direct/ -v
       - run: python -m pytest tests/integration/ -v
       - run: python scripts/check_release.py
       - run: python scripts/check_contract_patterns.py
       - run: python scripts/check_frontend_surface.py
       - uses: actions/setup-node@v4
-        with: {node-version: '22'}
+        with: {node-version: '20'}
       - run: npm ci
       - run: npm run check:deploy
       - run: cd frontend && npm ci && npm test && npm run typecheck && npm run build

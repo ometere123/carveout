@@ -2,12 +2,12 @@
 
 ## Passed in this checkout (2026-09-20)
 
-- Official compatible pins install: `genlayer-test==0.29.2`, `genlayer-py==0.16.3`, `genvm-linter==0.11.1rc2`, `pytest==9.0.2`.
-- `genvm-lint check contracts/carveout.py --json`: PASS (3 checks; informational newer runner available notice).
+- Stable pins: `genlayer-test==0.29.2`, `genlayer-py==0.16.3`, `genvm-linter==0.11.0`, `pyright==1.1.414`, `pytest==9.0.2`; Python 3.12.
+- Stable GenVM lint, validate, schema, and typecheck: PASS against runner `v0.2.16` matching the contract dependency.
 - Complete Direct Mode suite: PASS, 46 tests. On Windows the installed test runner has a temporary-file lock incompatibility; `run_direct_windows.py` applies a process-local unlink retry shim and invokes the unchanged pytest suite.
-- `npm run check:static` (Python compilation, release guards and deployment-helper TypeScript): PASS.
-- Stable GenLayerJS `1.2.0` compatibility: PASS; package `studionet` chain definition is 61999. The latest stable CLI tag is 0.39.2; CLI built-in Studionet reports the required RPC. No 2.x RC was installed or committed.
-- Frontend `npm install`: PASS; `npm run typecheck`: PASS; `npm run build`: PASS.
+- Python compile, static release guards, and deployment-helper TypeScript check: PASS.
+- Stable frontend/client pins: `genlayer-js==1.1.8`, Node 20 in CI, local CLI `0.39.1`; the global CLI was not changed.
+- Root/frontend `npm ci`, frontend tests (4 passed), typecheck and production build: PASS.
 
 ## Not verified
 

@@ -10,6 +10,19 @@ CARVEOUT is hard-locked to **GenLayer Studionet only**:
 
 There is no 61997/Studio-dev release path, Snaps path, WalletConnect path, embedded wallet, backend signer or browser private key in the application.
 
+## Stable Studionet toolchain
+
+The release toolchain is pinned to stable Studionet 61999: Python 3.12, local GenLayer CLI 0.39.1, `genlayer-js==1.1.8`, `genlayer-test==0.29.2`, `genlayer-py==0.16.3`, `genvm-linter==0.11.0`, Node 20 in CI, and the stable `py-genlayer` runtime hash in the contract.
+
+Use the repository-local CLI binary for CARVEOUT; do not use or change a global CLI:
+
+```powershell
+.\.genlayer-stable\node_modules\.bin\genlayer.cmd network set studionet
+.\.genlayer-stable\node_modules\.bin\genlayer.cmd network info
+```
+
+The CLI tool directory and its cache are local-only and must not be committed.
+
 ## Product boundary
 
 CARVEOUT deliberately keeps SLA arithmetic deterministic. A customer cannot expose provider collateral merely by typing a poor availability number, and a provider cannot invent an exception after failure. Independent measurement consensus opens the incident; only then can a frozen exception be adjudicated and challenged.
@@ -55,14 +68,15 @@ Current results, the compatible Python pins, and live-release blockers are recor
 ## Real release gates for the finishing environment
 
 ```bash
-pip install -r requirements.txt
+py -3.12 -m pip install -r requirements.txt
 genvm-lint check contracts/carveout.py --json
 pytest tests/direct/ -v
-cd frontend && npm install && npm run typecheck && npm run build
+npm ci
+cd frontend && npm ci && npm test && npm run typecheck && npm run build
 ```
 
 Then confirm the built-in network resolves to **61999** / `https://studio.genlayer.com/api`, deploy the exact final source, wait for FINALIZED plus successful execution, compare deployed schema/source with this repository, wire the finalized address into the frontend, publish it, and run `docs/LIVE_DEMO.md` with real evidence and real transaction hashes.
 
 ## Release honesty
 
-This checkout has no `.git` metadata, canonical deployment address, or deployment record. Local lint, Direct Mode, static checks and frontend build have been run in this environment; see `docs/REVIEW_EVIDENCE.md` for exact results and the live gates that remain unproven. No deployment or transaction evidence is claimed here.
+This checkout has Git metadata, but no canonical deployment address or deployment record. Local lint, Direct Mode, static checks and frontend build have been run in this environment; see `docs/REVIEW_EVIDENCE.md` for exact results and the live gates that remain unproven. No deployment or transaction evidence is claimed here.
