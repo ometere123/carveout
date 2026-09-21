@@ -1,30 +1,27 @@
-# CARVEOUT agent handoff — 0.3.0 consensus release
+# CARVEOUT agent handoff — canonical 0.4.0
 
-## Current release continuation — 2026-09-21
+## Current release
 
-Do not continue or retry the 0.3.0 live `cv-i-2` measurement: transaction `0x75daf13670200403477bed9beb07ea5200a83973f4bf106f296de66f12bfe0ba` finalized `UNDETERMINED`, canonical state remains `MEASUREMENT_PENDING`. Candidate 0.4.0 clips, sorts and merges generic event intervals against the frozen window, and marks a source with no overlapping events as non-contributing. Source SHA-256 is `0af5222346cf2d0537f85ca0f2981f5368f2bb28548525110df9364ece2e7d2f`; schema is `deployments/studionet-0.4.0.schema.json`. Local checks pass (60 Direct Mode tests, 42 frontend tests, GenVM checks, typecheck/build and guards). Integration was environment-skipped. GitHub CI passed at [run 35606141013](https://github.com/ometere123/carveout/actions/runs/35606141013) for `ba037c4148f8f79b45b781fe3200def9a817fb54`. The candidate is not deployed. Preserve the 61999 stable runner/toolchain; deployment needs the user's signing action, then verify source/schema and point production frontend only after readback. Start over with a fresh agreement on the new address.
+- Network: GenLayer Studionet, chain `61999`; RPC `https://studio.genlayer.com/api`.
+- Canonical contract: [`0x08Dc200120385474c40F1a48A640d987A94aB1BB`](https://explorer-studio.genlayer.com/address/0x08Dc200120385474c40F1a48A640d987A94aB1BB).
+- Deployment: [`0xbb9c23a98730ff3779f8bff4399b358d009f18d70716efc023a18b31428cd7cd`](https://explorer-studio.genlayer.com/tx/0xbb9c23a98730ff3779f8bff4399b358d009f18d70716efc023a18b31428cd7cd), FINALIZED / SUCCESS / MAJORITY_AGREE.
+- Contract source commit `ba037c4148f8f79b45b781fe3200def9a817fb54`; SHA-256 `0af5222346cf2d0537f85ca0f2981f5368f2bb28548525110df9364ece2e7d2f`.
+- Generated schema file `deployments/studionet-0.4.0.schema.json`, SHA-256 `26de6f5a55a686fb6f38bffd320d14ba53d4b74162a2ad15bdb123aed6f345fd`; deployed canonical schema hash matches local at `4801e0ceeb22866c94f40cac36e48ee3b0606d1500272927e92ede67d9991a70`.
+- Read-only deployed `get_stats()` reports 0.4.0, chain 61999, `accounting_balanced=true`, all counts and balances zero. Accounting: `0 deposited = 0 agreement escrow + 0 challenge escrow + 0 claimable + 0 withdrawn`.
+- Production frontend: [`dpl_2KJyYYm1gyqhUZ36ATT2N5Mrk7N2`](https://vercel.com/delealufejoel-4184s-projects/carveout/dpl_2KJyYYm1gyqhUZ36ATT2N5Mrk7N2), READY at `https://carve-out.vercel.app`; HTTP `/open` 200 and deployed JS contains the canonical address, not the superseded 0.3 address. Vercel Production `NEXT_PUBLIC_CARVEOUT_CONTRACT` is set to the same address.
+- Latest green main CI at handoff: [run 35606688234](https://github.com/ometere123/carveout/actions/runs/35606688234), commit `f87f7465506f1c3f017f0d3a04a791c5d5cc8ad2`. Release source CI: [run 35606141013](https://github.com/ometere123/carveout/actions/runs/35606141013), source commit `ba037c4148f8f79b45b781fe3200def9a817fb54`.
+- Local verification: Direct Mode 60/60; GenVM lint, validate, schema and typecheck PASS; contract/release/frontend-surface guards PASS; frontend tests 42/42; frontend typecheck and production build PASS. Read-only integration was environment-gated and skipped.
 
-## Current state
+## Continue safely
 
-Release 0.3.0 is deployed and canonical on Studionet 61999 at [`0x74D8aEc8BF79369BeDdCae000214552Dcc7D00A9`](https://explorer-studio.genlayer.com/address/0x74D8aEc8BF79369BeDdCae000214552Dcc7D00A9), deployment tx [`0x0a7d3471aa60f1c4d8becff9e151ad7f655b13ad54dae6352f80b3353a860323`](https://explorer-studio.genlayer.com/tx/0x0a7d3471aa60f1c4d8becff9e151ad7f655b13ad54dae6352f80b3353a860323). Receipt finalized successfully (MAJORITY_AGREE); read-only source and schema verification passed. Source SHA-256 `93d8c7cbd0329e8b07ccc6806b32476cda206a6a88acb36367602d018bb41ae6`; schema SHA-256 `26de6f5a55a686fb6f38bffd320d14ba53d4b74162a2ad15bdb123aed6f345fd`; public signatures are unchanged. Stable toolchain, injected-wallet architecture, chain and RPC remain unchanged.
+The user operates every application wallet write and wallet switch. Never sign or submit lifecycle transactions, inspect/use private keys, or introduce an alternate signer. Continue only from a fresh agreement on canonical 0.4.0 after the user starts that lifecycle. The previous 0.3.0 `cv-i-2` measurement transaction `0x75daf13670200403477bed9beb07ea5200a83973f4bf106f296de66f12bfe0ba` finalized `UNDETERMINED`; its canonical incident remains `MEASUREMENT_PENDING`. Preserve it as failure evidence; never retry it or continue its lifecycle. No economic lifecycle on 0.4.0 is yet demonstrated.
 
-## Local verification
+The Vercel upload initially failed because only `frontend/` was uploaded while the project Root Directory is also `frontend`. The successful production upload used the repository root so Vercel could resolve its configured root. Current successful deployment is recorded above.
 
-Direct Mode 59/59; GenVM lint + validate PASS; schema generation PASS; contract typecheck PASS; contract-pattern/release/frontend-surface checks PASS; frontend tests 41/41; frontend TypeScript and production build PASS. For GenVM validation on this machine, set `GENVM_VERSION=v0.2.16`: without it an unrelated cached RC bundle can be selected. Do not change the contract header runner pin.
+## Preserved earlier failure evidence
 
-Source commit `b70d49659b569ec7941a7607735ca5f096d10ebc` is pushed to main and passed [GitHub CI run 35583968282](https://github.com/ometere123/carveout/actions/runs/35583968282).
-
-## Release status and outstanding work
-
-1. Production frontend [`dpl_G6u9nyjfcTX7yXWoGRo5XVCMqrwk`](https://vercel.com/delealufejoel-4184s-projects/carveout/dpl_G6u9nyjfcTX7yXWoGRo5XVCMqrwk) is READY at `https://carve-out.vercel.app`, configured for the verified address; public route and compiled address readback passed.
-2. User executes a fresh lifecycle and returns actual hashes/readbacks/screenshots. Never retry the 0.2.0 UNDETERMINED transaction.
-
-Latest green main CI: [run 35584496491](https://github.com/ometere123/carveout/actions/runs/35584496491), commit `1048b7def2c71233695713c2633ab2e59215cd55`.
-
-## Preserved failure evidence
-
-0.2.0 contract `0xA9C86FF6113187915C1Bd8e958fC718719337531`: proposal tx `0x7676d22bbc7a411ded3565077208355a3b7c0fdd915e0560b811206d9c636b3c` (`cv-a-1`), acceptance `0x7e14534c17c68e43cd288931ec7a9084b370f3346d219a50f06c2a51f344294c`, incident tx `0x7185530b04ea679a54fadadfa256d72b8a7c58ca02553b2f1eeb4e766392e2d0` (`cv-i-1`), measurement tx `0x4efe7a6a73577360f2dff97fdbaabd9080842172a29534d58ada108547ba6645` UNDETERMINED after validator rotations. Canonical incident remains MEASUREMENT_PENDING. Full ledger is `docs/REVIEW_EVIDENCE.md`.
+On 0.2.0 at `0xA9C86FF6113187915C1Bd8e958fC718719337531`: proposal tx `0x7676d22bbc7a411ded3565077208355a3b7c0fdd915e0560b811206d9c636b3c` (`cv-a-1`), acceptance `0x7e14534c17c68e43cd288931ec7a9084b370f3346d219a50f06c2a51f344294c`, incident `0x7185530b04ea679a54fadadfa256d72b8a7c58ca02553b2f1eeb4e766392e2d0` (`cv-i-1`), and measurement `0x4efe7a6a73577360f2dff97fdbaabd9080842172a29534d58ada108547ba6645` ended UNDETERMINED. On 0.3.0, `cv-i-2` verification tx above also ended UNDETERMINED after validator rotations. Full transaction history is in `docs/REVIEW_EVIDENCE.md`.
 
 ## Safety boundary
 
-Do not inspect/use local secret keys; do not sign or submit user application writes. Read-only public RPCs are allowed. Do not use 0.2.0 address with 0.3.0 client code. Do not label the previous agreement as new-release evidence. No live outcome is proven until user returns finalized transaction evidence and canonical state reads.
+Read-only public RPC and source/schema verification are allowed. No user application transaction is to be submitted without the user's explicit browser-wallet action. Do not present earlier-release activity as proof of the 0.4.0 evidence-consensus fix. Keep network, SDK, runtime and CLI pinned to the stable Studionet toolchain in `deployments/studionet.json`.

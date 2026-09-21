@@ -1,8 +1,8 @@
-# Verification status — CARVEOUT 0.3.0 release
+# Verification status — CARVEOUT 0.4.0 release
 
-## Current candidate 0.4.0 — 2026-09-21
+## Current release 0.4.0 — 2026-09-21
 
-The active 0.3.0 measurement attempt for `cv-i-2`, tx `0x75daf13670200403477bed9beb07ea5200a83973f4bf106f296de66f12bfe0ba`, ended `UNDETERMINED`; canonical status remains `MEASUREMENT_PENDING`. Do not retry. Candidate 0.4.0 changes provider-neutral event interval normalization only; source SHA-256 `0af5222346cf2d0537f85ca0f2981f5368f2bb28548525110df9364ece2e7d2f`, schema file `deployments/studionet-0.4.0.schema.json`. Direct Mode 60/60, GenVM lint/validate/schema/typecheck, static guards, frontend tests 42/42, frontend typecheck and production build pass locally. Read-only integration skipped by its environment gate; GitHub CI passed at [run 35606141013](https://github.com/ometere123/carveout/actions/runs/35606141013) for exact source commit `ba037c4148f8f79b45b781fe3200def9a817fb54`. Candidate is not deployed; a fresh agreement on its verified deployment is required before restarting live lifecycle.
+Release 0.4.0 is deployed at [`0x08Dc200120385474c40F1a48A640d987A94aB1BB`](https://explorer-studio.genlayer.com/address/0x08Dc200120385474c40F1a48A640d987A94aB1BB), deployment transaction [`0xbb9c23a98730ff3779f8bff4399b358d009f18d70716efc023a18b31428cd7cd`](https://explorer-studio.genlayer.com/tx/0xbb9c23a98730ff3779f8bff4399b358d009f18d70716efc023a18b31428cd7cd), FINALIZED / SUCCESS / MAJORITY_AGREE. Source SHA-256 `0af5222346cf2d0537f85ca0f2981f5368f2bb28548525110df9364ece2e7d2f`; generated schema file `deployments/studionet-0.4.0.schema.json` SHA-256 `26de6f5a55a686fb6f38bffd320d14ba53d4b74162a2ad15bdb123aed6f345fd`; deployed and local canonical schema SHA-256 `4801e0ceeb22866c94f40cac36e48ee3b0606d1500272927e92ede67d9991a70`, exact readback verified. Direct Mode 60/60, GenVM lint/validate/schema/typecheck, static guards, frontend tests 42/42, frontend typecheck and production build pass locally. Read-only integration was skipped by its environment gate. Source CI [run 35606141013](https://github.com/ometere123/carveout/actions/runs/35606141013) passed for `ba037c4148f8f79b45b781fe3200def9a817fb54`; latest green main CI is [run 35606688234](https://github.com/ometere123/carveout/actions/runs/35606688234) at `f87f7465506f1c3f017f0d3a04a791c5d5cc8ad2`. Production frontend is deployed as [`dpl_2KJyYYm1gyqhUZ36ATT2N5Mrk7N2`](https://vercel.com/delealufejoel-4184s-projects/carveout/dpl_2KJyYYm1gyqhUZ36ATT2N5Mrk7N2), READY; `/open` returns HTTP 200 and bundle includes canonical 0.4.0 address only. Start any future live lifecycle from a fresh agreement on this release.
 
 ## Completed locally
 
@@ -16,14 +16,14 @@ The active 0.3.0 measurement attempt for `cv-i-2`, tx `0x75daf13670200403477bed9
 
 Use `GENVM_VERSION=v0.2.16` with local genvm-lint commands. This avoids selecting a different pre-cached RC bundle on this machine. The contract header still uses the pre-existing stable `py-genlayer` hash; no runner or toolchain migration occurred.
 
-## Release and live status
+## Current release and live status
 
-- GitHub source commit `b70d49659b569ec7941a7607735ca5f096d10ebc`: **PASS**, [CI run 35583968282](https://github.com/ometere123/carveout/actions/runs/35583968282).
-- Deployment finalized successfully at [`0x74D8aEc8BF79369BeDdCae000214552Dcc7D00A9`](https://explorer-studio.genlayer.com/address/0x74D8aEc8BF79369BeDdCae000214552Dcc7D00A9), tx [`0x0a7d3471aa60f1c4d8becff9e151ad7f655b13ad54dae6352f80b3353a860323`](https://explorer-studio.genlayer.com/tx/0x0a7d3471aa60f1c4d8becff9e151ad7f655b13ad54dae6352f80b3353a860323); execution SUCCESS, consensus MAJORITY_AGREE.
-- Read-only deployed source matches local release SHA-256 byte-for-byte; deployed schema matches the local canonicalized schema. `get_stats()` confirms version 0.3.0, Studionet 61999, and `accounting_balanced=true` (initial accounting values all zero).
-- Production frontend [`dpl_G6u9nyjfcTX7yXWoGRo5XVCMqrwk`](https://vercel.com/delealufejoel-4184s-projects/carveout/dpl_G6u9nyjfcTX7yXWoGRo5XVCMqrwk) is READY at `https://carve-out.vercel.app`; `/open` returns HTTP 200 and its compiled JavaScript includes the canonical 0.3.0 address, not the old 0.2.0 address.
-- Fresh user-operated browser lifecycle and fail-closed evidence remain pending user wallet actions.
+- Contract-source CI: **PASS**, [run 35606141013](https://github.com/ometere123/carveout/actions/runs/35606141013), source commit `ba037c4148f8f79b45b781fe3200def9a817fb54`. Latest green main CI: [run 35606688234](https://github.com/ometere123/carveout/actions/runs/35606688234), commit `f87f7465506f1c3f017f0d3a04a791c5d5cc8ad2`.
+- New deployment finalized successfully at [`0x08Dc200120385474c40F1a48A640d987A94aB1BB`](https://explorer-studio.genlayer.com/address/0x08Dc200120385474c40F1a48A640d987A94aB1BB), tx [`0xbb9c23a98730ff3779f8bff4399b358d009f18d70716efc023a18b31428cd7cd`](https://explorer-studio.genlayer.com/tx/0xbb9c23a98730ff3779f8bff4399b358d009f18d70716efc023a18b31428cd7cd); execution SUCCESS, consensus MAJORITY_AGREE. Read-only RPC confirms deployed source byte-for-byte and canonical schema equality.
+- `get_stats()` returns version 0.4.0, Studionet 61999, `accounting_balanced=true`, and all counts/balances zero. Initial accounting proof: `0 deposited = 0 agreement escrow + 0 challenge escrow + 0 claimable + 0 withdrawn`.
+- Production frontend [`dpl_2KJyYYm1gyqhUZ36ATT2N5Mrk7N2`](https://vercel.com/delealufejoel-4184s-projects/carveout/dpl_2KJyYYm1gyqhUZ36ATT2N5Mrk7N2) is READY at `https://carve-out.vercel.app`; `/open` returns HTTP 200 and its compiled JavaScript references the canonical 0.4.0 address and not the superseded 0.3.0 address.
+- Fresh user-operated browser lifecycle and fail-closed evidence remain pending wallet actions. No application transaction was signed or submitted for this release.
 
-Latest green `main` CI is [run 35584496491](https://github.com/ometere123/carveout/actions/runs/35584496491) for commit `1048b7def2c71233695713c2633ab2e59215cd55`.
+The prior 0.3.0-era main CI run was [35584496491](https://github.com/ometere123/carveout/actions/runs/35584496491), commit `1048b7def2c71233695713c2633ab2e59215cd55`; it is superseded by the current CI noted above.
 
 The 0.2.0 deployment at `0xA9C86FF6113187915C1Bd8e958fC718719337531` remains deployed but does not contain this consensus fix. Its measurement transaction `0x4efe7a6a73577360f2dff97fdbaabd9080842172a29534d58ada108547ba6645` is finalized UNDETERMINED after validator rotations and its incident remains MEASUREMENT_PENDING. Preserve it; do not retry it or continue its economic lifecycle.

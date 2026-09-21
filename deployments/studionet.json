@@ -19,24 +19,56 @@
     "address": "0xA7EeAE0E93793e3146Cb14b0700251B8b0EBADFB"
   },
   "canonicalDeployment": {
-    "version": "0.3.0-studionet",
-    "address": "0x74D8aEc8BF79369BeDdCae000214552Dcc7D00A9",
-    "transaction": "0x0a7d3471aa60f1c4d8becff9e151ad7f655b13ad54dae6352f80b3353a860323",
+    "version": "0.4.0-studionet",
+    "address": "0x08Dc200120385474c40F1a48A640d987A94aB1BB",
+    "transaction": "0xbb9c23a98730ff3779f8bff4399b358d009f18d70716efc023a18b31428cd7cd",
     "status": "FINALIZED",
     "execution": "SUCCESS",
     "consensus": "MAJORITY_AGREE",
-    "sourceCommit": "b70d49659b569ec7941a7607735ca5f096d10ebc",
-    "sourceSha256": "93d8c7cbd0329e8b07ccc6806b32476cda206a6a88acb36367602d018bb41ae6",
+    "sourceCommit": "ba037c4148f8f79b45b781fe3200def9a817fb54",
+    "sourceSha256": "0af5222346cf2d0537f85ca0f2981f5368f2bb28548525110df9364ece2e7d2f",
     "schemaSha256": "26de6f5a55a686fb6f38bffd320d14ba53d4b74162a2ad15bdb123aed6f345fd",
-    "explorerAddress": "https://explorer-studio.genlayer.com/address/0x74D8aEc8BF79369BeDdCae000214552Dcc7D00A9",
-    "explorerTransaction": "https://explorer-studio.genlayer.com/tx/0x0a7d3471aa60f1c4d8becff9e151ad7f655b13ad54dae6352f80b3353a860323",
+    "explorerAddress": "https://explorer-studio.genlayer.com/address/0x08Dc200120385474c40F1a48A640d987A94aB1BB",
+    "explorerTransaction": "https://explorer-studio.genlayer.com/tx/0xbb9c23a98730ff3779f8bff4399b358d009f18d70716efc023a18b31428cd7cd",
     "deploymentValue": "0",
     "constructorArgs": [],
     "sourceMatchesLocalByteForByte": true,
     "schemaMatchesLocalCanonicalJson": true,
-    "note": "Canonical release 0.3.0 deployment; source and schema verified by read-only Studionet RPC."
+    "deployedSourceSha256": "0af5222346cf2d0537f85ca0f2981f5368f2bb28548525110df9364ece2e7d2f",
+    "deployedSchemaSha256Canonical": "4801e0ceeb22866c94f40cac36e48ee3b0606d1500272927e92ede67d9991a70",
+    "localSchemaSha256Canonical": "4801e0ceeb22866c94f40cac36e48ee3b0606d1500272927e92ede67d9991a70",
+    "getStats": {
+      "accounting_balanced": true,
+      "admin_controls": false,
+      "agreement_escrow": "0",
+      "agreements": 0,
+      "chain_id": "61999",
+      "challenge_escrow": "0",
+      "claimable": "0",
+      "finalized_breaches": 0,
+      "incidents": 0,
+      "network": "Studionet",
+      "proven_exceptions": 0,
+      "rpc": "https://studio.genlayer.com/api",
+      "total_deposited": "0",
+      "version": "0.4.0-studionet",
+      "withdrawn": "0"
+    },
+    "note": "Canonical release 0.4.0 deployment; FINALIZED/SUCCESS/MAJORITY_AGREE. Read-only RPC confirms exact local source and canonical schema hashes. Initial accounting is balanced at zero."
   },
   "historicalDeployments": [
+    {
+      "version": "0.3.0-studionet",
+      "address": "0x74D8aEc8BF79369BeDdCae000214552Dcc7D00A9",
+      "transaction": "0x0a7d3471aa60f1c4d8becff9e151ad7f655b13ad54dae6352f80b3353a860323",
+      "status": "HISTORICAL",
+      "sourceCommit": "b70d49659b569ec7941a7607735ca5f096d10ebc",
+      "sourceSha256": "93d8c7cbd0329e8b07ccc6806b32476cda206a6a88acb36367602d018bb41ae6",
+      "schemaSha256": "26de6f5a55a686fb6f38bffd320d14ba53d4b74162a2ad15bdb123aed6f345fd",
+      "explorerAddress": "https://explorer-studio.genlayer.com/address/0x74D8aEc8BF79369BeDdCae000214552Dcc7D00A9",
+      "explorerTransaction": "https://explorer-studio.genlayer.com/tx/0x0a7d3471aa60f1c4d8becff9e151ad7f655b13ad54dae6352f80b3353a860323",
+      "note": "Superseded by the canonical 0.4.0 deployment. The UNDETERMINED cv-i-2 measurement is preserved under failure evidence."
+    },
     {
       "version": "0.2.0-studionet",
       "address": "0xA9C86FF6113187915C1Bd8e958fC718719337531",
@@ -54,26 +86,26 @@
   ],
   "productionFrontend": {
     "url": "https://carve-out.vercel.app",
-    "contractAddress": "0x74D8aEc8BF79369BeDdCae000214552Dcc7D00A9",
+    "contractAddress": "0x08Dc200120385474c40F1a48A640d987A94aB1BB",
     "chainId": 61999,
     "rpc": "https://studio.genlayer.com/api",
-    "status": "PRODUCTION_0.3.0_VERIFIED",
-    "deploymentId": "dpl_G6u9nyjfcTX7yXWoGRo5XVCMqrwk",
-    "deploymentUrl": "https://carveout-7ldv93tv7-delealufejoel-4184s-projects.vercel.app",
+    "status": "PRODUCTION_0.4.0_VERIFIED",
+    "deploymentId": "dpl_2KJyYYm1gyqhUZ36ATT2N5Mrk7N2",
+    "deploymentUrl": "https://carveout-iachme8us-delealufejoel-4184s-projects.vercel.app",
     "productionAlias": "https://carve-out.vercel.app",
-    "sourceCommit": "1048b7def2c71233695713c2633ab2e59215cd55",
+    "sourceCommit": "f87f7465506f1c3f017f0d3a04a791c5d5cc8ad2",
     "environment": {
-      "NEXT_PUBLIC_CARVEOUT_CONTRACT": "0x74D8aEc8BF79369BeDdCae000214552Dcc7D00A9",
+      "NEXT_PUBLIC_CARVEOUT_CONTRACT": "0x08Dc200120385474c40F1a48A640d987A94aB1BB",
       "NEXT_PUBLIC_GENLAYER_CHAIN_ID": "61999",
       "NEXT_PUBLIC_GENLAYER_RPC_URL": "https://studio.genlayer.com/api"
     },
-    "readback": "HTTP 200 on /open; compiled production JavaScript contains the canonical 0.3.0 address and not the prior 0.2.0 address."
+    "readback": "HTTP 200 on /open; compiled production JavaScript contains canonical 0.4.0 contract 0x08Dc200120385474c40F1a48A640d987A94aB1BB and does not contain the superseded 0.3.0 address."
   },
   "releaseCandidate": {
     "version": "0.4.0-studionet",
-    "status": "SOURCE_READY_DEPLOYMENT_PENDING",
-    "deployed": false,
-    "targetAddress": null,
+    "status": "DEPLOYED_SOURCE_SCHEMA_AND_FRONTEND_VERIFIED",
+    "deployed": true,
+    "targetAddress": "0x08Dc200120385474c40F1a48A640d987A94aB1BB",
     "network": "studionet",
     "chainId": 61999,
     "rpc": "https://studio.genlayer.com/api",
@@ -89,9 +121,14 @@
       "generatorValidation": "PASS"
     },
     "deployment": {
-      "status": "AWAITING_USER_WALLET_ACTION",
+      "status": "FINALIZED",
       "expectedValue": "0",
-      "constructorArgs": []
+      "constructorArgs": [],
+      "transaction": "0xbb9c23a98730ff3779f8bff4399b358d009f18d70716efc023a18b31428cd7cd",
+      "address": "0x08Dc200120385474c40F1a48A640d987A94aB1BB",
+      "execution": "SUCCESS",
+      "consensus": "MAJORITY_AGREE",
+      "explorerTransaction": "https://explorer-studio.genlayer.com/tx/0xbb9c23a98730ff3779f8bff4399b358d009f18d70716efc023a18b31428cd7cd"
     },
     "verification": {
       "genvmLint": "PASS",
@@ -110,7 +147,40 @@
         "testedCommit": "ba037c4148f8f79b45b781fe3200def9a817fb54"
       }
     },
-    "liveLifecycle": "PENDING_FRESH_AGREEMENT_AFTER_0.4.0_DEPLOYMENT"
+    "deploymentVerification": {
+      "status": "PASS",
+      "verifiedAt": "2026-09-21",
+      "network": "studionet",
+      "chainId": 61999,
+      "rpc": "https://studio.genlayer.com/api",
+      "deploymentTransaction": "0xbb9c23a98730ff3779f8bff4399b358d009f18d70716efc023a18b31428cd7cd",
+      "sourceSha256": "0af5222346cf2d0537f85ca0f2981f5368f2bb28548525110df9364ece2e7d2f",
+      "schemaSha256": "26de6f5a55a686fb6f38bffd320d14ba53d4b74162a2ad15bdb123aed6f345fd",
+      "schemaMatchesLocal": true,
+      "sourceMatchesLocalByteForByte": true,
+      "deployedSchemaSha256Canonical": "4801e0ceeb22866c94f40cac36e48ee3b0606d1500272927e92ede67d9991a70",
+      "localSchemaSha256Canonical": "4801e0ceeb22866c94f40cac36e48ee3b0606d1500272927e92ede67d9991a70",
+      "schemaMatchesLocalCanonicalJson": true,
+      "deployedVersion": "0.4.0-studionet",
+      "deployedSourceSha256": "0af5222346cf2d0537f85ca0f2981f5368f2bb28548525110df9364ece2e7d2f"
+    },
+    "frontend": {
+      "url": "https://carve-out.vercel.app",
+      "status": "PRODUCTION_DEPLOYED_AND_READBACK_VERIFIED",
+      "productionEnvironmentConfigured": true,
+      "contractAddress": "0x08Dc200120385474c40F1a48A640d987A94aB1BB",
+      "deploymentId": "dpl_2KJyYYm1gyqhUZ36ATT2N5Mrk7N2",
+      "productionUrl": "https://carve-out.vercel.app",
+      "sourceCommit": "f87f7465506f1c3f017f0d3a04a791c5d5cc8ad2",
+      "readback": "HTTP 200 on /open and production JS references canonical 0.4.0 only."
+    },
+    "liveLifecycle": "PENDING_FRESH_USER_LIFECYCLE_ON_0.4.0"
+  },
+  "latestMain": {
+    "commit": "f87f7465506f1c3f017f0d3a04a791c5d5cc8ad2",
+    "ciRunId": "35606688234",
+    "ciRunUrl": "https://github.com/ometere123/carveout/actions/runs/35606688234",
+    "ciStatus": "PASS"
   },
   "knownLiveFailure": {
     "contractAddress": "0x74D8aEc8BF79369BeDdCae000214552Dcc7D00A9",

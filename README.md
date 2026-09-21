@@ -53,7 +53,7 @@ GOAL_PROMPT.txt                 compact finishing-agent goal
 STATIC_VERIFICATION.md          checks actually run while packaging
 ```
 
-Current contract surface: **21 public methods**. Release 0.3.0 is deployed at [`0x74D8aEc8BF79369BeDdCae000214552Dcc7D00A9`](https://explorer-studio.genlayer.com/address/0x74D8aEc8BF79369BeDdCae000214552Dcc7D00A9), deployment transaction [`0x0a7d3471aa60f1c4d8becff9e151ad7f655b13ad54dae6352f80b3353a860323`](https://explorer-studio.genlayer.com/tx/0x0a7d3471aa60f1c4d8becff9e151ad7f655b13ad54dae6352f80b3353a860323). A live 0.3 measurement attempt ended `UNDETERMINED` after validators disagreed over relevant evidence with extra out-of-window history. Release 0.4.0 prepares generic interval normalization, passed [GitHub CI run 35606141013](https://github.com/ometere123/carveout/actions/runs/35606141013) at source commit `ba037c4148f8f79b45b781fe3200def9a817fb54`, and is not deployed; do not retry that incident or use it as proof of the fix. New live testing must wait for a fresh verified release. See [docs/REVIEW_EVIDENCE.md](docs/REVIEW_EVIDENCE.md).
+Current contract surface: **21 public methods**. Canonical release 0.4.0 is deployed on Studionet 61999 at [`0x08Dc200120385474c40F1a48A640d987A94aB1BB`](https://explorer-studio.genlayer.com/address/0x08Dc200120385474c40F1a48A640d987A94aB1BB), deployment tx [`0xbb9c23a98730ff3779f8bff4399b358d009f18d70716efc023a18b31428cd7cd`](https://explorer-studio.genlayer.com/tx/0xbb9c23a98730ff3779f8bff4399b358d009f18d70716efc023a18b31428cd7cd), FINALIZED / SUCCESS / MAJORITY_AGREE. Deployed source SHA-256 `0af5222346cf2d0537f85ca0f2981f5368f2bb28548525110df9364ece2e7d2f` and canonical schema hash `4801e0ceeb22866c94f40cac36e48ee3b0606d1500272927e92ede67d9991a70` match local artifacts. Production `https://carve-out.vercel.app` is READY and its public bundle points to this contract. Initial `get_stats()` reports `accounting_balanced=true` and all balances/counts zero. The 0.3.0 `cv-i-2` measurement ended `UNDETERMINED` and is retained as historical failure evidence; do not retry or continue it. Latest green main CI: [run 35606688234](https://github.com/ometere123/carveout/actions/runs/35606688234), commit `f87f7465506f1c3f017f0d3a04a791c5d5cc8ad2`. No new-release live lifecycle is claimed. See [docs/REVIEW_EVIDENCE.md](docs/REVIEW_EVIDENCE.md).
 
 ## Frontend
 
@@ -85,9 +85,9 @@ npm ci
 cd frontend && npm ci && npm test && npm run typecheck && npm run build
 ```
 
-The deployed 0.3.0 source commit `b70d49659b569ec7941a7607735ca5f096d10ebc` passed [GitHub CI run 35583968282](https://github.com/ometere123/carveout/actions/runs/35583968282). The 0.3.0 live measurement for `cv-i-2` (transaction `0x75daf13670200403477bed9beb07ea5200a83973f4bf106f296de66f12bfe0ba`) reached `UNDETERMINED` and remains `MEASUREMENT_PENDING`; do not retry it. The full economic lifecycle is not demonstrated.
+Release 0.4.0 source commit `ba037c4148f8f79b45b781fe3200def9a817fb54` passed [CI run 35606141013](https://github.com/ometere123/carveout/actions/runs/35606141013); the latest green main CI is [run 35606688234](https://github.com/ometere123/carveout/actions/runs/35606688234) at `f87f7465506f1c3f017f0d3a04a791c5d5cc8ad2`. The superseded 0.3.0 live measurement for `cv-i-2` (transaction `0x75daf13670200403477bed9beb07ea5200a83973f4bf106f296de66f12bfe0ba`) reached `UNDETERMINED` and remains `MEASUREMENT_PENDING`; preserve it and do not retry. The full economic lifecycle on 0.4.0 is not demonstrated; application writes remain user-approved.
 
-**Release boundary:** 0.3.0 at `0x74D8aEc8BF79369BeDdCae000214552Dcc7D00A9` remains deployed canonical until 0.4.0 has green CI, is deployed and source/schema verified. The 0.4.0 candidate is not safe for live writes yet. Lifecycle transactions remain user-approved.
+**Canonical release:** 0.4.0 at `0x08Dc200120385474c40F1a48A640d987A94aB1BB`, source/schema verified, with production frontend configured to the same address. The 0.3.0 address remains in deployment history only.
 
 ## Previously deployed baseline
 

@@ -1,6 +1,6 @@
 # CARVEOUT static and release verification
 
-## 0.4.0 candidate status — 2026-09-21
+## 0.4.0 current release — 2026-09-21
 
 - Provider-neutral source intervals are clipped to the frozen observation window, sorted and merged; a source with intervals but no overlap is non-contributing.
 - Stable toolchain unchanged: Studionet 61999, GenVM `v0.2.16`, pinned `py-genlayer` dependency unchanged.
@@ -8,13 +8,14 @@
 - GenVM lint, validation, schema generation and contract typecheck: PASS; schema at `deployments/studionet-0.4.0.schema.json`.
 - Contract/release/frontend-surface/deploy TypeScript/Python compile checks: PASS.
 - Frontend tests: 42 passed; TypeScript typecheck and production build: PASS.
-- Read-only integration is environment-gated and skipped. GitHub CI passed at [run 35606141013](https://github.com/ometere123/carveout/actions/runs/35606141013), source commit `ba037c4148f8f79b45b781fe3200def9a817fb54`; 0.4.0 is not deployed.
+- Read-only integration is environment-gated and skipped. Contract source CI passed at [run 35606141013](https://github.com/ometere123/carveout/actions/runs/35606141013), source commit `ba037c4148f8f79b45b781fe3200def9a817fb54`; latest green main CI is [run 35606688234](https://github.com/ometere123/carveout/actions/runs/35606688234) at `f87f7465506f1c3f017f0d3a04a791c5d5cc8ad2`.
+- Release 0.4.0 is deployed at [`0x08Dc200120385474c40F1a48A640d987A94aB1BB`](https://explorer-studio.genlayer.com/address/0x08Dc200120385474c40F1a48A640d987A94aB1BB), tx [`0xbb9c23a98730ff3779f8bff4399b358d009f18d70716efc023a18b31428cd7cd`](https://explorer-studio.genlayer.com/tx/0xbb9c23a98730ff3779f8bff4399b358d009f18d70716efc023a18b31428cd7cd), FINALIZED / SUCCESS / MAJORITY_AGREE; read-only source/schema checks pass. Production frontend [`dpl_2KJyYYm1gyqhUZ36ATT2N5Mrk7N2`](https://vercel.com/delealufejoel-4184s-projects/carveout/dpl_2KJyYYm1gyqhUZ36ATT2N5Mrk7N2) is READY and compiled bundle verified against the new address.
 - The 0.3.0 `cv-i-2` verification transaction `0x75daf13670200403477bed9beb07ea5200a83973f4bf106f296de66f12bfe0ba` is preserved `UNDETERMINED` evidence and must not be retried.
 - Observation fields accept readable WAT date/time input and convert using `Africa/Lagos` to Unix seconds for the contract; protocol timestamps remain unchanged.
 
 Static checks support but do not replace GenVM validation, Direct Mode, deployed source/schema reads, or user-operated browser evidence.
 
-## Current 0.3.0 release
+## Historical 0.3.0 release checks
 
 - Network/toolchain unchanged: Studionet chain `61999`, RPC `https://studio.genlayer.com/api`, CLI `0.39.1`, `genlayer-js 1.1.8`, `genlayer-test 0.29.2`, `genlayer-py 0.16.3`, `genvm-linter 0.11.0`, Python 3.12, stable `py-genlayer` hash.
 - Direct Mode: 59 passed.

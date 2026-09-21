@@ -10,3 +10,5 @@ frontend/.env.local
 .env
 
 frontend/tsconfig.tsbuildinfo
+.vercel
+.env.local
