@@ -1,6 +1,6 @@
 # CARVEOUT manual Studionet lifecycle
 
-This is a user-operated browser-wallet runbook. The agent must not sign or submit any of these application writes. Candidate `0.2.0-studionet` is deployed at `0xA9C86FF6113187915C1Bd8e958fC718719337531`; its finalized deployment receipt and deployed source/schema are verified. The frontend-only production deployment configured to this address is the remaining release prerequisite. Do not use the previous contract at `0x75f2e473E6f010B510F1d281C8E4679fD2043054` with the candidate frontend.
+This is a user-operated browser-wallet runbook. The agent must not sign or submit any of these application writes. Candidate `0.2.0-studionet` is deployed at `0xA9C86FF6113187915C1Bd8e958fC718719337531`; its finalized deployment receipt and deployed source/schema are verified. The frontend-only production deployment configured to this address is READY at [https://carve-out.vercel.app](https://carve-out.vercel.app) and its served client configuration is verified. Do not use the previous contract at `0x75f2e473E6f010B510F1d281C8E4679fD2043054` with the candidate frontend.
 
 ## Prepare genuine public test evidence
 

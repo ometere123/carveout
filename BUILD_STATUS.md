@@ -15,9 +15,9 @@ This checkout started from latest `origin/main` commit `a5e73d2d1e7f82c529ca2d1f
 | GenVM check / validate / schema / typecheck | PASS: static checks, validation (21 methods), schema generation matching recorded hash, and typecheck. |
 | Candidate deployment/readback | PASS: finalized at `0xA9C86FF6113187915C1Bd8e958fC718719337531`; deployed source SHA-256 and 21-method schema match local candidate. Initial `get_stats()` is balanced and clean. |
 | Read-only Studionet integration | PASS against candidate `0.2.0-studionet`; no live application writes were performed by the agent. |
-| GitHub main CI | PASS: [run `35561427861`](https://github.com/ometere123/carveout/actions/runs/35561427861), tested main commit `344446ab0f1790af6700d972ad22d7892373c7ce`. |
+| GitHub main CI | PASS: [run `35563691627`](https://github.com/ometere123/carveout/actions/runs/35563691627), tested main commit `7efce487c84b75d3b757036e2e8c3cd94dd98bcb`. |
 | Contract deployment | PASS: candidate finalized and source/schema verified. Previous deployed address remains historical only. |
-| Canonical production frontend | Production contract-address variable now points to the verified candidate. Candidate frontend-only deployment and canonical URL verification are pending. |
+| Canonical production frontend | PASS: Vercel deployment `dpl_7LsZDctCsRoxfLPj99kaJaKtLsDz` READY; canonical URL HTTP 200 and served client config verified for candidate address, chain 61999 and canonical RPC. |
 | User browser-wallet lifecycle | PENDING user execution; no agent-side application writes. |
 
-Candidate source hash, unchanged public schema hash, historic deployment and pending steps are tracked in [`deployments/studionet.json`](deployments/studionet.json). The user-run transaction sequence is in [`docs/LIVE_DEMO.md`](docs/LIVE_DEMO.md). No live hash, agreement, incident, balance or adjudication is claimed.
+Candidate source hash, unchanged public schema hash, historical deployment and user-operated lifecycle evidence still pending are tracked in [`deployments/studionet.json`](deployments/studionet.json). The user-run transaction sequence is in [`docs/LIVE_DEMO.md`](docs/LIVE_DEMO.md). No live hash, agreement, incident, balance or adjudication is claimed.

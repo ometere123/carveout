@@ -6,7 +6,7 @@
 - Previously deployed contract: [`0x75f2e473E6f010B510F1d281C8E4679fD2043054`](https://explorer-studio.genlayer.com/address/0x75f2e473E6f010B510F1d281C8E4679fD2043054).
 - Previous deployment transaction: [`0x07ed7c7495129adc7ed26091c673b37dfe9dbd9b50fa85d21dd6a63b29722ddf`](https://explorer-studio.genlayer.com/tx/0x07ed7c7495129adc7ed26091c673b37dfe9dbd9b50fa85d21dd6a63b29722ddf).
 - That deployed instance corresponds to source commit `8f1302f10e0fee65f79187241e7da853225240d4`, source SHA-256 `144caccbd8b6daa8cbebc72ae9a4a5737c44147cbc100e8f7f1cb23cadf35f98`, and schema SHA-256 `26de6f5a55a686fb6f38bffd320d14ba53d4b74162a2ad15bdb123aed6f345fd`.
-- **This old address does not contain the evidence-commitment/neutral-timeout candidate now in this repository. Do not use it with the candidate frontend.** A user-controlled Studionet deployment and canonical source/schema readback are required before frontend release.
+- **Historical only:** this address predates the evidence-commitment candidate. Do not pair it with the candidate frontend. The candidate deployment and source/schema readback are documented below.
 - Previously deployed frontend baseline: [https://carve-out.vercel.app](https://carve-out.vercel.app), deployment `dpl_DvNdou86SF8oGDqF3Ya1kidSVEco`, source commit `351d283278b39870f123495dde6643f52151cdea`. It predates the current WAT/evidence-record UI.
 
 ## Candidate contract/frontend release
@@ -17,8 +17,8 @@
 - Candidate schema: unchanged public signatures (21 public methods; 6 views and 15 writes), SHA-256 `26de6f5a55a686fb6f38bffd320d14ba53d4b74162a2ad15bdb123aed6f345fd`. Local generator output and the live schema from the deployed candidate match exactly.
 - Candidate deployment: [`0xA9C86FF6113187915C1Bd8e958fC718719337531`](https://explorer-studio.genlayer.com/address/0xA9C86FF6113187915C1Bd8e958fC718719337531); transaction [`0x518742b1e07f6c24c821a6e5fc9fb9acd24a2c944a31cf312121079693ae5726`](https://explorer-studio.genlayer.com/tx/0x518742b1e07f6c24c821a6e5fc9fb9acd24a2c944a31cf312121079693ae5726), FINALIZED / MAJORITY_AGREE / SUCCESS; five validator votes agreed. RPC source bytes hash to candidate SHA-256 `d8a0c3eb5ae2f7f164bb5526c42ec24557dbfa06f8a2cf540e30215210978a99`; deployed schema matches the 21-method local schema.
 - Candidate `get_stats()` read: version `0.2.0-studionet`, chain `61999`, agreements/incidents/deposited/escrow/claimable/withdrawn all zero, `accounting_balanced=true`, `admin_controls=false`. Read-only integration test passed against the candidate address.
-- Vercel Production `NEXT_PUBLIC_CARVEOUT_CONTRACT` has been updated to the candidate address. Candidate frontend production deployment remains pending.
-- Final main commit `ebe2dc1277d8b2e8dd5cc3f1901d4795caa7d166`: GitHub CI [run `35561858222`](https://github.com/ometere123/carveout/actions/runs/35561858222) passed all jobs.
+- Candidate frontend production deployment: Vercel `dpl_7LsZDctCsRoxfLPj99kaJaKtLsDz` is READY and aliased to [https://carve-out.vercel.app](https://carve-out.vercel.app). The canonical URL returns HTTP 200; its served client bundle contains the candidate address, chain ID 61999 and canonical RPC.
+- Main commit `7efce487c84b75d3b757036e2e8c3cd94dd98bcb`: GitHub CI [run `35563691627`](https://github.com/ometere123/carveout/actions/runs/35563691627) passed all jobs. A subsequent documentation-only commit will receive its own CI result.
 
 ## Candidate local gates
 
@@ -28,7 +28,7 @@
 - `scripts/check_contract_patterns.py`, `scripts/check_release.py`, and `scripts/check_frontend_surface.py`: PASS.
 - GenVM lint/validate/schema/typecheck: PASS (21 methods; 6 views and 15 writes; generated schema hash matches).
 - Read-only integration smoke: PASS against both the historical deployment and the now-deployed candidate. No application lifecycle write or user wallet operation has been performed by the agent.
-- Candidate frontend deployment and final canonical Vercel readback: pending. Browser visual inspection of all specified viewport widths remains incomplete.
+- Candidate frontend deployment and canonical Vercel readback: PASS. Browser visual inspection at every specified viewport width remains incomplete.
 
 ## Candidate evidence-integrity behavior
 

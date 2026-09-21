@@ -83,9 +83,11 @@ cd frontend && npm ci && npm test && npm run typecheck && npm run build
 
 The canonical contract deployment, source/schema comparison, `get_stats()` read, and public frontend deployment are recorded in `deployments/studionet.json`. The canonical website is [https://carve-out.vercel.app](https://carve-out.vercel.app). Run `docs/LIVE_DEMO.md` only with a genuine SLA and actual public measurement evidence; record finalized transaction hashes and state reads. A complete adjudication/challenge/settlement/withdrawal lifecycle is not yet demonstrated.
 
-**Release boundary:** candidate contract `0xA9C86FF6113187915C1Bd8e958fC718719337531` is finalized on Studionet and its deployed source/schema and initial `get_stats()` read have been verified. The production frontend still needs a new frontend-only deployment configured to that address. Lifecycle transactions are reserved for the user and remain pending.
+**Release boundary:** candidate contract `0xA9C86FF6113187915C1Bd8e958fC718719337531` is finalized on Studionet and its deployed source/schema and initial `get_stats()` read have been verified. The production frontend is deployed and its served client configuration matches the candidate contract, chain 61999 and canonical RPC. Lifecycle transactions are reserved for the user and remain pending.
 
 ## Previously deployed baseline
+
+The previous frontend deployment is retained for provenance in `deployments/studionet.json`. The current public frontend deployment is READY and points to the candidate contract; this does not demonstrate any lifecycle action.
 
 The prior contract deployment is recorded at [`0x75f2e473E6f010B510F1d281C8E4679fD2043054`](https://explorer-studio.genlayer.com/address/0x75f2e473E6f010B510F1d281C8E4679fD2043054), with deployment transaction [`0x07ed7c7495129adc7ed26091c673b37dfe9dbd9b50fa85d21dd6a63b29722ddf`](https://explorer-studio.genlayer.com/tx/0x07ed7c7495129adc7ed26091c673b37dfe9dbd9b50fa85d21dd6a63b29722ddf). The currently hosted frontend at [carve-out.vercel.app](https://carve-out.vercel.app) is also the previous release. Both are retained for provenance and do not implement the candidate evidence record fields.
 

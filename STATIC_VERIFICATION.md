@@ -7,7 +7,7 @@ Static checks support, but do not replace, GenVM validation, Direct Mode, canoni
 - `scripts/check_release.py` scans authored contract/frontend/deploy/network configuration for forbidden chains and wallet flows, and pins Studionet chain `61999` and RPC `https://studio.genlayer.com/api`.
 - `scripts/check_contract_patterns.py` enforces consensus closures and transaction clock boundaries.
 - `scripts/check_frontend_surface.py` checks six routes, lifecycle action coverage, injected EIP-1193 write path, chain lock and transaction verification.
-- `scripts/verify_release_manifest.py` verifies the candidate source/schema hashes and ensures the candidate is not marked deployed or assigned an address prematurely.
+- `scripts/verify_release_manifest.py` verifies the candidate source/schema hashes, deployment receipt metadata, source/schema readback and candidate frontend production configuration.
 - `scripts/verify_accounting.py <stats.json>` verifies a saved canonical `get_stats()` response against the Studionet identity and `deposited == agreement escrow + challenge escrow + claimable + withdrawn`.
 - `deploy/deployScript.ts` rejects other chains/RPCs, waits for finalized successful deployment, reads `get_stats()` and captures deployment source hash/address. A human must authorize/sign deployment.
 
@@ -19,7 +19,8 @@ Static checks support, but do not replace, GenVM validation, Direct Mode, canoni
 - Frontend: 38 tests passed, typecheck PASS, production build PASS.
 - `genvm-lint check contracts/carveout.py --json`: static checks and validate PASS (21 methods, 6 views, 15 writes); `genvm-lint schema` PASS and output matches the recorded schema SHA-256; `genvm-lint typecheck` PASS with the local pyright wrapper on PATH.
 - Opt-in read-only Studionet smoke test: PASS against verified candidate `0xA9C86FF6113187915C1Bd8e958fC718719337531`; it reports the expected version/network/RPC and balanced accounting.
-- Full GitHub Actions suite: PASS, run `35561427861`, tested commit `344446ab0f1790af6700d972ad22d7892373c7ce`.
+- Full GitHub Actions suite: PASS, run `35563691627`, tested commit `7efce487c84b75d3b757036e2e8c3cd94dd98bcb`.
+- Vercel production deployment: PASS, `dpl_7LsZDctCsRoxfLPj99kaJaKtLsDz`; canonical URL HTTP 200 and client contract/network/RPC bundle verified.
 
 ## Known evidence limit
 
