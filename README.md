@@ -31,7 +31,9 @@ Deterministic systems can establish the measured SLA result. They cannot reliabl
 
 Deterministic responsibilities are agreement formation, authorization, timing, source-policy enforcement, measurement threshold comparison, interval validation, partial-liability arithmetic, GEN allocation, settlement and accounting. GenLayer consensus handles semantic interpretation of public evidence, whether facts establish the exact frozen exception, causal relation to the measured impact, and challenge re-evaluation. GenLayer is not used for arithmetic or ordinary deterministic oracle facts.
 
-At each measurement/adjudication/challenge decision, the contract stores a bounded canonical evidence representation: normalized rendered-text excerpts (maximum 800 characters per source) plus submitted URL, normalized origin, source family, service identity, observation interval and decision timestamp. A full SHA-256 decision digest binds the timestamp and content; a companion content digest omits only the decision timestamp, so reviewers can distinguish a changed evidence representation from the same representation evaluated later. Both supplement the existing case hash. Validators independently re-fetch and compare the structured decision and digests. GenVM's text renderer does not expose a reliable redirect chain or final URL; CARVEOUT records and enforces the submitted URL/origin but does not claim to prove a final redirect destination. Decisions fail closed when the returned evidence is malformed, empty, unattributable or unavailable.
+Evidence uses a provider-neutral pipeline: fetch each frozen source, independently extract a bounded structured manifest, normalize it, then compare consequential fields. Volatile request timestamps, rolling metadata, counters, response ordering, unrelated current records, and page chrome do not enter the consensus digest. The `measurement_evidence_digest`, `exception_evidence_digest`, and `challenge_evidence_digest` commit to normalized source identity, service/window attribution, source contribution, measured availability and event intervals. Validators do not compare narrative reasoning. Separate `*_observation_digest` values commit to the accepted leader's fetched body hashes for audit; they are not required to match validators' observations. Each source is processed up to 24,000 characters (48,000 total per decision), while only bounded structured manifests are persisted (3,600 characters per source). Larger-than-800-character evidence remains analyzable; the processing/storage limits are separate.
+
+Each source policy freezes a retrieval mode: `REQUEST_JSON`, `REQUEST_TEXT`, or `RENDER_TEXT` (omitted mode defaults to `RENDER_TEXT`). GenVM's stable HTTP request API is suitable for JSON/text endpoints, and page rendering is available where needed. A decisive measurement requires every submitted source to contribute evidence for the named service and completed observation interval, including an independent probe and a corroborating family. GenVM does not expose a reliable redirect chain/final URL for these reads; CARVEOUT records the submitted URL and requires content-based service/window attribution, but does not claim final-destination provenance. Prefer stable, non-redirecting source URLs where origin provenance is material. Malformed, empty, unattributable, stale or unavailable evidence remains non-decisive.
 
 ## Main lifecycle
 
@@ -41,7 +43,7 @@ At each measurement/adjudication/challenge decision, the contract stores a bound
 
 ```text
 contracts/carveout.py       one substantial Intelligent Contract
-52 Direct Mode tests        authored behavioural/adversarial coverage (candidate checkout)
+59 Direct Mode tests        authored behavioural/adversarial coverage (current checkout)
 tests/integration/              opt-in live Studionet smoke against a deployed address
 frontend/                       multipage Next.js application
 deploy/deployScript.ts          61999-locked deployment script
@@ -51,7 +53,7 @@ GOAL_PROMPT.txt                 compact finishing-agent goal
 STATIC_VERIFICATION.md          checks actually run while packaging
 ```
 
-Current contract surface: **21 public methods**. Direct Mode, genvm-lint and frontend release gate results are recorded in [docs/REVIEW_EVIDENCE.md](docs/REVIEW_EVIDENCE.md).
+Current contract surface: **21 public methods**. Release 0.3.0 changes consensus evidence handling without changing public signatures. It is not deployed yet; its exact source/schema, gates, and signed-deployment handoff are recorded in [docs/REVIEW_EVIDENCE.md](docs/REVIEW_EVIDENCE.md).
 
 ## Frontend
 
@@ -81,14 +83,14 @@ npm ci
 cd frontend && npm ci && npm test && npm run typecheck && npm run build
 ```
 
-The canonical contract deployment, source/schema comparison, `get_stats()` read, and public frontend deployment are recorded in `deployments/studionet.json`. The canonical website is [https://carve-out.vercel.app](https://carve-out.vercel.app). Run `docs/LIVE_DEMO.md` only with a genuine SLA and actual public measurement evidence; record finalized transaction hashes and state reads. A complete adjudication/challenge/settlement/withdrawal lifecycle is not yet demonstrated.
+The currently deployed contract is 0.2.0 at `0xA9C86FF6113187915C1Bd8e958fC718719337531`; it does not contain the new consensus changes. Release 0.3.0 is prepared for a user-signed Studionet deployment. Do not connect the release-0.3 frontend or create new agreements against the 0.2.0 instance. A prior live observation reached `UNDETERMINED` after validator rotations and remains `MEASUREMENT_PENDING`; it is retained as failure evidence and must not be retried. The complete adjudication/challenge/settlement/withdrawal lifecycle is not yet demonstrated.
 
-**Release boundary:** candidate contract `0xA9C86FF6113187915C1Bd8e958fC718719337531` is finalized on Studionet and its deployed source/schema and initial `get_stats()` read have been verified. The production frontend is deployed and its served client configuration matches the candidate contract, chain 61999 and canonical RPC. Lifecycle transactions are reserved for the user and remain pending.
+**Release boundary:** 0.2.0 at `0xA9C86FF6113187915C1Bd8e958fC718719337531` remains the only current deployment and production frontend target while 0.3.0 is prepared. The 0.3.0 contract must be deployed and verified before production is pointed to its address. Lifecycle transactions are reserved for the user.
 
 ## Previously deployed baseline
 
-The previous frontend deployment is retained for provenance in `deployments/studionet.json`. The current public frontend deployment is READY and points to the candidate contract; this does not demonstrate any lifecycle action.
+The previous frontend deployment is retained for provenance in `deployments/studionet.json`. The current public frontend still targets the 0.2.0 contract and does not include the release-0.3 consensus changes.
 
 The prior contract deployment is recorded at [`0x75f2e473E6f010B510F1d281C8E4679fD2043054`](https://explorer-studio.genlayer.com/address/0x75f2e473E6f010B510F1d281C8E4679fD2043054), with deployment transaction [`0x07ed7c7495129adc7ed26091c673b37dfe9dbd9b50fa85d21dd6a63b29722ddf`](https://explorer-studio.genlayer.com/tx/0x07ed7c7495129adc7ed26091c673b37dfe9dbd9b50fa85d21dd6a63b29722ddf). The currently hosted frontend at [carve-out.vercel.app](https://carve-out.vercel.app) is also the previous release. Both are retained for provenance and do not implement the candidate evidence record fields.
 
-The previous address must not be used with candidate UI code. The candidate live economic lifecycle—including evidence measurement, exception adjudication, challenge, settlement, credits and withdrawals—has not yet been demonstrated; see [docs/LIVE_DEMO.md](docs/LIVE_DEMO.md). A deployment and a green CI run are not evidence that those lifecycle transactions occurred.
+The previous 0.1 address must not be used with current UI code. The 0.2.0 live failure must not be retried. The release-0.3 economic lifecycle—including the new evidence measurement, exception adjudication, challenge, settlement, credits and withdrawals—has not yet been demonstrated; see [docs/LIVE_DEMO.md](docs/LIVE_DEMO.md). A deployment and a green CI run are not evidence that those lifecycle transactions occurred.

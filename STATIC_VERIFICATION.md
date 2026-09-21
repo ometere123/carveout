@@ -1,27 +1,23 @@
 # CARVEOUT static and release verification
 
-Static checks support, but do not replace, GenVM validation, Direct Mode, canonical RPC reads, deployment/source verification or browser evidence.
+Static checks support but do not replace GenVM validation, Direct Mode, deployed source/schema reads, or user-operated browser evidence.
 
-## Automated guards
+## Current 0.3.0 candidate
 
-- `scripts/check_release.py` scans authored contract/frontend/deploy/network configuration for forbidden chains and wallet flows, and pins Studionet chain `61999` and RPC `https://studio.genlayer.com/api`.
-- `scripts/check_contract_patterns.py` enforces consensus closures and transaction clock boundaries.
-- `scripts/check_frontend_surface.py` checks six routes, lifecycle action coverage, injected EIP-1193 write path, chain lock and transaction verification.
-- `scripts/verify_release_manifest.py` verifies the candidate source/schema hashes, deployment receipt metadata, source/schema readback and candidate frontend production configuration.
-- `scripts/verify_accounting.py <stats.json>` verifies a saved canonical `get_stats()` response against the Studionet identity and `deposited == agreement escrow + challenge escrow + claimable + withdrawn`.
-- `deploy/deployScript.ts` rejects other chains/RPCs, waits for finalized successful deployment, reads `get_stats()` and captures deployment source hash/address. A human must authorize/sign deployment.
+- Network/toolchain unchanged: Studionet chain `61999`, RPC `https://studio.genlayer.com/api`, CLI `0.39.1`, `genlayer-js 1.1.8`, `genlayer-test 0.29.2`, `genlayer-py 0.16.3`, `genvm-linter 0.11.0`, Python 3.12, stable `py-genlayer` hash.
+- Direct Mode: 59 passed.
+- GenVM lint and semantic validation: PASS (`GENVM_VERSION=v0.2.16`).
+- Schema generation: PASS; 21 methods (6 views, 15 writes); recorded schema hash matches.
+- Contract typecheck: PASS.
+- Contract pattern, release, frontend surface, deploy TypeScript and Python compilation checks: PASS.
+- Frontend tests: 41 passed; TypeScript typecheck and optimized production build: PASS.
+- GitHub CI: pending exact release push.
+- Read-only integration: pending user-signed 0.3 deployment; CI integration test is intentionally not pointed at an older deployment.
 
-## Current candidate run
+## Evidence model and known limit
 
-- Contract pattern/release/frontend-surface guards: PASS.
-- Manifest source/schema check: PASS.
-- Direct Mode on Python 3.12: 52 passed with `run_direct_windows.py` (Windows temp-file lock workaround).
-- Frontend: 38 tests passed, typecheck PASS, production build PASS.
-- `genvm-lint check contracts/carveout.py --json`: static checks and validate PASS (21 methods, 6 views, 15 writes); `genvm-lint schema` PASS and output matches the recorded schema SHA-256; `genvm-lint typecheck` PASS with the local pyright wrapper on PATH.
-- Opt-in read-only Studionet smoke test: PASS against verified candidate `0xA9C86FF6113187915C1Bd8e958fC718719337531`; it reports the expected version/network/RPC and balanced accounting.
-- Full GitHub Actions suite: PASS, run `35563691627`, tested commit `7efce487c84b75d3b757036e2e8c3cd94dd98bcb`.
-- Vercel production deployment: PASS, `dpl_7LsZDctCsRoxfLPj99kaJaKtLsDz`; canonical URL HTTP 200 and client contract/network/RPC bundle verified.
+Validators independently fetch and extract stable structured fields; consensus commits to normalized consequential manifest fields, not raw body hashes, timestamps, page chrome or free-form reasoning. A separate leader observation digest supports audit. Every measurement source, including the independent probe and corroborating family, must be attributable and materially support the completed interval. Processing is bounded at 24,000 characters/source; persistence is separately bounded at 3,600 characters/source. The stable GenVM web API does not expose reliable redirect-chain/final-URL provenance, so the contract binds submitted URL/origin and content attribution but does not claim final URL verification.
 
-## Known evidence limit
+## Deployment
 
-GenVM's current text renderer does not expose a reliable redirect chain/final URL. The contract binds/checks submitted source URLs/origins and persists the actual bounded text excerpt it evaluated; reviewers must not infer final redirect provenance. A source whose service/window attribution or bounded representation is incomplete produces a non-decision.
+Release 0.3.0 changes contract consensus behavior and therefore requires a new contract deployment. Existing production deployment and frontend target 0.2.0 and must not be used as proof of the new behavior. Deployment source/schema readback, frontend production switch and a fresh user-signed lifecycle remain pending.

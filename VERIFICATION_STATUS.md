@@ -1,22 +1,23 @@
-# Verification status
+# Verification status — CARVEOUT 0.3.0 candidate
 
-## Candidate local results (2026-09-21)
+## Completed locally
 
-- Starting point: current `origin/main` `a5e73d2d1e7f82c529ca2d1f5acf7fa91893b723`; no existing work was overwritten.
-- Direct Mode: **52 passed** with Python 3.12 via `run_direct_windows.py`, the repository helper for the `genlayer-test 0.29.2` Windows temp-file lock.
-- Frontend tests: **38 passed**; TypeScript typecheck: **PASS**; Next.js production build: **PASS**.
-- `scripts/check_contract_patterns.py`, `scripts/check_release.py`, `scripts/check_frontend_surface.py`, candidate manifest hash verifier: **PASS**.
-- WAT tests confirm `2026-09-21T03:45:50Z` displays as `21 Sep 2026, 04:45:50 WAT`, and the Unix seconds/UTC input remain unchanged.
-- No wallet connection, contract transaction, alternative signer or other application write was used.
+- Direct Mode: **59 passed** via `python run_direct_windows.py`.
+- `genvm-lint check contracts/carveout.py --json`: **PASS** (3 lint checks; semantic validation passes; 21 methods, 6 views, 15 writes).
+- Schema generation: **PASS**, generated SHA-256 `26de6f5a55a686fb6f38bffd320d14ba53d4b74162a2ad15bdb123aed6f345fd`.
+- `genvm-lint typecheck contracts/carveout.py`: **PASS**.
+- Contract pattern guard, release guard, frontend surface check, Python compilation and deploy-script typecheck: **PASS**.
+- Frontend tests: **41 passed**, TypeScript typecheck **PASS**, Next.js production build **PASS**.
+- WAT tests confirm valid Unix/UTC inputs render in `Africa/Lagos`; zero, `"0"`, null, undefined and empty values render as unset; original input values remain unchanged.
 
-## Gates awaiting candidate CI or user action
+Use `GENVM_VERSION=v0.2.16` with local genvm-lint commands. This avoids selecting a different pre-cached RC bundle on this machine. The contract header still uses the pre-existing stable `py-genlayer` hash; no runner or toolchain migration occurred.
 
-- GenVM lint and validate: **PASS** (21 methods; 6 views, 15 writes). Schema generation: **PASS**, SHA-256 matches the recorded schema. `genvm-lint typecheck`: **PASS** using the local venv pyright wrapper.
-- Candidate deployment: **PASS** at `0xA9C86FF6113187915C1Bd8e958fC718719337531`, tx `0x518742b1e07f6c24c821a6e5fc9fb9acd24a2c944a31cf312121079693ae5726`; FINALIZED / SUCCESS; deployed source SHA-256 and schema match local artifacts.
-- Candidate read-only integration: **PASS**; `get_stats()` confirms chain/RPC/version, no initial accounting activity and `accounting_balanced=true`.
-- Full GitHub CI: **PASS**, [run `35563691627`](https://github.com/ometere123/carveout/actions/runs/35563691627), testing candidate main commit `7efce487c84b75d3b757036e2e8c3cd94dd98bcb`.
-- The old deployment (`0x75f2e473E6f010B510F1d281C8E4679fD2043054`) remains historical and is not a valid target for candidate frontend configuration.
-- Candidate frontend is deployed as Vercel `dpl_7LsZDctCsRoxfLPj99kaJaKtLsDz` (READY); `https://carve-out.vercel.app` returns HTTP 200 and the served client bundle contains the candidate contract address, chain ID 61999 and canonical RPC.
-- Real browser-wallet lifecycle and meaningful fail-closed transaction: **PENDING USER**. No fabricated/live evidence is recorded.
+## Pending release actions
 
-See [`docs/REVIEW_EVIDENCE.md`](docs/REVIEW_EVIDENCE.md) for the ledger and [`docs/LIVE_DEMO.md`](docs/LIVE_DEMO.md) for the manual-only runbook. All displayed UI timestamps use `Africa/Lagos`; protocol timestamps remain UTC Unix seconds.
+- GitHub push and green CI for the exact release commit.
+- User-signed deployment of this source to Studionet 61999.
+- Read-only deployed source and schema verification plus `get_stats()` against the new address.
+- Production frontend configuration/deployment after the new contract is verified.
+- Fresh user-operated browser lifecycle and fail-closed evidence.
+
+The 0.2.0 deployment at `0xA9C86FF6113187915C1Bd8e958fC718719337531` remains deployed but does not contain this consensus fix. Its measurement transaction `0x4efe7a6a73577360f2dff97fdbaabd9080842172a29534d58ada108547ba6645` is finalized UNDETERMINED after validator rotations and its incident remains MEASUREMENT_PENDING. Preserve it; do not retry it or continue its economic lifecycle.

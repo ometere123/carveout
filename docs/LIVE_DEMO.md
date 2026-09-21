@@ -1,6 +1,6 @@
 # CARVEOUT manual Studionet lifecycle
 
-This is a user-operated browser-wallet runbook. The agent must not sign or submit any of these application writes. Candidate `0.2.0-studionet` is deployed at `0xA9C86FF6113187915C1Bd8e958fC718719337531`; its finalized deployment receipt and deployed source/schema are verified. The frontend-only production deployment configured to this address is READY at [https://carve-out.vercel.app](https://carve-out.vercel.app) and its served client configuration is verified. Do not use the previous contract at `0x75f2e473E6f010B510F1d281C8E4679fD2043054` with the candidate frontend.
+This is a user-operated browser-wallet runbook. The agent must not sign or submit any application writes. Release `0.3.0-studionet` changes contract evidence consensus and is prepared but **not yet deployed**. The currently deployed contract `0xA9C86FF6113187915C1Bd8e958fC718719337531` and production frontend at [https://carve-out.vercel.app](https://carve-out.vercel.app) are release 0.2.0 only; do not use them to demonstrate the new consensus behavior. First follow the signed-deployment step in [REVIEW_EVIDENCE.md](REVIEW_EVIDENCE.md), verify deployed source/schema, and point the frontend at that new address. The earlier measurement transaction on 0.2.0 finalized UNDETERMINED and must not be retried or continued.
 
 ## Prepare genuine public test evidence
 
@@ -51,7 +51,7 @@ Use the independent monitor's actual public hostname, not a provider-controlled 
 }
 ```
 
-3. Before submitting, confirm every URL exists publicly, belongs to its declared source, describes the named service/event, and fits the eventual observation window. Expected state is no agreement yet. Click **Fund and propose agreement**. The injected provider wallet should request approval for exactly `0.001 GEN` native value. Record the create transaction hash and agreement ID; wait for finalization and canonical PROPOSED readback. Save a screenshot of the finalized state and proposal details.
+3. Before submitting, confirm every URL exists publicly, belongs to its declared source, describes the named service/event, and fits the eventual observation window. Freeze retrieval as `REQUEST_JSON` for a JSON feed/API, `REQUEST_TEXT` for plain-text HTTP, or `RENDER_TEXT` if browser rendering is required. Omitted mode defaults to `RENDER_TEXT`; the selected mode is part of the proposal specification. Expected state is no agreement yet. Click **Fund and propose agreement**. The injected provider wallet should request approval for exactly `0.001 GEN` native value. Record the create transaction hash and agreement ID; wait for finalization and canonical PROPOSED readback. Save a screenshot of the finalized state and proposal details.
 4. After creation/readback, use **Open agreement** or the automatic redirect. Connect the named customer wallet, not the provider wallet. Confirm status PROPOSED, customer/provider/service/bond and WAT formation/SLA deadlines. Click **Accept agreement**. The wallet value is `0 GEN`. Record the acceptance hash. Readback must show ACTIVE and a nonzero `accepted_at` at least five minutes before exposure; capture the agreement page.
 
 ## Genuine positive / economic path

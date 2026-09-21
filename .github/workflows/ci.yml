@@ -5,7 +5,6 @@ jobs:
     runs-on: ubuntu-latest
     env:
       GENVM_VERSION: v0.2.16
-      CARVEOUT_CONTRACT: '0x75f2e473E6f010B510F1d281C8E4679fD2043054'
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5

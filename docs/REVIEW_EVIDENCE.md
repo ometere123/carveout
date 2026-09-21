@@ -1,70 +1,65 @@
 # CARVEOUT reviewer evidence ledger
 
-## Existing deployed baseline (historical/current chain state)
+## Release identity
 
-- Network: GenLayer Studionet, alias `studionet`, chain ID `61999`; RPC `https://studio.genlayer.com/api`; explorer `https://explorer-studio.genlayer.com`.
-- Previously deployed contract: [`0x75f2e473E6f010B510F1d281C8E4679fD2043054`](https://explorer-studio.genlayer.com/address/0x75f2e473E6f010B510F1d281C8E4679fD2043054).
-- Previous deployment transaction: [`0x07ed7c7495129adc7ed26091c673b37dfe9dbd9b50fa85d21dd6a63b29722ddf`](https://explorer-studio.genlayer.com/tx/0x07ed7c7495129adc7ed26091c673b37dfe9dbd9b50fa85d21dd6a63b29722ddf).
-- That deployed instance corresponds to source commit `8f1302f10e0fee65f79187241e7da853225240d4`, source SHA-256 `144caccbd8b6daa8cbebc72ae9a4a5737c44147cbc100e8f7f1cb23cadf35f98`, and schema SHA-256 `26de6f5a55a686fb6f38bffd320d14ba53d4b74162a2ad15bdb123aed6f345fd`.
-- **Historical only:** this address predates the evidence-commitment candidate. Do not pair it with the candidate frontend. The candidate deployment and source/schema readback are documented below.
-- Previously deployed frontend baseline: [https://carve-out.vercel.app](https://carve-out.vercel.app), deployment `dpl_DvNdou86SF8oGDqF3Ya1kidSVEco`, source commit `351d283278b39870f123495dde6643f52151cdea`. It predates the current WAT/evidence-record UI.
+- Network: GenLayer Studionet `studionet`, chain `61999`; RPC `https://studio.genlayer.com/api`; explorer `https://explorer-studio.genlayer.com`.
+- **Currently deployed:** release `0.2.0-studionet`, contract [`0xA9C86FF6113187915C1Bd8e958fC718719337531`](https://explorer-studio.genlayer.com/address/0xA9C86FF6113187915C1Bd8e958fC718719337531), deployment [`0x518742b1e07f6c24c821a6e5fc9fb9acd24a2c944a31cf312121079693ae5726`](https://explorer-studio.genlayer.com/tx/0x518742b1e07f6c24c821a6e5fc9fb9acd24a2c944a31cf312121079693ae5726). It does **not** include the 0.3.0 evidence-consensus changes.
+- **Prepared candidate:** `0.3.0-studionet`; source `contracts/carveout.py`, SHA-256 `93d8c7cbd0329e8b07ccc6806b32476cda206a6a88acb36367602d018bb41ae6`; generated schema SHA-256 `26de6f5a55a686fb6f38bffd320d14ba53d4b74162a2ad15bdb123aed6f345fd` (same public ABI, 21 methods). Source commit and CI run will be filled after push. Deployment is pending the user's signature. Do not use an old agreement as evidence for this release.
+- Production `https://carve-out.vercel.app` still targets deployed 0.2.0. Do not point it at 0.3.0 until 0.3.0 is deployed and the deployed source/schema are verified.
+- Historical 0.1 deployment [`0x75f2e473E6f010B510F1d281C8E4679fD2043054`](https://explorer-studio.genlayer.com/address/0x75f2e473E6f010B510F1d281C8E4679fD2043054) is provenance only.
 
-## Candidate contract/frontend release
+## Preserved live failure evidence (0.2.0)
 
-- Candidate version: `0.2.0-studionet`.
-- Candidate contract source commit: `afb6a28de0a9f22aa8ac73fe72073a66822f5e13` (the release-manifest/documentation follow-up does not modify contract source).
-- Candidate contract source SHA-256: `d8a0c3eb5ae2f7f164bb5526c42ec24557dbfa06f8a2cf540e30215210978a99` (verify again against final commit).
-- Candidate schema: unchanged public signatures (21 public methods; 6 views and 15 writes), SHA-256 `26de6f5a55a686fb6f38bffd320d14ba53d4b74162a2ad15bdb123aed6f345fd`. Local generator output and the live schema from the deployed candidate match exactly.
-- Candidate deployment: [`0xA9C86FF6113187915C1Bd8e958fC718719337531`](https://explorer-studio.genlayer.com/address/0xA9C86FF6113187915C1Bd8e958fC718719337531); transaction [`0x518742b1e07f6c24c821a6e5fc9fb9acd24a2c944a31cf312121079693ae5726`](https://explorer-studio.genlayer.com/tx/0x518742b1e07f6c24c821a6e5fc9fb9acd24a2c944a31cf312121079693ae5726), FINALIZED / MAJORITY_AGREE / SUCCESS; five validator votes agreed. RPC source bytes hash to candidate SHA-256 `d8a0c3eb5ae2f7f164bb5526c42ec24557dbfa06f8a2cf540e30215210978a99`; deployed schema matches the 21-method local schema.
-- Candidate `get_stats()` read: version `0.2.0-studionet`, chain `61999`, agreements/incidents/deposited/escrow/claimable/withdrawn all zero, `accounting_balanced=true`, `admin_controls=false`. Read-only integration test passed against the candidate address.
-- Candidate frontend production deployment: Vercel `dpl_7LsZDctCsRoxfLPj99kaJaKtLsDz` is READY and aliased to [https://carve-out.vercel.app](https://carve-out.vercel.app). The canonical URL returns HTTP 200; its served client bundle contains the candidate address, chain ID 61999 and canonical RPC.
-- Main commit `7efce487c84b75d3b757036e2e8c3cd94dd98bcb`: GitHub CI [run `35563691627`](https://github.com/ometere123/carveout/actions/runs/35563691627) passed all jobs. A subsequent documentation-only commit will receive its own CI result.
+The following real writes formed agreement `cv-a-1` and incident `cv-i-1` on the 0.2.0 address. They are evidence for the failure case only; do not retry the measurement transaction or continue this incident's economic lifecycle.
 
-## Candidate local gates
+| Action | Transaction | Explorer | Observed state |
+|---|---|---|---|
+| Provider proposal and bond | `0x7676d22bbc7a411ded3565077208355a3b7c0fdd915e0560b811206d9c636b3c` | [transaction](https://explorer-studio.genlayer.com/tx/0x7676d22bbc7a411ded3565077208355a3b7c0fdd915e0560b811206d9c636b3c) | Finalized; created `cv-a-1` as PROPOSED |
+| Named customer acceptance | `0x7e14534c17c68e43cd288931ec7a9084b370f3346d219a50f06c2a51f344294c` | [transaction](https://explorer-studio.genlayer.com/tx/0x7e14534c17c68e43cd288931ec7a9084b370f3346d219a50f06c2a51f344294c) | Finalized; agreement ACTIVE |
+| Incident creation | `0x7185530b04ea679a54fadadfa256d72b8a7c58ca02553b2f1eeb4e766392e2d0` | [transaction](https://explorer-studio.genlayer.com/tx/0x7185530b04ea679a54fadadfa256d72b8a7c58ca02553b2f1eeb4e766392e2d0) | Finalized; created `cv-i-1`, MEASUREMENT_PENDING |
+| Measurement attempt | `0x4efe7a6a73577360f2dff97fdbaabd9080842172a29534d58ada108547ba6645` | [transaction](https://explorer-studio.genlayer.com/tx/0x4efe7a6a73577360f2dff97fdbaabd9080842172a29534d58ada108547ba6645) | UNDETERMINED after validator rotations; leader output alone is not consensus. Canonical incident remains MEASUREMENT_PENDING. Not retried. |
 
-- Stable pins: Python 3.12; GenLayer CLI `0.39.1`; `genlayer-js==1.1.8`; `genlayer-test==0.29.2`; `genlayer-py==0.16.3`; `genvm-linter==0.11.0`; stable contract runtime hash retained.
-- `run_direct_windows.py`: **52 Direct Mode tests passed** using Python 3.12 and the repository's Windows temp-file-lock workaround.
-- Frontend tests: **38 passed**; typecheck: PASS; production Next.js build: PASS for the candidate UI.
-- `scripts/check_contract_patterns.py`, `scripts/check_release.py`, and `scripts/check_frontend_surface.py`: PASS.
-- GenVM lint/validate/schema/typecheck: PASS (21 methods; 6 views and 15 writes; generated schema hash matches).
-- Read-only integration smoke: PASS against both the historical deployment and the now-deployed candidate. No application lifecycle write or user wallet operation has been performed by the agent.
-- Candidate frontend deployment and canonical Vercel readback: PASS. Browser visual inspection at every specified viewport width remains incomplete.
+This result motivated extracting and comparing stable structured source facts rather than raw fetched-page excerpts/hashes. It is not a successful measurement or economic settlement.
 
-## Candidate evidence-integrity behavior
+## 0.3.0 code-level release gates
 
-- Stored records include exact submitted URL, normalized origin, evidence family, service identity, observation bounds, decision timestamp, canonical excerpt (at most 800 characters/source) and truncation flag. A full decision digest binds the timestamp and representation; a companion content digest omits only decision time. Both supplement each existing case hash.
-- Whitespace and designated common page chrome normalize to the same record; substantive excerpt changes alter both digests, while a later decision timestamp alters only the full digest. Overlong records fail closed as `SOURCE_UNAVAILABLE`/`INCONCLUSIVE` rather than making decisions from incomplete excerpts.
-- Validators compare consequential structured results, service/window attribution, intervals and both evidence digests. Free-form reasoning prose is not an equivalence criterion.
-- GenVM's renderer does not expose a reliable redirect chain/final URL. The contract enforces the submitted URL/origin and records this runtime limitation; it does not claim final-destination proof.
-- Evidence unavailability is a non-decision. Measurement retry exhaustion rejects an unproven report. Exception adjudication unavailability closes neutrally and returns provider collateral. Challenge non-decisions preserve the pending allocation and bounded expiry refunds the challenger.
-- WAT display uses `Africa/Lagos`; raw timestamps and all contract/evidence values remain UTC Unix seconds.
+| Gate | Result |
+|---|---|
+| Direct Mode | PASS — 59 tests, Python helper `python run_direct_windows.py` |
+| GenVM lint + semantic validate | PASS — stable GenVM v0.2.16 artifact, pinned `py-genlayer` unchanged |
+| Schema generation | PASS — 21 methods; generated hash above |
+| Contract typecheck | PASS |
+| Contract pattern / release / frontend surface | PASS locally |
+| Frontend tests | PASS — 41 |
+| Frontend TypeScript typecheck | PASS |
+| Next.js production build | PASS |
+| GitHub CI | Pending push of release source |
+| Read-only integration against 0.3 deployment | Pending user deployment |
+| 0.3 source/schema deployment verification | Pending user deployment |
+| 0.3 production frontend deployment | Pending deployment verification |
 
-## Live lifecycle ledger (all pending; no live application writes performed by the agent)
+The current machine needed `GENVM_VERSION=v0.2.16` explicitly because another cached RC bundle otherwise took precedence. No runner, runtime pin, network, SDK family, or contract dependency was changed.
 
-Record only user-generated, finalized transactions and actual readbacks. Use the new deployed address and link each hash directly to the explorer.
+## New-release deployment: user signature required
 
-| Evidence item | Actual value / explorer link |
-| --- | --- |
-| Candidate contract deployment transaction/address/source/schema readback | PASS: [`0x518742b1e07f6c24c821a6e5fc9fb9acd24a2c944a31cf312121079693ae5726`](https://explorer-studio.genlayer.com/tx/0x518742b1e07f6c24c821a6e5fc9fb9acd24a2c944a31cf312121079693ae5726); [`0xA9C86FF6113187915C1Bd8e958fC718719337531`](https://explorer-studio.genlayer.com/address/0xA9C86FF6113187915C1Bd8e958fC718719337531); source/schema exact match |
-| Provider proposal/funding transaction + agreement ID | PENDING USER BROWSER WALLET |
-| Named customer acceptance transaction | PENDING USER BROWSER WALLET |
-| Incident opening transaction + incident ID | PENDING USER BROWSER WALLET |
-| Measurement decision transaction + `measurement_case_hash` + `measurement_evidence_digest` | PENDING USER BROWSER WALLET |
-| Exception claim transaction + `exception_case_hash` | PENDING USER BROWSER WALLET |
-| Exception adjudication transaction/result + `exception_evidence_digest` | PENDING USER BROWSER WALLET |
-| Challenge transaction/result + `challenge_case_hash` + `challenge_evidence_digest` OR finalized challenge-window completion read | PENDING USER BROWSER WALLET |
-| Deterministic finalization transaction + payout/provider return | PENDING USER BROWSER WALLET |
-| Native GEN withdrawal transaction | PENDING USER BROWSER WALLET |
-| Fail-closed healthy-service/false-claim path transactions and state | PENDING USER BROWSER WALLET |
-| Provider/customer balances before and after | PENDING USER READBACK |
-| Final `get_stats()` JSON | PENDING USER READBACK |
-| Accounting proof `deposited == agreement escrow + challenge escrow + claimable + withdrawn` | PENDING USER READBACK |
-| Explorer links and screenshots for every consequential step | PENDING USER EVIDENCE |
+After the exact source commit is pushed and main CI is green, deploy `contracts/carveout.py` through GenLayer Studio on `studionet` / chain `61999`, canonical RPC `https://studio.genlayer.com/api`, no constructor arguments, value `0`. Expected deployer wallet: `0xA7EeAE0E93793e3146Cb14b0700251B8b0EBADFB`. Confirm the uploaded source hash is `93d8c7cbd0329e8b07ccc6806b32476cda206a6a88acb36367602d018bb41ae6`. Return the finalized deployment transaction hash and new contract address. Do not submit lifecycle transactions to the old address.
 
-## Accounting evidence requirements
+## New-release lifecycle evidence slots
 
-For each settlement and withdrawal, save the relevant party `get_credit()` values before and after, plus all five `get_stats()` amounts. Run `python scripts/verify_accounting.py path/to/get-stats.json` on the final stats response. The verifier checks chain/RPC identity and the exact conservation equation; it does not itself prove that transaction hashes are genuine.
+Only fill these with actual finalized public explorer evidence and canonical readbacks. Blank/pending entries are intentionally not claims.
 
-## Manual runbook
-
-See [`LIVE_DEMO.md`](LIVE_DEMO.md) for the wallet-by-wallet sequence, concrete form values, truthful controlled-service test setup, exact source URL shapes, approval values, expected canonical state and screenshot/hash return packet. All transaction hashes and live lifecycle evidence remain pending until the user supplies them.
+| Action | Transaction / explorer | Readback / evidence |
+|---|---|---|
+| Provider proposal + bond | PENDING | PENDING |
+| Customer acceptance | PENDING | PENDING |
+| Incident creation | PENDING | PENDING |
+| Measurement verification | PENDING | PENDING |
+| Exception claim | PENDING | PENDING |
+| Exception adjudication | PENDING | PENDING |
+| Challenge or expired challenge window | PENDING | PENDING |
+| Finalization | PENDING | PENDING |
+| Withdrawal | PENDING | PENDING |
+| Meaningful fail-closed path | PENDING | PENDING |
+| Before/after party balances | PENDING | PENDING |
+| Final `get_stats()` | PENDING | PENDING |
+| Accounting balanced proof | PENDING | `deposited == agreement_escrow + challenge_escrow + claimable + withdrawn` |

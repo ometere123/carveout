@@ -38,11 +38,11 @@ export function sampleAgreementDraft(): AgreementFormDraft {
     policy: "Use only evidence from the origins frozen below. A status notice alone does not establish an exception; evidence must match the service and incident window. Unavailable or inconclusive evidence does not excuse the miss.",
     sourcePolicy: JSON.stringify({
       measurement: [
-        { kind: "PROVIDER_STATUS", host: "status.github.com", path_prefix: "/api/v2/incidents" },
-        { kind: "PUBLIC_TELEMETRY", host: "www.githubstatus.com", path_prefix: "/api/v2" },
+        { kind: "PROVIDER_STATUS", host: "status.github.com", path_prefix: "/api/v2/incidents", retrieval_mode: "REQUEST_JSON" },
+        { kind: "PUBLIC_TELEMETRY", host: "www.githubstatus.com", path_prefix: "/api/v2", retrieval_mode: "REQUEST_JSON" },
       ],
-      exception: [{ kind: "PUBLIC_NOTICE", host: "github.blog", path_prefix: "/" }],
-      challenge: [{ kind: "COUNTER_EVIDENCE", host: "docs.github.com", path_prefix: "/" }],
+      exception: [{ kind: "PUBLIC_NOTICE", host: "github.blog", path_prefix: "/", retrieval_mode: "RENDER_TEXT" }],
+      challenge: [{ kind: "COUNTER_EVIDENCE", host: "docs.github.com", path_prefix: "/", retrieval_mode: "RENDER_TEXT" }],
     }, null, 2),
     startAfterMinutes: "1440",
     durationMinutes: "43200",

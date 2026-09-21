@@ -1,7 +1,7 @@
 export const USER_TIME_ZONE = "Africa/Lagos";
 
 export function formatWatTimestamp(value: string | number | null | undefined): string {
-  if (value === null || value === undefined || value === "") return "—";
+  if (value === null || value === undefined || value === "" || value === 0 || value === "0") return "—";
   const numeric = typeof value === "number" || /^-?\d+$/.test(String(value));
   const date = new Date(numeric ? Number(value) * 1000 : String(value));
   if (!Number.isFinite(date.getTime())) return "Invalid timestamp";

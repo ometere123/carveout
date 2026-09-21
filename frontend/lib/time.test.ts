@@ -14,3 +14,13 @@ test("formats Unix seconds in Africa/Lagos while preserving the contract integer
   assert.equal(formatWatTimestamp(unixSeconds), "21 Sep 2026, 04:45:50 WAT");
   assert.equal(String(unixSeconds), "1789962350");
 });
+
+test("renders zero and unset contract timestamps as unset, not the Unix epoch", () => {
+  for (const value of [0, "0", null, undefined, ""]) {
+    assert.equal(formatWatTimestamp(value), "—");
+    assert.doesNotMatch(formatWatTimestamp(value), /1970/);
+  }
+  const unixSeconds = 1789962350;
+  assert.equal(formatWatTimestamp(unixSeconds), "21 Sep 2026, 04:45:50 WAT");
+  assert.equal(String(unixSeconds), "1789962350");
+});

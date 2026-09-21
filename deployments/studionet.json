@@ -5,208 +5,107 @@
   "chainId": 61999,
   "rpc": "https://studio.genlayer.com/api",
   "explorer": "https://explorer-studio.genlayer.com",
+  "toolchain": {
+    "cli": "0.39.1",
+    "genlayerJs": "1.1.8",
+    "genlayerTest": "0.29.2",
+    "genlayerPy": "0.16.3",
+    "genvmLinter": "0.11.0",
+    "genvmRuntime": "v0.2.16",
+    "python": "3.12"
+  },
   "deployer": {
     "account": "party_b",
     "address": "0xA7EeAE0E93793e3146Cb14b0700251B8b0EBADFB"
   },
-  "source": {
-    "commit": "8f1302f10e0fee65f79187241e7da853225240d4",
-    "path": "contracts/carveout.py",
-    "sha256": "144caccbd8b6daa8cbebc72ae9a4a5737c44147cbc100e8f7f1cb23cadf35f98"
-  },
-  "schema": {
-    "path": "deployments/studionet.schema.json",
-    "sha256": "26de6f5a55a686fb6f38bffd320d14ba53d4b74162a2ad15bdb123aed6f345fd",
-    "constructorArgs": []
-  },
-  "deployment": {
-    "address": "0x75f2e473E6f010B510F1d281C8E4679fD2043054",
-    "transaction": "0x07ed7c7495129adc7ed26091c673b37dfe9dbd9b50fa85d21dd6a63b29722ddf",
-    "createdAt": "2026-09-20T10:19:20.505918+00:00",
+  "canonicalDeployment": {
+    "version": "0.2.0-studionet",
+    "address": "0xA9C86FF6113187915C1Bd8e958fC718719337531",
+    "transaction": "0x518742b1e07f6c24c821a6e5fc9fb9acd24a2c944a31cf312121079693ae5726",
     "status": "FINALIZED",
-    "consensus": "MAJORITY_AGREE",
     "execution": "SUCCESS",
-    "constructorArgs": [],
-    "contractValueProvidedGen": "0"
+    "sourceCommit": "afb6a28de0a9f22aa8ac73fe72073a66822f5e13",
+    "sourceSha256": "d8a0c3eb5ae2f7f164bb5526c42ec24557dbfa06f8a2cf540e30215210978a99",
+    "schemaSha256": "26de6f5a55a686fb6f38bffd320d14ba53d4b74162a2ad15bdb123aed6f345fd",
+    "note": "Current deployed address. Does not include release 0.3.0 evidence-consensus changes."
   },
-  "frontend": {
+  "historicalDeployments": [
+    {
+      "version": "0.1.x",
+      "address": "0x75f2e473E6f010B510F1d281C8E4679fD2043054",
+      "transaction": "0x07ed7c7495129adc7ed26091c673b37dfe9dbd9b50fa85d21dd6a63b29722ddf",
+      "status": "HISTORICAL"
+    }
+  ],
+  "productionFrontend": {
     "url": "https://carve-out.vercel.app",
-    "project": "carveout",
-    "projectId": "prj_Lb1NXf709xZ4WX5oWus6RNfqhuMp",
-    "productionDeploymentId": "dpl_7LsZDctCsRoxfLPj99kaJaKtLsDz",
-    "productionDeploymentUrl": "https://carveout-dj6maj9gx-delealufejoel-4184s-projects.vercel.app",
-    "productionSourceCommit": "7efce487c84b75d3b757036e2e8c3cd94dd98bcb",
-    "status": "READY",
-    "nodeVersion": "22.x",
-    "installCommand": "npm ci",
-    "publicRoutesVerified": [
-      "/"
-    ],
-    "clientContractAddressVerified": true,
-    "clientChainIdVerified": "61999",
-    "clientRpcVerified": "https://studio.genlayer.com/api",
-    "ssoProtectionDisabledForPublicAccess": true,
-    "httpStatus": 200,
-    "verification": "Vercel deployment inspect READY; canonical URL HTTP 200; served client bundle includes candidate address, chain ID and canonical RPC."
+    "contractAddress": "0xA9C86FF6113187915C1Bd8e958fC718719337531",
+    "chainId": 61999,
+    "rpc": "https://studio.genlayer.com/api",
+    "status": "CURRENT_0.2.0_ONLY",
+    "note": "Do not deploy or point production at the 0.3.0 adapter until new contract deployment is finalized and source/schema verified."
   },
   "releaseCandidate": {
-    "version": "0.2.0-studionet",
-    "status": "DEPLOYED_AND_VERIFIED",
-    "deployed": true,
-    "targetAddress": "0xA9C86FF6113187915C1Bd8e958fC718719337531",
+    "version": "0.3.0-studionet",
+    "status": "READY_FOR_USER_SIGNED_DEPLOYMENT",
+    "deployed": false,
+    "targetAddress": null,
     "network": "studionet",
     "chainId": 61999,
     "rpc": "https://studio.genlayer.com/api",
     "source": {
-      "commit": "afb6a28de0a9f22aa8ac73fe72073a66822f5e13",
+      "commit": "PENDING_SOURCE_COMMIT",
       "path": "contracts/carveout.py",
-      "sha256": "d8a0c3eb5ae2f7f164bb5526c42ec24557dbfa06f8a2cf540e30215210978a99"
+      "sha256": "93d8c7cbd0329e8b07ccc6806b32476cda206a6a88acb36367602d018bb41ae6"
     },
     "schema": {
       "path": "deployments/studionet.schema.json",
       "sha256": "26de6f5a55a686fb6f38bffd320d14ba53d4b74162a2ad15bdb123aed6f345fd",
       "publicAbiChanges": false,
-      "generatorValidation": "LOCAL_PASS"
+      "generatorValidation": "PASS"
     },
     "deployment": {
-      "address": "0xA9C86FF6113187915C1Bd8e958fC718719337531",
-      "transaction": "0x518742b1e07f6c24c821a6e5fc9fb9acd24a2c944a31cf312121079693ae5726",
-      "createdAt": "2026-09-21T04:54:13.086861+00:00",
-      "status": "FINALIZED",
-      "consensus": "MAJORITY_AGREE",
-      "execution": "SUCCESS",
-      "votes": {
-        "agree": 5,
-        "disagree": 0
-      },
+      "status": "PENDING_USER_SIGNATURE",
+      "expectedValue": "0",
       "constructorArgs": [],
-      "deployer": "0xA7EeAE0E93793e3146Cb14b0700251B8b0EBADFB"
+      "action": "Deploy exact contracts/carveout.py through GenLayer Studio on Studionet 61999; do not deploy through an alternate signer. Return the finalized deployment transaction hash and contract address."
     },
     "deploymentVerification": {
-      "status": "PASS",
-      "network": "studionet",
-      "chainId": 61999,
-      "rpc": "https://studio.genlayer.com/api",
-      "deploymentTransaction": "0x518742b1e07f6c24c821a6e5fc9fb9acd24a2c944a31cf312121079693ae5726",
-      "sourceSha256": "d8a0c3eb5ae2f7f164bb5526c42ec24557dbfa06f8a2cf540e30215210978a99",
-      "sourceMatchesLocalByteForByte": true,
-      "schemaSha256": "26de6f5a55a686fb6f38bffd320d14ba53d4b74162a2ad15bdb123aed6f345fd",
-      "schemaMatchesLocal": true,
-      "verifiedAt": "2026-09-21T05:04:25Z",
-      "receiptSource": "stable genlayer CLI and genlayer-js 1.1.8; canonical RPC gen_getContractCode",
-      "readOnlyStatsIntegration": "PASS",
-      "frontendProductionDeployment": "PASS",
-      "frontendDeploymentId": "dpl_7LsZDctCsRoxfLPj99kaJaKtLsDz",
-      "frontendCanonicalUrlHttpStatus": 200,
-      "frontendClientConfigVerified": true
-    },
-    "getStats": {
-      "version": "0.2.0-studionet",
-      "network": "Studionet",
-      "chain_id": "61999",
-      "rpc": "https://studio.genlayer.com/api",
-      "agreements": 0,
-      "incidents": 0,
-      "finalized_breaches": 0,
-      "proven_exceptions": 0,
-      "total_deposited": "0",
-      "agreement_escrow": "0",
-      "challenge_escrow": "0",
-      "claimable": "0",
-      "withdrawn": "0",
-      "accounting_balanced": true,
-      "admin_controls": false
+      "status": "PENDING_DEPLOYMENT"
     },
     "frontend": {
       "url": "https://carve-out.vercel.app",
-      "contractAddress": "0xA9C86FF6113187915C1Bd8e958fC718719337531",
-      "productionEnvironmentConfigured": true,
-      "deploymentStatus": "READY",
-      "deploymentId": "dpl_7LsZDctCsRoxfLPj99kaJaKtLsDz"
+      "status": "PENDING_NEW_CONTRACT_DEPLOYMENT"
     },
-    "liveLifecycle": "PENDING_USER_BROWSER_WALLET_ACTIONS",
-    "candidateFrontendDeployment": "READY_PRODUCTION"
+    "verification": {
+      "directMode": {
+        "status": "PASS",
+        "tests": 59,
+        "command": "python run_direct_windows.py"
+      },
+      "genvmLint": "PASS",
+      "genvmValidate": "PASS",
+      "schemaGeneration": "PASS",
+      "contractTypecheck": "PASS",
+      "contractPatternGuard": "PASS",
+      "releaseGuard": "PENDING_MANIFEST_CI",
+      "frontendSurfaceChecks": "PASS",
+      "frontendTests": {
+        "status": "PASS",
+        "tests": 41
+      },
+      "frontendTypecheck": "PASS",
+      "productionBuild": "PASS",
+      "readOnlyIntegration": "PENDING_NEW_DEPLOYMENT",
+      "githubCi": "PENDING_PUSH"
+    },
+    "liveLifecycle": "PENDING_NEW_DEPLOYMENT_AND_USER_WALLET_ACTIONS"
   },
-  "baselineDeploymentVerification": {
-    "schemaMatchesLocal": true,
-    "deployedSourceSha256MatchesLocal": true,
-    "readOnlyIntegrationTest": {
-      "method": "get_stats",
-      "status": "PASS",
-      "observedAt": "2026-09-20",
-      "network": "studionet",
-      "chainId": 61999,
-      "accountingBalanced": true,
-      "adminControls": false,
-      "reader": "ephemeral in-memory address; no signing key persisted"
-    },
-    "getStats": {
-      "version": "0.1.0-studionet",
-      "network": "Studionet",
-      "chainId": "61999",
-      "rpc": "https://studio.genlayer.com/api",
-      "agreements": 0,
-      "incidents": 0,
-      "finalizedBreaches": 0,
-      "provenExceptions": 0,
-      "totalDeposited": "0",
-      "agreementEscrow": "0",
-      "challengeEscrow": "0",
-      "claimable": "0",
-      "withdrawn": "0",
-      "accountingBalanced": true,
-      "adminControls": false
-    },
-    "status": "HISTORICAL_BASELINE_ONLY",
-    "observedForContractVersion": "0.1.0-studionet"
-  },
-  "verification": {
-    "candidateSourceHashMatchesLocal": true,
-    "candidateSchemaGeneration": "PASS; generated schema matches recorded hash and public signatures are unchanged",
-    "candidateContractDeployment": "PASS; finalized and source/schema verified",
-    "candidateReadonlyIntegration": "PASS; 1 test against the 0.2.0 candidate deployment",
-    "candidateFrontendDeployment": "PASS; Vercel READY and canonical client configuration verified",
-    "candidateDirectMode": {
-      "status": "PASS",
-      "tests": 52,
-      "command": ".venv\\Scripts\\python.exe run_direct_windows.py"
-    },
-    "candidateFrontend": {
-      "tests": 38,
-      "typecheck": "PASS",
-      "productionBuild": "PASS"
-    },
-    "candidateGithubCi": {
-      "status": "PASS",
-      "runId": "35563691627",
-      "runUrl": "https://github.com/ometere123/carveout/actions/runs/35563691627",
-      "testedMainCommit": "7efce487c84b75d3b757036e2e8c3cd94dd98bcb"
-    },
-    "historicalBaselineReadonlyIntegration": "PASS; prior deployed 0.1.0 address only",
-    "liveLifecycle": "PENDING_USER_BROWSER_WALLET_ACTIONS"
-  },
-  "previousFrontendDeployment": {
-    "url": "https://carve-out.vercel.app",
-    "project": "carveout",
-    "projectId": "prj_Lb1NXf709xZ4WX5oWus6RNfqhuMp",
-    "productionDeploymentId": "dpl_DvNdou86SF8oGDqF3Ya1kidSVEco",
-    "productionDeploymentUrl": "https://carveout-dbg8f3aow-delealufejoel-4184s-projects.vercel.app",
-    "productionSourceCommit": "351d283278b39870f123495dde6643f52151cdea",
-    "status": "HISTORICAL_PREVIOUS_RELEASE",
-    "nodeVersion": "22.x",
-    "installCommand": "npm ci",
-    "publicRoutesVerified": [
-      "/",
-      "/agreements",
-      "/open",
-      "/account",
-      "/protocol",
-      "/agreements/1"
-    ],
-    "clientContractAddressVerified": true,
-    "clientChainIdVerified": "61999",
-    "clientRpcVerified": "https://studio.genlayer.com/api",
-    "ssoProtectionDisabledForPublicAccess": true,
-    "note": "Superseded by the verified candidate frontend production deployment below."
+  "knownLiveFailure": {
+    "contractAddress": "0xA9C86FF6113187915C1Bd8e958fC718719337531",
+    "agreementId": "cv-a-1",
+    "incidentId": "cv-i-1",
+    "verificationTransaction": "0x4efe7a6a73577360f2dff97fdbaabd9080842172a29534d58ada108547ba6645",
+    "result": "UNDETERMINED after validator rotations; canonical incident remains MEASUREMENT_PENDING. Preserve as failure evidence. Do not retry or continue its lifecycle."
   }
 }
