@@ -12,10 +12,11 @@
 ## Gates awaiting candidate CI or user action
 
 - GenVM lint and validate: **PASS** (21 methods; 6 views, 15 writes). Schema generation: **PASS**, SHA-256 matches the recorded schema. `genvm-lint typecheck`: **PASS** using the local venv pyright wrapper.
-- Read-only Studionet smoke: **PASS against the prior 0.1.0 deployment only**. Candidate read-only integration awaits candidate deployment.
+- Candidate deployment: **PASS** at `0xA9C86FF6113187915C1Bd8e958fC718719337531`, tx `0x518742b1e07f6c24c821a6e5fc9fb9acd24a2c944a31cf312121079693ae5726`; FINALIZED / SUCCESS; deployed source SHA-256 and schema match local artifacts.
+- Candidate read-only integration: **PASS**; `get_stats()` confirms chain/RPC/version, no initial accounting activity and `accounting_balanced=true`.
 - Full GitHub CI: **PASS**, [run `35561427861`](https://github.com/ometere123/carveout/actions/runs/35561427861), testing candidate main commit `344446ab0f1790af6700d972ad22d7892373c7ce`.
-- Candidate source changes the contract. The old deployment (`0x75f2e473E6f010B510F1d281C8E4679fD2043054`) is not a valid target for candidate frontend configuration.
-- Candidate Studionet deployment/source/schema readback: **PENDING the user's signing action**. Candidate frontend address wiring and Vercel production deployment follow only after that returned address is verified.
+- The old deployment (`0x75f2e473E6f010B510F1d281C8E4679fD2043054`) remains historical and is not a valid target for candidate frontend configuration.
+- Candidate frontend address wiring is set locally and in Vercel Production. Candidate frontend deployment and canonical URL readback remain pending.
 - Real browser-wallet lifecycle and meaningful fail-closed transaction: **PENDING USER**. No fabricated/live evidence is recorded.
 
 See [`docs/REVIEW_EVIDENCE.md`](docs/REVIEW_EVIDENCE.md) for the ledger and [`docs/LIVE_DEMO.md`](docs/LIVE_DEMO.md) for the manual-only runbook. All displayed UI timestamps use `Africa/Lagos`; protocol timestamps remain UTC Unix seconds.

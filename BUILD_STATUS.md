@@ -13,10 +13,11 @@ This checkout started from latest `origin/main` commit `a5e73d2d1e7f82c529ca2d1f
 | Production Next.js build | PASS for candidate UI. |
 | Static release guards | PASS: contract patterns, Studionet lock and six-route frontend surface. Candidate manifest hash verifier passes. |
 | GenVM check / validate / schema / typecheck | PASS: static checks, validation (21 methods), schema generation matching recorded hash, and typecheck. |
-| Read-only Studionet integration | PASS against the historical 0.1.0 address only; candidate deployment/readback remains pending. No live application writes were performed. |
+| Candidate deployment/readback | PASS: finalized at `0xA9C86FF6113187915C1Bd8e958fC718719337531`; deployed source SHA-256 and 21-method schema match local candidate. Initial `get_stats()` is balanced and clean. |
+| Read-only Studionet integration | PASS against candidate `0.2.0-studionet`; no live application writes were performed by the agent. |
 | GitHub main CI | PASS: [run `35561427861`](https://github.com/ometere123/carveout/actions/runs/35561427861), tested main commit `344446ab0f1790af6700d972ad22d7892373c7ce`. |
-| Contract deployment | PENDING user signature. The previous deployed address is incompatible with candidate UI; do not wire/deploy candidate frontend to it. |
-| Canonical production frontend | Existing Vercel deployment is the previous release. Candidate frontend deploy is blocked until a new source/schema-verified contract address is returned. |
+| Contract deployment | PASS: candidate finalized and source/schema verified. Previous deployed address remains historical only. |
+| Canonical production frontend | Production contract-address variable now points to the verified candidate. Candidate frontend-only deployment and canonical URL verification are pending. |
 | User browser-wallet lifecycle | PENDING user execution; no agent-side application writes. |
 
 Candidate source hash, unchanged public schema hash, historic deployment and pending steps are tracked in [`deployments/studionet.json`](deployments/studionet.json). The user-run transaction sequence is in [`docs/LIVE_DEMO.md`](docs/LIVE_DEMO.md). No live hash, agreement, incident, balance or adjudication is claimed.

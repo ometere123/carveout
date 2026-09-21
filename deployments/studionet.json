@@ -55,9 +55,9 @@
   },
   "releaseCandidate": {
     "version": "0.2.0-studionet",
-    "status": "NEEDS_HUMAN_DEPLOYMENT_AND_READBACK",
-    "deployed": false,
-    "targetAddress": null,
+    "status": "DEPLOYED_AND_VERIFIED",
+    "deployed": true,
+    "targetAddress": "0xA9C86FF6113187915C1Bd8e958fC718719337531",
     "network": "studionet",
     "chainId": 61999,
     "rpc": "https://studio.genlayer.com/api",
@@ -72,10 +72,53 @@
       "publicAbiChanges": false,
       "generatorValidation": "LOCAL_PASS"
     },
+    "deployment": {
+      "address": "0xA9C86FF6113187915C1Bd8e958fC718719337531",
+      "transaction": "0x518742b1e07f6c24c821a6e5fc9fb9acd24a2c944a31cf312121079693ae5726",
+      "createdAt": "2026-09-21T04:54:13.086861+00:00",
+      "status": "FINALIZED",
+      "consensus": "MAJORITY_AGREE",
+      "execution": "SUCCESS",
+      "votes": {"agree": 5, "disagree": 0},
+      "constructorArgs": [],
+      "deployer": "0xA7EeAE0E93793e3146Cb14b0700251B8b0EBADFB"
+    },
+    "deploymentVerification": {
+      "status": "PASS",
+      "network": "studionet",
+      "chainId": 61999,
+      "rpc": "https://studio.genlayer.com/api",
+      "deploymentTransaction": "0x518742b1e07f6c24c821a6e5fc9fb9acd24a2c944a31cf312121079693ae5726",
+      "sourceSha256": "d8a0c3eb5ae2f7f164bb5526c42ec24557dbfa06f8a2cf540e30215210978a99",
+      "sourceMatchesLocalByteForByte": true,
+      "schemaSha256": "26de6f5a55a686fb6f38bffd320d14ba53d4b74162a2ad15bdb123aed6f345fd",
+      "schemaMatchesLocal": true,
+      "verifiedAt": "2026-09-21T05:04:25Z",
+      "receiptSource": "stable genlayer CLI and genlayer-js 1.1.8; canonical RPC gen_getContractCode",
+      "readOnlyStatsIntegration": "PASS"
+    },
+    "getStats": {
+      "version": "0.2.0-studionet",
+      "network": "Studionet",
+      "chain_id": "61999",
+      "rpc": "https://studio.genlayer.com/api",
+      "agreements": 0,
+      "incidents": 0,
+      "finalized_breaches": 0,
+      "proven_exceptions": 0,
+      "total_deposited": "0",
+      "agreement_escrow": "0",
+      "challenge_escrow": "0",
+      "claimable": "0",
+      "withdrawn": "0",
+      "accounting_balanced": true,
+      "admin_controls": false
+    },
     "frontend": {
       "url": "https://carve-out.vercel.app",
-      "contractAddress": "PENDING_HUMAN_DEPLOYMENT",
-      "deploymentStatus": "DO_NOT_DEPLOY_UNTIL_NEW_CONTRACT_ADDRESS_VERIFIED"
+      "contractAddress": "0xA9C86FF6113187915C1Bd8e958fC718719337531",
+      "productionEnvironmentConfigured": true,
+      "deploymentStatus": "PRODUCTION_RELEASE_PENDING_FRONTEND_DEPLOY"
     },
     "liveLifecycle": "PENDING_USER_BROWSER_WALLET_ACTIONS"
   },
@@ -115,8 +158,9 @@
   "verification": {
     "candidateSourceHashMatchesLocal": true,
     "candidateSchemaGeneration": "PASS; generated schema matches recorded hash and public signatures are unchanged",
-    "candidateContractDeployment": "PENDING_USER_SIGNATURE_AND_READBACK",
-    "candidateFrontendDeployment": "BLOCKED_UNTIL_NEW_CONTRACT_ADDRESS_IS_VERIFIED",
+    "candidateContractDeployment": "PASS; finalized and source/schema verified",
+    "candidateReadonlyIntegration": "PASS; get_stats reports Studionet 61999 and accounting_balanced=true",
+    "candidateFrontendDeployment": "PENDING_PRODUCTION_DEPLOY",
     "candidateDirectMode": {
       "status": "PASS",
       "tests": 52,
@@ -129,11 +173,12 @@
     },
     "candidateGithubCi": {
       "status": "PASS",
-      "runId": "35561427861",
-      "runUrl": "https://github.com/ometere123/carveout/actions/runs/35561427861",
-      "testedMainCommit": "344446ab0f1790af6700d972ad22d7892373c7ce"
+      "runId": "35561858222",
+      "runUrl": "https://github.com/ometere123/carveout/actions/runs/35561858222",
+      "testedMainCommit": "ebe2dc1277d8b2e8dd5cc3f1901d4795caa7d166"
     },
-    "historicalBaselineReadonlyIntegration": "PASS; prior deployed 0.1.0 address only, not candidate verification",
+    "candidateReadonlyIntegration": "PASS; 1 test against the 0.2.0 candidate deployment",
+    "historicalBaselineReadonlyIntegration": "PASS; prior deployed 0.1.0 address only",
     "liveLifecycle": "PENDING_USER_BROWSER_WALLET_ACTIONS"
   }
 }

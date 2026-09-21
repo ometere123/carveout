@@ -14,10 +14,11 @@
 - Candidate version: `0.2.0-studionet`.
 - Candidate contract source commit: `afb6a28de0a9f22aa8ac73fe72073a66822f5e13` (the release-manifest/documentation follow-up does not modify contract source).
 - Candidate contract source SHA-256: `d8a0c3eb5ae2f7f164bb5526c42ec24557dbfa06f8a2cf540e30215210978a99` (verify again against final commit).
-- Candidate schema: unchanged public signatures (21 public methods; 6 views and 15 writes), SHA-256 `26de6f5a55a686fb6f38bffd320d14ba53d4b74162a2ad15bdb123aed6f345fd`. Local `genvm-lint check`/validate, schema generation (hash match), and typecheck all pass; candidate CI remains required.
-- Target network is hard-locked to Studionet `61999`, RPC `https://studio.genlayer.com/api`; new contract address and deployment transaction: **pending user-controlled deployment/signature**.
-- Candidate production frontend contract address: **unset until the candidate contract address is verified**. Do not deploy this frontend while it points at the previous contract.
-- Candidate release commit tested by CI: `344446ab0f1790af6700d972ad22d7892373c7ce`; GitHub CI [run `35561427861`](https://github.com/ometere123/carveout/actions/runs/35561427861) passed all jobs. Documentation records this tested candidate commit; any later docs-only commit must also retain green CI.
+- Candidate schema: unchanged public signatures (21 public methods; 6 views and 15 writes), SHA-256 `26de6f5a55a686fb6f38bffd320d14ba53d4b74162a2ad15bdb123aed6f345fd`. Local generator output and the live schema from the deployed candidate match exactly.
+- Candidate deployment: [`0xA9C86FF6113187915C1Bd8e958fC718719337531`](https://explorer-studio.genlayer.com/address/0xA9C86FF6113187915C1Bd8e958fC718719337531); transaction [`0x518742b1e07f6c24c821a6e5fc9fb9acd24a2c944a31cf312121079693ae5726`](https://explorer-studio.genlayer.com/tx/0x518742b1e07f6c24c821a6e5fc9fb9acd24a2c944a31cf312121079693ae5726), FINALIZED / MAJORITY_AGREE / SUCCESS; five validator votes agreed. RPC source bytes hash to candidate SHA-256 `d8a0c3eb5ae2f7f164bb5526c42ec24557dbfa06f8a2cf540e30215210978a99`; deployed schema matches the 21-method local schema.
+- Candidate `get_stats()` read: version `0.2.0-studionet`, chain `61999`, agreements/incidents/deposited/escrow/claimable/withdrawn all zero, `accounting_balanced=true`, `admin_controls=false`. Read-only integration test passed against the candidate address.
+- Vercel Production `NEXT_PUBLIC_CARVEOUT_CONTRACT` has been updated to the candidate address. Candidate frontend production deployment remains pending.
+- Final main commit `ebe2dc1277d8b2e8dd5cc3f1901d4795caa7d166`: GitHub CI [run `35561858222`](https://github.com/ometere123/carveout/actions/runs/35561858222) passed all jobs.
 
 ## Candidate local gates
 
@@ -26,8 +27,8 @@
 - Frontend tests: **38 passed**; typecheck: PASS; production Next.js build: PASS for the candidate UI.
 - `scripts/check_contract_patterns.py`, `scripts/check_release.py`, and `scripts/check_frontend_surface.py`: PASS.
 - GenVM lint/validate/schema/typecheck: PASS (21 methods; 6 views and 15 writes; generated schema hash matches).
-- Read-only integration smoke: PASS against prior deployment `0x75f2e473E6f010B510F1d281C8E4679fD2043054` only; it does not verify candidate behavior. No consensus write or user wallet operation has been performed.
-- Local 100% viewport/browser review and final canonical Vercel deployment: pending after verified contract deployment. The existing editorial design and prior desktop layout are retained; new timestamp and evidence-record displays need final browser inspection.
+- Read-only integration smoke: PASS against both the historical deployment and the now-deployed candidate. No application lifecycle write or user wallet operation has been performed by the agent.
+- Candidate frontend deployment and final canonical Vercel readback: pending. Browser visual inspection of all specified viewport widths remains incomplete.
 
 ## Candidate evidence-integrity behavior
 
@@ -44,7 +45,7 @@ Record only user-generated, finalized transactions and actual readbacks. Use the
 
 | Evidence item | Actual value / explorer link |
 | --- | --- |
-| Candidate contract deployment transaction/address/source/schema readback | PENDING USER DEPLOYMENT |
+| Candidate contract deployment transaction/address/source/schema readback | PASS: [`0x518742b1e07f6c24c821a6e5fc9fb9acd24a2c944a31cf312121079693ae5726`](https://explorer-studio.genlayer.com/tx/0x518742b1e07f6c24c821a6e5fc9fb9acd24a2c944a31cf312121079693ae5726); [`0xA9C86FF6113187915C1Bd8e958fC718719337531`](https://explorer-studio.genlayer.com/address/0xA9C86FF6113187915C1Bd8e958fC718719337531); source/schema exact match |
 | Provider proposal/funding transaction + agreement ID | PENDING USER BROWSER WALLET |
 | Named customer acceptance transaction | PENDING USER BROWSER WALLET |
 | Incident opening transaction + incident ID | PENDING USER BROWSER WALLET |

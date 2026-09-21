@@ -4,22 +4,15 @@
 
 This branch began at the latest `origin/main` commit `a5e73d2d1e7f82c529ca2d1f5acf7fa91893b723`. It preserves the existing agreement contract and browser adapter, adds bounded durable evidence representations/digests and WAT-only display formatting, and is intended to remain on stable Studionet 61999 (`https://studio.genlayer.com/api`) with `genlayer-js@1.1.8` and the current stable contract runtime.
 
-Local Direct Mode is 52/52 on Python 3.12.10 using `run_direct_windows.py`. Frontend tests (38), TypeScript typecheck and production build pass. Static release guards, GenVM lint/validate/schema/typecheck pass; the generated schema matches the recorded schema hash. The opt-in live smoke test passes against the historical baseline only, not the undeployed candidate. Candidate CI must pass before deployment.
+Local Direct Mode is 52/52 on Python 3.12.10 using `run_direct_windows.py`. Frontend tests (38), TypeScript typecheck and production build pass. Static release guards and GenVM lint/validate/schema/typecheck pass. Candidate GitHub CI run `35561858222` is green. Read-only candidate integration passes.
 
 The candidate contract source is commit `afb6a28de0a9f22aa8ac73fe72073a66822f5e13`, SHA-256 `d8a0c3eb5ae2f7f164bb5526c42ec24557dbfa06f8a2cf540e30215210978a99`; the schema SHA-256 is `26de6f5a55a686fb6f38bffd320d14ba53d4b74162a2ad15bdb123aed6f345fd`.
 
-## Human-controlled deployment boundary
+## Deployment and release state
 
-The contract source changed. The old deployed instance at `0x75f2e473E6f010B510F1d281C8E4679fD2043054` is incompatible with the candidate frontend fields. Do not repoint the frontend to that address and do not deploy the frontend until a new contract address is finalized and its source/schema/read-only state are verified.
+The user deployed candidate `0.2.0-studionet` at `0xA9C86FF6113187915C1Bd8e958fC718719337531` in transaction `0x518742b1e07f6c24c821a6e5fc9fb9acd24a2c944a31cf312121079693ae5726`. The transaction is FINALIZED / MAJORITY_AGREE with GenVM SUCCESS and five agreeing validators. Read-only `gen_getContractCode` returned source whose SHA-256 exactly matches the candidate; the live schema matches the local 21-method schema. Candidate `get_stats()` reports version `0.2.0-studionet`, Studionet 61999, zero totals and `accounting_balanced=true`; the opt-in integration test passes against this address. The previous instance `0x75f2e473E6f010B510F1d281C8E4679fD2043054` is historical only.
 
-After the candidate source is pushed and CI is green, the user performs the deployment signing step:
-
-1. From repository root, run `.\.genlayer-stable\node_modules\.bin\genlayer.cmd network set studionet`, then `network info`. Confirm alias `studionet`, chain `61999`, RPC `https://studio.genlayer.com/api`.
-2. Confirm the active signer is the user's intended release wallet. The prior deployment was signed by `party_b` address `0xA7EeAE0E93793e3146Cb14b0700251B8b0EBADFB`; use it only if the user controls and intentionally selects that same account. No one should reveal or transmit a key.
-3. Run `.\.genlayer-stable\node_modules\.bin\genlayer.cmd deploy --contract contracts/carveout.py`. This contract has no constructor arguments and requires `0 GEN` value on gasless Studionet. Confirm the displayed source is candidate SHA-256 from `deployments/studionet.json` and approve the deployment from the intended signer.
-4. Return the finalized deployment transaction hash and new contract address. Also capture the finalized receipt/execution result. Do not run browser lifecycle writes at this deployment step.
-
-Once the user returns that deployment evidence, verify the address on Studionet, compare deployed source and generated schema with the candidate, read `get_stats()` and accounting, update `deployments/studionet.json`, wire the frontend address, rerun CI, deploy the frontend, and stop before any browser application transaction.
+The remaining release wiring is frontend-only: Vercel Production `NEXT_PUBLIC_CARVEOUT_CONTRACT` is set to the verified candidate address. After this release-documentation commit passes CI, deploy the frontend from `frontend/` and verify the canonical URL/client address. Do not redeploy the contract. Stop before any browser application transaction; the user performs all lifecycle writes.
 
 ## User-run application lifecycle
 
@@ -27,8 +20,8 @@ The user personally signs provider proposal/funding, customer acceptance, incide
 
 ## Current artifacts
 
-- `deployments/studionet.json` keeps the previous deployed baseline separate from the undeployed candidate.
+- `deployments/studionet.json` keeps the previous deployment as historical baseline and records the verified candidate separately.
 - `docs/REVIEW_EVIDENCE.md` contains explicitly pending live-evidence rows.
-- `scripts/verify_release_manifest.py` checks source/schema hashes and prevents premature candidate address wiring.
+- `scripts/verify_release_manifest.py` checks source/schema hashes, the candidate deployment address and the recorded on-chain source/schema verification.
 - `scripts/verify_accounting.py` checks a saved `get_stats()` response.
 - All user-facing timestamps display `Africa/Lagos`; contract, Unix and evidence timestamps remain unchanged.

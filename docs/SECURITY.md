@@ -35,4 +35,4 @@ The GenVM `render(..., mode="text")` runtime does not reliably expose redirect c
 
 ## Release state
 
-The old deployed contract at the address in `deployments/studionet.json` predates the current evidence-commitment changes. Do not point a frontend containing the new incident fields at that old deployment. This repository prepares a candidate release; a human-controlled deployment/signature and returned address/hash are required before production configuration can be changed.
+The historical contract at `0x75f2e473E6f010B510F1d281C8E4679fD2043054` predates the evidence-commitment changes and must not be used with this frontend. Candidate `0.2.0-studionet` is deployed at `0xA9C86FF6113187915C1Bd8e958fC718719337531`; its deployed source and schema match the checked release artifacts. Production frontend publication is a separate frontend-only step.
