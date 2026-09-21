@@ -24,5 +24,5 @@ export async function write(address:string,functionName:string,args:any[]=[],val
   const client=writeClient(address);
   return writeWithClient(client,address as `0x${string}`,contractAddress,functionName,args,value);
 }
-export async function waitFinal(hash:string){return waitForFinalizedExecution(readClient() as any,hash as `0x${string}`);}
+export async function waitFinal(hash:string,onFinalized?:()=>void){return waitForFinalizedExecution(readClient() as any,hash as `0x${string}`,undefined,onFinalized);}
 export function gen(value:string|number){return parseGenAmount(String(value));}

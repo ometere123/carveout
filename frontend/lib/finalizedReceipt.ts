@@ -1,44 +1,54 @@
 import { finalizedExecutionFailure, finalizedExecutionState, type FinalizedTransactionLike } from "./executionFailure";
+import { getTransactionReceipt, type GenLayerReceipt } from "./genlayerRpc";
 
 type ReceiptClient = {
   waitForTransactionReceipt: (request: Record<string, unknown>) => Promise<FinalizedTransactionLike>;
-  getTransaction?: (request: { hash: `0x${string}` }) => Promise<FinalizedTransactionLike>;
-  debugTraceTransaction?: (request: { hash: `0x${string}` }) => Promise<unknown>;
 };
 
-export async function waitForFinalizedExecution(client: ReceiptClient, hash: `0x${string}`) {
-  const receipt = await client.waitForTransactionReceipt({
+export type FinalizedWriteResult = {
+  finalized: true;
+  execution: "success" | "unknown";
+  receipt?: FinalizedTransactionLike;
+  receiptLookupError?: string;
+};
+
+export async function waitForFinalizedExecution(
+  client: ReceiptClient,
+  hash: `0x${string}`,
+  readReceipt: (txId: string) => Promise<GenLayerReceipt> = getTransactionReceipt,
+  onFinalized?: () => void,
+): Promise<FinalizedWriteResult> {
+  const sdkReceipt = await client.waitForTransactionReceipt({
     hash,
     status: "FINALIZED",
     retries: 240,
     interval: 15000,
     fullTransaction: true,
   });
-  const state = finalizedExecutionState(receipt);
-  if (state === "success") return receipt;
-  if (state === "failure") throw new Error(finalizedExecutionFailure(receipt));
+  onFinalized?.();
 
-  let diagnostic = "full finalized receipt contained no unambiguous execution result";
-  if (client.getTransaction) {
-    try {
-      const transaction = await client.getTransaction({ hash });
-      const transactionState = finalizedExecutionState(transaction);
-      if (transactionState === "success") return transaction;
-      if (transactionState === "failure") throw new Error(finalizedExecutionFailure(transaction));
-      diagnostic += "; full transaction lookup was also ambiguous";
-    } catch (error: any) {
-      if (error?.message?.startsWith("Transaction rolled back:")) throw error;
-      diagnostic += `; full transaction lookup failed: ${error?.message || String(error)}`;
-    }
+  let authoritativeReceipt: FinalizedTransactionLike = sdkReceipt;
+  let receiptLookupError: string | undefined;
+  try {
+    const rpcReceipt = await readReceipt(hash) as FinalizedTransactionLike;
+    authoritativeReceipt = {
+      ...sdkReceipt,
+      ...rpcReceipt,
+      consensus_data: {
+        ...sdkReceipt.consensus_data,
+        ...rpcReceipt.consensus_data,
+        leader_receipt: rpcReceipt.consensus_data?.leader_receipt ?? sdkReceipt.consensus_data?.leader_receipt,
+      },
+    };
+  } catch (error: any) {
+    receiptLookupError = error?.message || String(error);
   }
-  if (client.debugTraceTransaction) {
-    try {
-      const trace = await client.debugTraceTransaction({ hash });
-      const traceText = JSON.stringify(trace);
-      diagnostic += `; execution trace fetched${traceText ? `: ${traceText.slice(0, 500)}` : ""}`;
-    } catch (error: any) {
-      diagnostic += `; execution trace lookup failed: ${error?.message || String(error)}`;
-    }
-  }
-  throw new Error(`CARVEOUT: finalized transaction execution could not be verified (${diagnostic}). Transaction: ${hash}`);
+
+  const state = finalizedExecutionState(authoritativeReceipt);
+  if (state === "failure") throw new Error(finalizedExecutionFailure(authoritativeReceipt));
+  if (state === "success") return { finalized: true, execution: "success", receipt: authoritativeReceipt };
+
+  // Finality is established by the SDK poll, but missing execution metadata is
+  // not a rollback. The caller must verify the action's canonical state change.
+  return { finalized: true, execution: "unknown", receipt: authoritativeReceipt, receiptLookupError };
 }

@@ -28,9 +28,11 @@ for required, source in (
     ('LATEST_FINAL', contract),
     ('waitForTransactionReceipt', receipt),
     ('FINALIZED', receipt),
-    ('FINISHED_WITH_RETURN', execution),
+    ('finishedwithreturn', execution),
 ):
     if required not in source: failures.append("missing finalized GenLayer integration behavior: " + required)
+if "debugTraceTransaction" in receipt or "gen_dbg_traceTransaction" in receipt:
+    failures.append("production transaction verification must not depend on the optional GenLayer debug RPC")
 for forbidden in ('wallet_getSnaps','wallet_requestSnaps','WalletConnect','Privy'):
     if forbidden in all_source: failures.append("forbidden wallet path: " + forbidden)
 if failures:

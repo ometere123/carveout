@@ -21,6 +21,17 @@ test("single Studio leader receipt object is normalized safely", () => {
   assert.equal(finalizedExecutionState({ statusName: "FINALIZED", consensus_data: { leader_receipt: { execution_result: "SUCCESS" } } }), "success");
 });
 
+test("documented numeric receipt execution codes normalize explicitly", () => {
+  assert.equal(finalizedExecutionState({ txExecutionResult: 1 }), "success");
+  assert.equal(finalizedExecutionState({ txExecutionResultName: "FinishedWithReturn" }), "success");
+  assert.equal(finalizedExecutionState({ txExecutionResult: 2 }), "failure");
+  assert.equal(finalizedExecutionState({ txExecutionResultName: "FinishedWithError" }), "failure");
+});
+
+test("FINALIZED without execution metadata remains unknown, never success", () => {
+  assert.equal(finalizedExecutionState({ statusName: "FINALIZED" }), "unknown");
+});
+
 test("finalized GenLayer SDK leader rollback result surfaces its decoded payload", () => {
   const receipt = {
     statusName: "FINALIZED",

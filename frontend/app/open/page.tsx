@@ -4,6 +4,7 @@ import Link from "next/link";
 import {write,waitFinal,read} from "@/lib/contract";
 import {buildCreateAgreementCall, parseProviderBond} from "@/lib/agreementWrite";
 import {buildSlaWindow,isValidProposalStartMinutes} from "@/lib/slaWindow";
+import {isMatchingProposedAgreement,NO_RESUBMIT_UNTIL_VERIFIED} from "@/lib/actionVerification";
 import {emptyAgreementDraft,sampleAgreementDraft} from "@/lib/agreementForm";
 import {useInjectedWallet} from "@/lib/wallet";
 import {TxNotice} from "@/components/TxNotice";
@@ -12,7 +13,7 @@ export default function Open(){
   const wallet=useInjectedWallet();
   const [form,setForm]=useState(emptyAgreementDraft);
   const [sampleLoaded,setSampleLoaded]=useState(false);
-  const [phase,setPhase]=useState(""),[hash,setHash]=useState(""),[error,setError]=useState("");
+  const [phase,setPhase]=useState(""),[hash,setHash]=useState(""),[error,setError]=useState(""),[message,setMessage]=useState("");
   const [validation,setValidation]=useState<string[]>([]);
   const [createdId,setCreatedId]=useState("");
   const update=(key:string,value:string)=>{setForm(current=>({...current,[key]:value}));setSampleLoaded(false)};
@@ -48,9 +49,11 @@ export default function Open(){
     setValidation(issues);if(issues.length)return;
     if(!wallet.address)return setError("Connect an injected EIP-1193 wallet first.");
     if(!wallet.correctNetwork)return setError("Switch the injected wallet to GenLayer Studionet (61999).");
-    let finalized=false;
+    let finalized=false,submitted=false;
     try{
-      setError("");setHash("");setCreatedId("");setPhase("signing");
+      setError("");setMessage("");setHash("");setCreatedId("");setPhase("signing");
+      const agreementsBefore=await read("list_agreements",[0,30]);
+      const countBefore=Number(agreementsBefore?.total||0);
       const now=Math.floor(Date.now()/1000);
       const {start,end}=buildSlaWindow(Number(form.startAfterMinutes),Number(form.durationMinutes),now);
       const credit=parseProviderBond(form.credit);
@@ -60,16 +63,17 @@ export default function Open(){
         sourcePolicy:form.sourcePolicy,challengeWindowSeconds:Number(form.challenge)
       });
       const tx=await write(wallet.address,"create_agreement",agreementCall.args,agreementCall.value);
-      setHash(String(tx));setPhase("submitted");await new Promise(resolve=>setTimeout(resolve,500));setPhase("finalizing");await waitFinal(String(tx));finalized=true;setPhase("readback");
+      submitted=true;setHash(String(tx));setPhase("submitted");await new Promise(resolve=>setTimeout(resolve,500));setPhase("finalizing");
+      const execution=await waitFinal(String(tx),()=>setPhase("verifying-execution"));finalized=true;setPhase("verifying-state");
       const list=await read("list_agreements",[0,30]);
-      if(!Number(list?.total))throw new Error("Finalized transaction did not produce a readable agreement record.");
-      const page=await read("list_agreements",[Math.max(0,Number(list.total)-1),1]);
-      const newest=page?.items?.[page.items.length-1];
-      if(!newest?.id)throw new Error("The new agreement is missing from the canonical registry.");
-      const stored=await read("get_agreement",[newest.id]);
-      if(stored.status!=="PROPOSED"||String(stored.provider).toLowerCase()!==wallet.address.toLowerCase()||String(stored.customer).toLowerCase()!==customer.toLowerCase()||stored.service_name!==form.service.trim()||String(stored.bond_atto)!==credit.toString())throw new Error("Canonical agreement readback does not match the proposal. Do not submit again until you inspect the transaction and registry.");
-      setCreatedId(stored.id);setPhase("finalized");
-    }catch(e:any){setError(finalized?"Transaction finalized, but canonical readback verification failed. Do not resubmit until you inspect the transaction. "+(e?.message||String(e)):(e?.message||String(e)));setPhase(finalized?"readback-failed":"");}
+      const countAfter=Number(list?.total||0);
+      const added=Math.min(30,Math.max(0,countAfter-countBefore));
+      const page=added?await read("list_agreements",[countBefore,added]):{items:[]};
+      const match=(page?.items||[]).find((item:any)=>isMatchingProposedAgreement(item,{provider:wallet.address!,customer,service:form.service.trim(),bondAtto:credit.toString()}));
+      const stored=match?.id?await read("get_agreement",[match.id]):null;
+      if(!isMatchingProposedAgreement(stored,{provider:wallet.address,customer,service:form.service.trim(),bondAtto:credit.toString()})){setPhase("verification-incomplete");setMessage(execution.execution==="unknown"?`The chain finalized this write, but the execution result is unavailable and no matching PROPOSED agreement was found. ${NO_RESUBMIT_UNTIL_VERIFIED}`:`The execution receipt succeeded, but the expected PROPOSED agreement was not found in canonical state. ${NO_RESUBMIT_UNTIL_VERIFIED}`);return;}
+      setCreatedId(stored.id);setPhase("state-verified");
+    }catch(e:any){const text=e?.message||String(e);if(text.startsWith("Transaction rolled back:")){setError(text);setPhase("failed");}else if(finalized){setPhase("verification-incomplete");setMessage("The chain finalized this write, but canonical state could not be verified. Do not resubmit until the transaction and registry are verified. "+text);}else if(submitted){setPhase("submitted-unverified");setMessage("The write was submitted, but finalization could not be confirmed. Inspect its Explorer record before taking any further action. Do not resubmit while its status is unknown. "+text);}else{setError(text);setPhase("");}}
   }
   return <section className="shell page">
     <div className="page-intro"><div><div className="kicker">New agreement</div><h1>Freeze the exception.</h1></div><p>The provider bonds the maximum credit and proposes the exact SLA, exception clauses, and public source origins. The named customer must accept before the exposure window begins.</p></div>
@@ -87,9 +91,9 @@ export default function Open(){
       <Area label="Source families, origins, and path prefixes (JSON)" placeholder={'{"measurement":[{"kind":"PROVIDER_STATUS","host":"status.your-service.com","path_prefix":"/incidents"},{"kind":"INDEPENDENT_PROBE","host":"probe.your-service.org","path_prefix":"/"}],"exception":[{"kind":"PUBLIC_NOTICE","host":"notices.your-service.org","path_prefix":"/"}],"challenge":[{"kind":"COUNTER_EVIDENCE","host":"evidence.your-service.org","path_prefix":"/"}]}'} value={form.sourcePolicy} set={v=>update("sourcePolicy",v)}/>
       <p className="micro-note">Use real, public HTTPS origins relevant to this service. Each policy group requires 1–8 distinct origins. Measurement needs at least two source families, including an independent probe on a separate origin. The customer accepts this exact frozen policy. The contract requires at least 10 minutes before SLA start at execution; this app requires you to select at least 15 minutes when creating a proposal to leave time for wallet signing, submission, and finalization. The timestamp uses your selected interval without added minutes. Customer acceptance must still occur at least 5 minutes before SLA exposure.</p>
       {validation.length>0&&<ul className="tx tx-error" role="alert">{validation.map((item,i)=><li key={i}>{item}</li>)}</ul>}
-      <button className="button red" onClick={submit} disabled={phase==="signing"||phase==="finalizing"||phase==="readback"}>Fund and propose agreement</button>
+      <button className="button red" onClick={submit} disabled={phase==="signing"||phase==="submitted"||phase==="submitted-unverified"||phase==="finalizing"||phase==="verifying-execution"||phase==="verifying-state"||phase==="verification-incomplete"}>Fund and propose agreement</button>
       {createdId&&<p className="micro-note" role="status">Proposal persisted and verified: <Link href={"/agreements/"+createdId}>{createdId} · open agreement</Link></p>}
-      <TxNotice phase={phase} hash={hash} error={error}/>
+      <TxNotice phase={phase} hash={hash} error={error} message={message}/>
     </div><aside className="side-note"><div className="kicker">Formation rule</div><h2>Neither party can change the agreement after acceptance.</h2><p>The contract requires at least 10 minutes before SLA start when the proposal executes. This app requires a selected lead of at least 15 minutes to leave time for wallet signing, submission, and finalization before that boundary. The timestamp uses the interval you select without added time. The named customer must accept the same specification at least five minutes before SLA exposure. An unaccepted proposal has a bounded bond refund.</p><p>The source policy pins evidence families to exact HTTPS hosts and path prefixes. Measurement requires distinct origins, including an independent probe.</p><p className="micro-note">The form starts blank. Nothing is sent to the contract until you submit and approve the wallet transaction.</p></aside></div>
   </section>
 }

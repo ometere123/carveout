@@ -1,11 +1,12 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useParams } from "next/navigation";
 import { read, waitFinal, write } from "@/lib/contract";
 import { formatGenAmount } from "@/lib/amount";
 import { useInjectedWallet } from "@/lib/wallet";
 import { TxNotice } from "@/components/TxNotice";
+import { isExpectedActionState, NO_RESUBMIT_UNTIL_VERIFIED, resolveWriteVerification } from "@/lib/actionVerification";
 
 const now = () => Math.floor(Date.now()/1000);
 const genText = (v:any) => `${formatGenAmount(BigInt(String(v || 0)), 6)} GEN`;
@@ -24,7 +25,9 @@ export default function AgreementDetail(){
   const {id}=useParams<{id:string}>();
   const wallet=useInjectedWallet();
   const [agreement,setAgreement]=useState<any>(null),[incident,setIncident]=useState<any>(null);
-  const [phase,setPhase]=useState(""),[hash,setHash]=useState(""),[error,setError]=useState("");
+  const [phase,setPhase]=useState(""),[hash,setHash]=useState(""),[error,setError]=useState(""),[message,setMessage]=useState("");
+  const submittedHash=useRef("");
+  const finalityKnown=useRef(false);
   const [miss,setMiss]=useState({actual:"9900",from:"",to:"",evidence:"[]"});
   const [claim,setClaim]=useState({code:"",evidence:"[]"});
   const [challenge,setChallenge]=useState({text:"",url:""});
@@ -35,8 +38,10 @@ export default function AgreementDetail(){
       setMiss(x=>({...x,evidence:x.evidence==="[]"?defaultEvidence(a.source_policy,"measurement"):x.evidence}));
       setClaim(x=>({...x,evidence:x.evidence==="[]"?defaultEvidence(a.source_policy,"exception"):x.evidence}));
       setChallenge(x=>({...x,url:x.url||defaultChallengeUrl(a.source_policy)}));
-      if(a.incident_id){setIncident(await read("get_incident",[a.incident_id]));}else setIncident(null);
+      const nextIncident=a.incident_id?await read("get_incident",[a.incident_id]):null;
+      setIncident(nextIncident);
       setError("");
+      return { agreement:a, incident:nextIncident };
     }catch(e:any){setError(e?.message||String(e));throw e;}
   },[id]);
   useEffect(()=>{refresh().catch(()=>{})},[refresh]);
@@ -51,10 +56,28 @@ export default function AgreementDetail(){
   async function transact(name:string,args:any[]=[],value?:bigint){
     if(!wallet.address)throw new Error("Connect an injected EIP-1193 wallet first");
     if(!wallet.correctNetwork)throw new Error("Switch the injected wallet to GenLayer Studionet (61999) before signing.");
-    setError("");setPhase("signing");setHash("");
-    const tx=await write(wallet.address,name,args,value);setHash(String(tx));setPhase("submitted");await new Promise(resolve=>setTimeout(resolve,500));setPhase("finalizing");await waitFinal(String(tx));setPhase("readback");try{await refresh()}catch(e:any){setPhase("readback-failed");throw Object.assign(new Error(e?.message||String(e)),{finalized:true})}setPhase("finalized");
+    const beforeAgreement=agreement,beforeIncident=incident;
+    const creditAddress=name==="expire_proposal"||name==="expire_agreement"?String(agreement?.provider):name==="withdraw_credit"?wallet.address:"";
+    const creditBefore=creditAddress?String(await read("get_credit",[creditAddress])):undefined;
+    const statsBefore=name==="withdraw_credit"?await read("get_stats"):undefined;
+    const settlement=name==="finalize_incident"||name==="finalize_default_breach";
+    const settlementParties=settlement?[String(agreement.customer),String(agreement.provider)]:[];
+    const creditsBefore=Object.fromEntries(await Promise.all(settlementParties.map(async party=>[party.toLowerCase(),String(await read("get_credit",[party]))] as const)));
+    setError("");setMessage("");setPhase("signing");setHash("");submittedHash.current="";finalityKnown.current=false;
+    const tx=await write(wallet.address,name,args,value);setHash(String(tx));submittedHash.current=String(tx);setPhase("submitted");await new Promise(resolve=>setTimeout(resolve,500));setPhase("finalizing");
+    const outcome=await waitFinal(String(tx),()=>setPhase("verifying-execution"));finalityKnown.current=true;setPhase("verifying-state");
+    const after=await refresh();
+    if(!after.incident&&beforeIncident?.id&&["verify_measurement","dismiss_unproven_measurement"].includes(name))after.incident=await read("get_incident",[beforeIncident.id]);
+    const creditAfter=creditAddress?String(await read("get_credit",[creditAddress])):undefined;
+    const statsAfter=name==="withdraw_credit"||name==="finalize_incident"||name==="finalize_default_breach"?await read("get_stats"):undefined;
+    const creditsAfter=Object.fromEntries(await Promise.all(settlementParties.map(async party=>[party.toLowerCase(),String(await read("get_credit",[party]))] as const)));
+    const verified=isExpectedActionState({action:name,beforeAgreement,beforeIncident,agreement:after.agreement,incident:after.incident,args,creditBefore,creditAfter,statsBefore,statsAfter,creditsBefore,creditsAfter});
+    const result=resolveWriteVerification(outcome.execution,verified);
+    if(result==="state-verified"){setPhase("state-verified");return;}
+    setPhase("verification-incomplete");
+    setMessage(outcome.execution==="unknown"?`The chain finalized this write, but execution metadata is unavailable and the expected action-specific contract state was not proven. ${NO_RESUBMIT_UNTIL_VERIFIED}`:`Execution succeeded, but the expected action-specific contract state was not proven. ${NO_RESUBMIT_UNTIL_VERIFIED}`);
   }
-  async function doTx(name:string,args:any[]=[],value?:bigint){try{await transact(name,args,value)}catch(e:any){setError(e?.message||String(e));setPhase(e?.finalized?"readback-failed":"")}}
+  async function doTx(name:string,args:any[]=[],value?:bigint){if(["signing","submitted","submitted-unverified","finalizing","verifying-execution","verifying-state","verification-incomplete"].includes(phase))return;try{await transact(name,args,value)}catch(e:any){const text=e?.message||String(e);if(text.startsWith("Transaction rolled back:")){setError(text);setPhase("failed");}else if(submittedHash.current){setError("");setMessage(finalityKnown.current?`The transaction finalized, but its expected state could not be verified. ${NO_RESUBMIT_UNTIL_VERIFIED} Check the Explorer transaction and contract state. ${text}`:`The write was submitted but finalization could not be confirmed. Do not resubmit while its status is unknown. Check the Explorer transaction. ${text}`);setPhase(finalityKnown.current?"verification-incomplete":"submitted-unverified");}else{setError(text);setPhase("")}}}
 
   if(!agreement)return <section className="shell page"><div className="kicker">Agreement file</div><h1>{error?"Agreement unavailable":"Loading agreement…"}</h1>{error&&<div className="tx tx-error" role="alert">{error}</div>}</section>;
   const maxCredit=BigInt(agreement.max_credit_atto||0);
@@ -155,7 +178,7 @@ export default function AgreementDetail(){
         </>}
       </main>
     </div>
-    <TxNotice phase={phase} hash={hash} error={error}/>
+    <TxNotice phase={phase} hash={hash} error={error} message={message}/>
   </section>
 }
 
