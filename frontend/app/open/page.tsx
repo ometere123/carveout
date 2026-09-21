@@ -1,6 +1,7 @@
 "use client";
 import {useState} from "react";
 import Link from "next/link";
+import {useRouter} from "next/navigation";
 import {write,waitFinal,read} from "@/lib/contract";
 import {buildCreateAgreementCall, parseProviderBond} from "@/lib/agreementWrite";
 import {buildSlaWindow,isValidProposalStartMinutes} from "@/lib/slaWindow";
@@ -10,6 +11,7 @@ import {useInjectedWallet} from "@/lib/wallet";
 import {TxNotice} from "@/components/TxNotice";
 
 export default function Open(){
+  const router=useRouter();
   const wallet=useInjectedWallet();
   const [form,setForm]=useState(emptyAgreementDraft);
   const [sampleLoaded,setSampleLoaded]=useState(false);
@@ -73,6 +75,7 @@ export default function Open(){
       const stored=match?.id?await read("get_agreement",[match.id]):null;
       if(!isMatchingProposedAgreement(stored,{provider:wallet.address,customer,service:form.service.trim(),bondAtto:credit.toString()})){setPhase("verification-incomplete");setMessage(execution.execution==="unknown"?`The chain finalized this write, but the execution result is unavailable and no matching PROPOSED agreement was found. ${NO_RESUBMIT_UNTIL_VERIFIED}`:`The execution receipt succeeded, but the expected PROPOSED agreement was not found in canonical state. ${NO_RESUBMIT_UNTIL_VERIFIED}`);return;}
       setCreatedId(stored.id);setPhase("state-verified");
+      window.setTimeout(()=>router.push(`/agreements/${encodeURIComponent(String(stored.id))}?created=1`),1100);
     }catch(e:any){const text=e?.message||String(e);if(text.startsWith("Transaction rolled back:")){setError(text);setPhase("failed");}else if(finalized){setPhase("verification-incomplete");setMessage("The chain finalized this write, but canonical state could not be verified. Do not resubmit until the transaction and registry are verified. "+text);}else if(submitted){setPhase("submitted-unverified");setMessage("The write was submitted, but finalization could not be confirmed. Inspect its Explorer record before taking any further action. Do not resubmit while its status is unknown. "+text);}else{setError(text);setPhase("");}}
   }
   return <section className="shell page">
@@ -92,7 +95,7 @@ export default function Open(){
       <p className="micro-note">Use real, public HTTPS origins relevant to this service. Each policy group requires 1–8 distinct origins. Measurement needs at least two source families, including an independent probe on a separate origin. The customer accepts this exact frozen policy. The contract requires at least 10 minutes before SLA start at execution; this app requires you to select at least 15 minutes when creating a proposal to leave time for wallet signing, submission, and finalization. The timestamp uses your selected interval without added minutes. Customer acceptance must still occur at least 5 minutes before SLA exposure.</p>
       {validation.length>0&&<ul className="tx tx-error" role="alert">{validation.map((item,i)=><li key={i}>{item}</li>)}</ul>}
       <button className="button red" onClick={submit} disabled={phase==="signing"||phase==="submitted"||phase==="submitted-unverified"||phase==="finalizing"||phase==="verifying-execution"||phase==="verifying-state"||phase==="verification-incomplete"}>Fund and propose agreement</button>
-      {createdId&&<p className="micro-note" role="status">Proposal persisted and verified: <Link href={"/agreements/"+createdId}>{createdId} · open agreement</Link></p>}
+      {createdId&&<div className="proposal-success" role="status"><div><div className="kicker">Proposal persisted and verified</div><p><b>{createdId}</b> is now in the canonical agreement registry. Opening its agreement file…</p></div><Link className="button primary" href={"/agreements/"+encodeURIComponent(createdId)+"?created=1"}>Open agreement</Link></div>}
       <TxNotice phase={phase} hash={hash} error={error} message={message}/>
     </div><aside className="side-note"><div className="kicker">Formation rule</div><h2>Neither party can change the agreement after acceptance.</h2><p>The contract requires at least 10 minutes before SLA start when the proposal executes. This app requires a selected lead of at least 15 minutes to leave time for wallet signing, submission, and finalization before that boundary. The timestamp uses the interval you select without added time. The named customer must accept the same specification at least five minutes before SLA exposure. An unaccepted proposal has a bounded bond refund.</p><p>The source policy pins evidence families to exact HTTPS hosts and path prefixes. Measurement requires distinct origins, including an independent probe.</p><p className="micro-note">The form starts blank. Nothing is sent to the contract until you submit and approve the wallet transaction.</p></aside></div>
   </section>

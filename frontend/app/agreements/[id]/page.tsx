@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useSearchParams } from "next/navigation";
 import { read, waitFinal, write } from "@/lib/contract";
 import { formatGenAmount } from "@/lib/amount";
 import { useInjectedWallet } from "@/lib/wallet";
@@ -23,6 +23,7 @@ function defaultChallengeUrl(policy:any){const x=policy?.challenge?.[0];return x
 
 export default function AgreementDetail(){
   const {id}=useParams<{id:string}>();
+  const searchParams=useSearchParams();
   const wallet=useInjectedWallet();
   const [agreement,setAgreement]=useState<any>(null),[incident,setIncident]=useState<any>(null);
   const [phase,setPhase]=useState(""),[hash,setHash]=useState(""),[error,setError]=useState(""),[message,setMessage]=useState("");
@@ -86,45 +87,41 @@ export default function AgreementDetail(){
   let challengeData:any=null;try{challengeData=incident?.challenge?JSON.parse(incident.challenge):null}catch{}
 
   return <section className="shell page">
-    <div className="page-intro">
-      <div><div className="kicker">Agreement {agreement.id}</div><h1>{agreement.service_name}</h1></div>
-      <div className="contract-summary"><span className={`tag ${agreement.status}`}>{agreement.status}</span><b>{genText(agreement.bond_atto)}</b><small>{agreement.metric_name} · target {(Number(agreement.target_bps)/100).toFixed(2)}%</small></div>
+    {searchParams.get("created")==="1"&&agreement.status==="PROPOSED"&&<div className="creation-notice" role="status"><span className="kicker">Proposal persisted and verified</span><b>Agreement created successfully</b><span>The canonical record is PROPOSED and awaiting customer acceptance.</span></div>}
+    <div className="agreement-summary">
+      <div className="agreement-summary-title"><div><div className="kicker">Agreement file · {agreement.id}</div><h1>{agreement.service_name}</h1></div><span className={`tag ${agreement.status}`}>{agreement.status}</span></div>
+      <div className="summary-facts"><div><span>Bonded maximum credit</span><b>{genText(agreement.bond_atto)}</b></div><div><span>Target metric</span><b>{agreement.metric_name}</b><small>{(Number(agreement.target_bps)/100).toFixed(2)}% target</small></div><div><span>Service</span><b>{agreement.service_url}</b></div></div>
     </div>
 
-    <div className="case-grid">
+    <div className="agreement-layout">
       <aside className="contract-panel">
-        <div className="kicker">Frozen terms</div>
+        <div className="kicker">Agreement dossier</div>
         <div className="docket-line"><span>Provider</span><b>{short(agreement.provider)}</b></div>
         <div className="docket-line"><span>Customer</span><b>{short(agreement.customer)}</b></div>
         <div className="docket-line"><span>Service</span><b>{agreement.service_url}</b></div>
-        <div className="docket-line"><span>Maximum credit</span><b>{genText(agreement.max_credit_atto)}</b></div>
-        <div className="docket-line"><span>Performance window</span><b>{new Date(Number(agreement.window_start)*1000).toISOString().slice(0,10)} → {new Date(Number(agreement.window_end)*1000).toISOString().slice(0,10)}</b></div>
-        <div className="basis">Specification hash · {agreement.spec_hash}</div>
-        <h3>Permitted carve-outs</h3>
-        {(agreement.exceptions||[]).map((x:any)=><div className="clause" key={x.code}><b>{x.code}</b><strong>{x.title}</strong><p>{x.rule}</p><small>Proof · {x.proof}</small></div>)}
-        <div className="basis">Evidence policy · {agreement.evidence_policy}</div>
-        <h3>Frozen source policy</h3>
-        {Object.entries(agreement.source_policy||{}).map(([group,items]:any)=><div className="basis" key={group}>{group} · {(items||[]).map((x:any)=>`${x.kind} @ ${x.host}${x.path_prefix}`).join(" · ")}</div>)}
+        <div className="docket-line"><span>Target</span><b>{agreement.metric_name} · {(Number(agreement.target_bps)/100).toFixed(2)}%</b></div>
+        <div className="docket-line"><span>Bond</span><b>{genText(agreement.bond_atto)} · max {genText(agreement.max_credit_atto)}</b></div>
+        <div className="docket-line"><span>Challenge window</span><b>{agreement.challenge_window_seconds} seconds</b></div>
+        <div className="docket-line"><span>SLA window</span><b>{new Date(Number(agreement.window_start)*1000).toISOString()} → {new Date(Number(agreement.window_end)*1000).toISOString()}</b></div>
+        {agreement.status==="PROPOSED"&&<div className="docket-line"><span>Formation deadline</span><b>{new Date(Number(agreement.formation_deadline)*1000).toISOString()}</b></div>}
+        <div className="digest-row"><span>Specification hash</span><code>{agreement.spec_hash}</code></div>
       </aside>
 
       <main className="incident-panel">
         {!incident && agreement.status==="PROPOSED" && <div className="incident-empty">
           <div className="kicker">Awaiting customer acceptance</div><h2>The provider proposed a frozen agreement.</h2>
           <p>The bond is escrowed, but incidents remain unavailable until the named customer accepts the exact specification before the formation deadline.</p>
-          <div className="basis">Formation deadline · {new Date(Number(agreement.formation_deadline)*1000).toISOString()}</div>
-          <div className="basis">Specification commitment · {agreement.spec_hash}</div>
-          {role==="customer"&&now()<Number(agreement.formation_deadline)&&<button className="button red" onClick={()=>doTx("accept_agreement",[id])}>Accept agreement</button>}
-          {now()>=Number(agreement.formation_deadline)&&<button className="button primary" onClick={()=>doTx("expire_proposal",[id])}>Return expired proposal bond</button>}
+          <div className="action-panel"><div className="kicker">Next action</div><p>Customer acceptance must be finalized before the formation deadline and at least five minutes before SLA exposure.</p>{role==="customer"&&now()<Number(agreement.formation_deadline)&&<button className="button red" onClick={()=>doTx("accept_agreement",[id])}>Accept agreement</button>}{role!=="customer"&&now()<Number(agreement.formation_deadline)&&<p className="micro-note">The named customer wallet is the next signer.</p>}{now()>=Number(agreement.formation_deadline)&&<button className="button primary" onClick={()=>doTx("expire_proposal",[id])}>Return expired proposal bond</button>}</div>
         </div>}
         {!incident && agreement.status==="ACTIVE" && <div className="incident-empty">
           <div className="kicker">No open incident</div><h2>The service agreement is active.</h2><p>The customer can report a measured miss. Liability is not established until independent evidence verifies the service and observation window.</p>
-          {role==="customer" && <div className="form-sheet compact">
+          {role==="customer" && <div className="form-sheet compact action-panel">
             <div className="two"><Field label="Claimed availability (basis points)" value={miss.actual} set={v=>setMiss({...miss,actual:v})}/><Field label="Observation start (Unix time)" value={miss.from} set={v=>setMiss({...miss,from:v})}/></div>
             <Field label="Observation end (Unix time)" value={miss.to} set={v=>setMiss({...miss,to:v})}/>
             <Area label="Measurement evidence (JSON)" value={miss.evidence} set={v=>setMiss({...miss,evidence:v})}/>
             <button className="button red" onClick={()=>doTx("open_incident",[id,Number(miss.actual),Number(miss.from),Number(miss.to),miss.evidence])}>Open measured miss</button>
           </div>}
-          {now()>Number(agreement.window_end)&&<button className="button primary" onClick={()=>doTx("expire_agreement",[id])}>Close expired agreement</button>}
+          {now()>Number(agreement.window_end)&&<div className="action-panel"><div className="kicker">Next action</div><button className="button primary" onClick={()=>doTx("expire_agreement",[id])}>Close expired agreement</button></div>}
         </div>}
 
         {incident && <>
@@ -150,7 +147,7 @@ export default function AgreementDetail(){
           {incident.excused_intervals?.length>0&&<div className="fact-sheet"><div className="kicker">Excused intervals · liability is deterministic</div>{incident.excused_intervals.map((x:any,i:number)=><p key={i}><b>{String(i+1).padStart(2,"0")}</b>{new Date(Number(x.from_ts)*1000).toISOString()} → {new Date(Number(x.to_ts)*1000).toISOString()} · Evidence {x.evidence_ids.join(", ")}</p>)}</div>}
           {challengeData&&<div className="challenge-record"><b>Challenge · {challengeData.status}</b><p>{challengeData.text}</p>{challengeData.basis&&<small>{challengeData.basis}</small>}</div>}
 
-          <div className="action-row">
+          <section className="action-panel workflow-actions"><div className="kicker">Available protocol actions</div><div className="action-row">
             {["MEASUREMENT_PENDING","MEASUREMENT_INCONCLUSIVE"].includes(incident.status)&&<button className="button primary" onClick={()=>doTx("verify_measurement",[incident.id])}>verify measurement</button>}
             {incident.status==="MEASUREMENT_INCONCLUSIVE"&&now()>=Number(incident.measurement_deadline||0)&&<button className="button" onClick={()=>doTx("dismiss_unproven_measurement",[incident.id])}>dismiss unproven miss</button>}
             {["EXCEPTION_CLAIMED","INCONCLUSIVE"].includes(incident.status)&&<button className="button red" onClick={()=>doTx("adjudicate_exception",[incident.id])}>adjudicate frozen exception</button>}
@@ -159,16 +156,16 @@ export default function AgreementDetail(){
             {incident.status==="PENDING"&&now()>=Number(incident.challenge_deadline||0)&&challengeData?.status!=="OPEN"&&<button className="button primary" onClick={()=>doTx("finalize_incident",[incident.id])}>finalize settlement</button>}
             {incident.status==="OPEN"&&now()>=Number(incident.response_deadline||0)&&<button className="button red" onClick={()=>doTx("finalize_default_breach",[incident.id])}>finalize provider default</button>}
             {incident.status==="INCONCLUSIVE"&&now()>=Number(incident.resolution_deadline||0)&&<button className="button red" onClick={()=>doTx("finalize_default_breach",[incident.id])}>finalize unresolved default</button>}
-          </div>
+          </div></section>
 
-          {role==="provider"&&incident.status==="OPEN"&&now()<Number(incident.response_deadline||0)&&<div className="form-sheet compact">
+          {role==="provider"&&incident.status==="OPEN"&&now()<Number(incident.response_deadline||0)&&<div className="form-sheet compact action-panel">
             <div className="kicker">invoke one frozen clause</div>
             <select value={claim.code} onChange={e=>setClaim({...claim,code:e.target.value})}><option value="">choose exception</option>{(agreement.exceptions||[]).map((x:any)=><option key={x.code} value={x.code}>{x.code} · {x.title}</option>)}</select>
             <Area label="exception evidence JSON" value={claim.evidence} set={v=>setClaim({...claim,evidence:v})}/>
             <button className="button red" onClick={()=>doTx("claim_exception",[incident.id,claim.code,claim.evidence])}>claim exception</button>
           </div>}
 
-          {incident.status==="PENDING"&&!incident.challenge&&role!=="observer"&&now()<Number(incident.challenge_deadline||0)&&<div className="form-sheet compact challenge-sheet">
+          {incident.status==="PENDING"&&!incident.challenge&&role!=="observer"&&now()<Number(incident.challenge_deadline||0)&&<div className="form-sheet compact challenge-sheet action-panel">
             <div className="kicker">counter-evidence window</div>
             <Area label="specific factual or contractual error" value={challenge.text} set={v=>setChallenge({...challenge,text:v})}/>
             <Field label="public counter-evidence URL" value={challenge.url} set={v=>setChallenge({...challenge,url:v})}/>
@@ -178,6 +175,7 @@ export default function AgreementDetail(){
         </>}
       </main>
     </div>
+    <details className="frozen-details"><summary>Frozen exception clauses and evidence policy</summary><div className="frozen-details-grid"><section><div className="kicker">Permitted carve-outs</div>{(agreement.exceptions||[]).map((x:any)=><div className="clause" key={x.code}><b>{x.code}</b><strong>{x.title}</strong><p>{x.rule}</p><small>Proof · {x.proof}</small></div>)}</section><section><div className="kicker">Adjudication policy</div><p className="policy-copy">{agreement.evidence_policy}</p><div className="kicker">Frozen source policy</div>{Object.entries(agreement.source_policy||{}).map(([group,items]:any)=><div className="basis" key={group}>{group} · {(items||[]).map((x:any)=>`${x.kind} @ ${x.host}${x.path_prefix}`).join(" · ")}</div>)}</section></div></details>
     <TxNotice phase={phase} hash={hash} error={error} message={message}/>
   </section>
 }
