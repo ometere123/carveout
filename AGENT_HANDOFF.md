@@ -8,9 +8,11 @@ Work is based on `main` commit `5ccc4ee` and leaves the existing stable toolchai
 
 Direct Mode 59/59; GenVM lint + validate PASS; schema generation PASS; contract typecheck PASS; contract-pattern/release/frontend-surface checks PASS; frontend tests 41/41; frontend TypeScript and production build PASS. For GenVM validation on this machine, set `GENVM_VERSION=v0.2.16`: without it an unrelated cached RC bundle can be selected. Do not change the contract header runner pin.
 
+Source commit `b70d49659b569ec7941a7607735ca5f096d10ebc` is pushed to main and passed [GitHub CI run 35583968282](https://github.com/ometere123/carveout/actions/runs/35583968282).
+
 ## Exact release gates still outstanding
 
-1. Check/push the prepared source and docs to GitHub `main`; wait for CI green and record the exact source commit/run.
+1. User deploys the verified release source after reviewing the source commit and green CI evidence.
 2. User deploys `contracts/carveout.py` via GenLayer Studio on Studionet 61999, canonical RPC; no constructor args and 0 value. Expected wallet `0xA7EeAE0E93793e3146Cb14b0700251B8b0EBADFB`. Expected source SHA-256 above. Collect finalized deployment tx + new address.
 3. Read deployed code/schema/stats; compare exact source/schema. Update `deployments/studionet.json` and only then configure and deploy frontend to the new address.
 4. User executes a fresh lifecycle and returns actual hashes/readbacks/screenshots. Never retry the 0.2.0 UNDETERMINED transaction.

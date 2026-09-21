@@ -14,7 +14,7 @@ Use `GENVM_VERSION=v0.2.16` with local genvm-lint commands. This avoids selectin
 
 ## Pending release actions
 
-- GitHub push and green CI for the exact release commit.
+- GitHub source commit `b70d49659b569ec7941a7607735ca5f096d10ebc`: **PASS**, [CI run 35583968282](https://github.com/ometere123/carveout/actions/runs/35583968282).
 - User-signed deployment of this source to Studionet 61999.
 - Read-only deployed source and schema verification plus `get_stats()` against the new address.
 - Production frontend configuration/deployment after the new contract is verified.

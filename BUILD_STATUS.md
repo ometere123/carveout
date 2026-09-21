@@ -1,7 +1,7 @@
 # Build status — CARVEOUT 0.3.0 candidate
 
 - Base checkout: `main` at `5ccc4ee` before these changes; work preserves the stable Studionet toolchain and existing single-contract design.
-- Candidate source: `contracts/carveout.py`, SHA-256 `93d8c7cbd0329e8b07ccc6806b32476cda206a6a88acb36367602d018bb41ae6`; source commit: PENDING source commit.
+- Candidate source: `contracts/carveout.py`, SHA-256 `93d8c7cbd0329e8b07ccc6806b32476cda206a6a88acb36367602d018bb41ae6`; source commit: `b70d49659b569ec7941a7607735ca5f096d10ebc`.
 - Schema: `deployments/studionet.schema.json`, SHA-256 `26de6f5a55a686fb6f38bffd320d14ba53d4b74162a2ad15bdb123aed6f345fd`; public interface remains 21 methods.
 - Evidence consensus: independently fetch each frozen source, extract/normalize provider-neutral stable source manifests, bind them with a consensus digest; persist the accepted leader's fetched-body digest separately. Bodies are processed up to 24,000 chars/source and 48,000 per decision; persisted per-source canonical manifest is bounded to 3,600 chars. The former 800-character excerpt is not an analysis cutoff.
 - WAT timestamp formatting: unset zero/null/empty values render as unset; valid timestamps use `Africa/Lagos`, while protocol Unix timestamps remain unchanged.
@@ -14,7 +14,7 @@
 - Contract typecheck: **PASS**.
 - Pattern/release/frontend-surface guards: **PASS**.
 - Frontend tests: **41/41 PASS**; typecheck **PASS**; production build **PASS**.
-- GitHub CI: PENDING push.
+- GitHub CI: **PASS**, [run 35583968282](https://github.com/ometere123/carveout/actions/runs/35583968282), testing the exact source commit.
 - New-address read-only integration: PENDING user-signed deployment.
 
 ## Deployment boundary

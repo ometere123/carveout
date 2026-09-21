@@ -11,7 +11,7 @@ Static checks support but do not replace GenVM validation, Direct Mode, deployed
 - Contract typecheck: PASS.
 - Contract pattern, release, frontend surface, deploy TypeScript and Python compilation checks: PASS.
 - Frontend tests: 41 passed; TypeScript typecheck and optimized production build: PASS.
-- GitHub CI: pending exact release push.
+- GitHub CI: PASS, [run 35583968282](https://github.com/ometere123/carveout/actions/runs/35583968282), exact source commit `b70d49659b569ec7941a7607735ca5f096d10ebc`.
 - Read-only integration: pending user-signed 0.3 deployment; CI integration test is intentionally not pointed at an older deployment.
 
 ## Evidence model and known limit
