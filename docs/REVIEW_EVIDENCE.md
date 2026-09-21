@@ -12,11 +12,12 @@
 ## Candidate contract/frontend release
 
 - Candidate version: `0.2.0-studionet`.
+- Candidate contract source commit: `afb6a28de0a9f22aa8ac73fe72073a66822f5e13` (the release-manifest/documentation follow-up does not modify contract source).
 - Candidate contract source SHA-256: `d8a0c3eb5ae2f7f164bb5526c42ec24557dbfa06f8a2cf540e30215210978a99` (verify again against final commit).
 - Candidate schema: unchanged public signatures (21 public methods; 6 views and 15 writes), SHA-256 `26de6f5a55a686fb6f38bffd320d14ba53d4b74162a2ad15bdb123aed6f345fd`. Local `genvm-lint check`/validate, schema generation (hash match), and typecheck all pass; candidate CI remains required.
 - Target network is hard-locked to Studionet `61999`, RPC `https://studio.genlayer.com/api`; new contract address and deployment transaction: **pending user-controlled deployment/signature**.
 - Candidate production frontend contract address: **unset until the candidate contract address is verified**. Do not deploy this frontend while it points at the previous contract.
-- Final code commit: pending push. Latest green CI for candidate commit: pending.
+- Final code commit: pending final manifest/documentation commit and push. Latest green CI for candidate commit: pending.
 
 ## Candidate local gates
 

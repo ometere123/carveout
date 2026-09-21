@@ -62,7 +62,7 @@
     "chainId": 61999,
     "rpc": "https://studio.genlayer.com/api",
     "source": {
-      "commit": "PENDING_PUSH",
+      "commit": "afb6a28de0a9f22aa8ac73fe72073a66822f5e13",
       "path": "contracts/carveout.py",
       "sha256": "d8a0c3eb5ae2f7f164bb5526c42ec24557dbfa06f8a2cf540e30215210978a99"
     },

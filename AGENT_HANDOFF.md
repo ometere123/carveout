@@ -6,6 +6,8 @@ This branch began at the latest `origin/main` commit `a5e73d2d1e7f82c529ca2d1f5a
 
 Local Direct Mode is 52/52 on Python 3.12.10 using `run_direct_windows.py`. Frontend tests (38), TypeScript typecheck and production build pass. Static release guards, GenVM lint/validate/schema/typecheck pass; the generated schema matches the recorded schema hash. The opt-in live smoke test passes against the historical baseline only, not the undeployed candidate. Candidate CI must pass before deployment.
 
+The candidate contract source is commit `afb6a28de0a9f22aa8ac73fe72073a66822f5e13`, SHA-256 `d8a0c3eb5ae2f7f164bb5526c42ec24557dbfa06f8a2cf540e30215210978a99`; the schema SHA-256 is `26de6f5a55a686fb6f38bffd320d14ba53d4b74162a2ad15bdb123aed6f345fd`.
+
 ## Human-controlled deployment boundary
 
 The contract source changed. The old deployed instance at `0x75f2e473E6f010B510F1d281C8E4679fD2043054` is incompatible with the candidate frontend fields. Do not repoint the frontend to that address and do not deploy the frontend until a new contract address is finalized and its source/schema/read-only state are verified.
