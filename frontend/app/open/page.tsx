@@ -3,6 +3,7 @@ import {useState} from "react";
 import Link from "next/link";
 import {write,waitFinal,read} from "@/lib/contract";
 import {buildCreateAgreementCall, parseProviderBond} from "@/lib/agreementWrite";
+import {buildSlaWindow,isValidProposalStartMinutes} from "@/lib/slaWindow";
 import {emptyAgreementDraft,sampleAgreementDraft} from "@/lib/agreementForm";
 import {useInjectedWallet} from "@/lib/wallet";
 import {TxNotice} from "@/components/TxNotice";
@@ -27,7 +28,7 @@ export default function Open(){
     try{const u=new URL(form.url);serviceHost=u.hostname.toLowerCase();if(u.protocol!=="https:"||!serviceHost||u.username||u.password||u.port||isPlaceholderHost(serviceHost))issues.push("Use a real public HTTPS service URL; reserved example/test domains are not accepted.");}catch{issues.push("Enter a valid public HTTPS service URL.");}
     const target=Number(form.target),startMinutes=Number(form.startAfterMinutes),durationMinutes=Number(form.durationMinutes),challengeSeconds=Number(form.challenge);
     if(!Number.isInteger(target)||target<1||target>10000)issues.push("Target must be an integer from 1 to 10,000 bps.");
-    if(!Number.isInteger(startMinutes)||startMinutes<10)issues.push("SLA start must be at least 10 minutes in the future so the customer can accept at least five minutes before exposure.");
+    if(!isValidProposalStartMinutes(startMinutes))issues.push("The app requires a selected SLA start at least 15 minutes in the future. The contract requires 10 minutes at execution; the extra time allows wallet signing, submission, and finalization. Customer acceptance is still required at least five minutes before exposure.");
     if(!Number.isInteger(durationMinutes)||durationMinutes<60||startMinutes+durationMinutes>90*24*60)issues.push("SLA duration must be at least 60 minutes and the complete window must fit within 90 days.");
     if(!Number.isInteger(challengeSeconds)||challengeSeconds<600||challengeSeconds>86400)issues.push("Challenge window must be 600-86,400 seconds.");
     try{
@@ -51,8 +52,7 @@ export default function Open(){
     try{
       setError("");setHash("");setCreatedId("");setPhase("signing");
       const now=Math.floor(Date.now()/1000);
-      const start=now+Number(form.startAfterMinutes)*60;
-      const end=start+Number(form.durationMinutes)*60;
+      const {start,end}=buildSlaWindow(Number(form.startAfterMinutes),Number(form.durationMinutes),now);
       const credit=parseProviderBond(form.credit);
       const agreementCall=buildCreateAgreementCall({
         customer,service:form.service.trim(),serviceUrl:form.url.trim(),metric:form.metric.trim(),targetBps:Number(form.target),
@@ -80,17 +80,17 @@ export default function Open(){
       <Field label="Service URL" placeholder="https://service.example (use the real public service host)" value={form.url} set={v=>update("url",v)}/>
       <div className="two"><Field label="SLA metric" placeholder="e.g. monthly availability" value={form.metric} set={v=>update("metric",v)}/><Field label="Target (basis points)" placeholder="e.g. 9995 = 99.95%" value={form.target} set={v=>update("target",v)}/></div>
       <div className="two"><Field label="Provider bond / maximum credit (GEN)" placeholder="0.001–50 GEN" value={form.credit} set={v=>update("credit",v)}/><Field label="Challenge window (seconds)" placeholder="600–86400" value={form.challenge} set={v=>update("challenge",v)}/></div>
-      <div className="two"><Field label="SLA begins after (minutes)" placeholder="At least 10 minutes" value={form.startAfterMinutes} set={v=>update("startAfterMinutes",v)}/><Field label="SLA duration (minutes)" placeholder="At least 60 minutes" value={form.durationMinutes} set={v=>update("durationMinutes",v)}/></div>
+      <div className="two"><Field label="SLA begins after (minutes)" placeholder="At least 15 minutes" value={form.startAfterMinutes} set={v=>update("startAfterMinutes",v)}/><Field label="SLA duration (minutes)" placeholder="At least 60 minutes" value={form.durationMinutes} set={v=>update("durationMinutes",v)}/></div>
       <div className="form-section-label">Frozen terms and evidence policy</div>
       <Area label="Exception clauses (JSON)" placeholder='[{"code":"…","title":"…","rule":"…","proof":"…"}]' value={form.exceptions} set={v=>update("exceptions",v)}/>
       <Area label="Measurement and adjudication policy" placeholder="State what evidence can establish the miss or excuse it. Unavailable evidence is not proof." value={form.policy} set={v=>update("policy",v)}/>
       <Area label="Source families, origins, and path prefixes (JSON)" placeholder={'{"measurement":[{"kind":"PROVIDER_STATUS","host":"status.your-service.com","path_prefix":"/incidents"},{"kind":"INDEPENDENT_PROBE","host":"probe.your-service.org","path_prefix":"/"}],"exception":[{"kind":"PUBLIC_NOTICE","host":"notices.your-service.org","path_prefix":"/"}],"challenge":[{"kind":"COUNTER_EVIDENCE","host":"evidence.your-service.org","path_prefix":"/"}]}'} value={form.sourcePolicy} set={v=>update("sourcePolicy",v)}/>
-      <p className="micro-note">Use real, public HTTPS origins relevant to this service. Each policy group requires 1–8 distinct origins. Measurement needs at least two source families, including an independent probe on a separate origin. The customer accepts this exact frozen policy. Proposal creation requires at least 10 minutes before SLA start; customer acceptance must happen at least 5 minutes before SLA exposure.</p>
+      <p className="micro-note">Use real, public HTTPS origins relevant to this service. Each policy group requires 1–8 distinct origins. Measurement needs at least two source families, including an independent probe on a separate origin. The customer accepts this exact frozen policy. The contract requires at least 10 minutes before SLA start at execution; this app requires you to select at least 15 minutes when creating a proposal to leave time for wallet signing, submission, and finalization. The timestamp uses your selected interval without added minutes. Customer acceptance must still occur at least 5 minutes before SLA exposure.</p>
       {validation.length>0&&<ul className="tx tx-error" role="alert">{validation.map((item,i)=><li key={i}>{item}</li>)}</ul>}
       <button className="button red" onClick={submit} disabled={phase==="signing"||phase==="finalizing"||phase==="readback"}>Fund and propose agreement</button>
       {createdId&&<p className="micro-note" role="status">Proposal persisted and verified: <Link href={"/agreements/"+createdId}>{createdId} · open agreement</Link></p>}
       <TxNotice phase={phase} hash={hash} error={error}/>
-    </div><aside className="side-note"><div className="kicker">Formation rule</div><h2>Neither party can change the agreement after acceptance.</h2><p>Creating a proposal requires at least 10 minutes before SLA start. The named customer must accept the same specification at least five minutes before SLA exposure. An unaccepted proposal has a bounded bond refund.</p><p>The source policy pins evidence families to exact HTTPS hosts and path prefixes. Measurement requires distinct origins, including an independent probe.</p><p className="micro-note">The form starts blank. Nothing is sent to the contract until you submit and approve the wallet transaction.</p></aside></div>
+    </div><aside className="side-note"><div className="kicker">Formation rule</div><h2>Neither party can change the agreement after acceptance.</h2><p>The contract requires at least 10 minutes before SLA start when the proposal executes. This app requires a selected lead of at least 15 minutes to leave time for wallet signing, submission, and finalization before that boundary. The timestamp uses the interval you select without added time. The named customer must accept the same specification at least five minutes before SLA exposure. An unaccepted proposal has a bounded bond refund.</p><p>The source policy pins evidence families to exact HTTPS hosts and path prefixes. Measurement requires distinct origins, including an independent probe.</p><p className="micro-note">The form starts blank. Nothing is sent to the contract until you submit and approve the wallet transaction.</p></aside></div>
   </section>
 }
 function Field({label,value,set,placeholder=""}:{label:string,value:string,set:(v:string)=>void,placeholder?:string}){const id=`field-${label.toLowerCase().replace(/[^a-z0-9]+/g,"-")}`;return <div className="field"><label htmlFor={id}>{label}</label><input id={id} value={value} placeholder={placeholder} onChange={e=>set(e.target.value)}/></div>}
