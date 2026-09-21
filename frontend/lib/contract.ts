@@ -5,6 +5,7 @@ import { CHAIN_ID, CONTRACT_ADDRESS, assertReleaseConfig } from "./config";
 import { provider } from "./wallet";
 import { parseGenAmount } from "./amount";
 import { assertContractAddress, assertWriteWallet } from "./walletGuard";
+import { finalizedExecutionFailure } from "./executionFailure";
 assertReleaseConfig();
 export function readClient(){ return createClient({chain:studionet}); }
 export function requireContract(){assertContractAddress(CONTRACT_ADDRESS);return CONTRACT_ADDRESS;}
@@ -23,5 +24,5 @@ export async function write(address:string,functionName:string,args:any[]=[],val
   const client=writeClient(address);
   return writeWithClient(client,address as `0x${string}`,contractAddress,functionName,args,value);
 }
-export async function waitFinal(hash:string){const receipt=await readClient().waitForTransactionReceipt({hash:hash as `0x${string}`,status:"FINALIZED",retries:240,interval:15000} as any);if((receipt as any).txExecutionResultName!==ExecutionResult.FINISHED_WITH_RETURN)throw new Error(`Transaction finalized without successful execution: ${(receipt as any).statusName} / ${(receipt as any).txExecutionResultName}`);return receipt;}
+export async function waitFinal(hash:string){const receipt=await readClient().waitForTransactionReceipt({hash:hash as `0x${string}`,status:"FINALIZED",retries:240,interval:15000,fullTransaction:true} as any);if((receipt as any).txExecutionResultName!==ExecutionResult.FINISHED_WITH_RETURN)throw new Error(finalizedExecutionFailure(receipt as any));return receipt;}
 export function gen(value:string|number){return parseGenAmount(String(value));}

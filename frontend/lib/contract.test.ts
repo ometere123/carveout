@@ -49,6 +49,7 @@ test("injected browser write sends with a JSON-RPC account and routes through wi
     const forbiddenWalletPaths = ["privateKey" + "ToAccount", "wallet_get" + "Snaps", "wallet_request" + "Snaps", "Wallet" + "Connect"];
     const adapterSource = await readFile(new URL("./contract.ts", import.meta.url), "utf8");
     for (const forbiddenPath of forbiddenWalletPaths) assert.ok(!adapterSource.includes(forbiddenPath));
+    assert.match(adapterSource, /fullTransaction:\s*true/, "finalized error read must retain the SDK leader receipt details");
   } finally {
     globalThis.fetch = previousFetch;
     if (previousWindow === undefined) delete (globalThis as any).window;

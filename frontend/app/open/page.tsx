@@ -1,8 +1,8 @@
 "use client";
 import {useState} from "react";
 import Link from "next/link";
-import {write,waitFinal,gen,read} from "@/lib/contract";
-import {parseGenAmount} from "@/lib/amount";
+import {write,waitFinal,read} from "@/lib/contract";
+import {buildCreateAgreementCall, parseProviderBond} from "@/lib/agreementWrite";
 import {emptyAgreementDraft,sampleAgreementDraft} from "@/lib/agreementForm";
 import {useInjectedWallet} from "@/lib/wallet";
 import {TxNotice} from "@/components/TxNotice";
@@ -43,7 +43,7 @@ export default function Open(){
       if(Array.isArray(ms)&&(new Set(ms.map((x:any)=>x.kind)).size<2||!ms.some((x:any)=>x.kind==="INDEPENDENT_PROBE")))issues.push("Measurement policy needs at least two source families, including an independently operated probe outside the service provider's control.");
       if(Array.isArray(ms)&&serviceHost){const probe=ms.find((x:any)=>x.kind==="INDEPENDENT_PROBE")?.host?.toLowerCase();if(probe&&sameServiceDomain(probe,serviceHost))issues.push("The independent probe must use an origin outside the service domain.");}
     }catch{issues.push("Source policy must be valid JSON with measurement, exception and challenge arrays.");}
-    try{const credit=parseGenAmount(form.credit);if(credit<1000000000000000n||credit>50n*10n**18n)issues.push("Provider bond and maximum credit must be between 0.001 and 50 GEN.");}catch(e:any){issues.push(e?.message||"Enter a valid exact GEN amount.");}
+    try{parseProviderBond(form.credit);}catch(e:any){issues.push(e?.message||"Enter a valid exact GEN amount.");}
     setValidation(issues);if(issues.length)return;
     if(!wallet.address)return setError("Connect an injected EIP-1193 wallet first.");
     if(!wallet.correctNetwork)return setError("Switch the injected wallet to GenLayer Studionet (61999).");
@@ -53,11 +53,13 @@ export default function Open(){
       const now=Math.floor(Date.now()/1000);
       const start=now+Number(form.startAfterMinutes)*60;
       const end=start+Number(form.durationMinutes)*60;
-      const credit=gen(form.credit);
-      const tx=await write(wallet.address,"create_agreement",[
-        customer,form.service.trim(),form.url.trim(),form.metric.trim(),Number(form.target),credit.toString(),start,end,
-        form.exceptions,form.policy,form.sourcePolicy,Number(form.challenge)
-      ],credit);
+      const credit=parseProviderBond(form.credit);
+      const agreementCall=buildCreateAgreementCall({
+        customer,service:form.service.trim(),serviceUrl:form.url.trim(),metric:form.metric.trim(),targetBps:Number(form.target),
+        maxCreditAtto:credit,windowStart:start,windowEnd:end,exceptions:form.exceptions,policy:form.policy,
+        sourcePolicy:form.sourcePolicy,challengeWindowSeconds:Number(form.challenge)
+      });
+      const tx=await write(wallet.address,"create_agreement",agreementCall.args,agreementCall.value);
       setHash(String(tx));setPhase("submitted");await new Promise(resolve=>setTimeout(resolve,500));setPhase("finalizing");await waitFinal(String(tx));finalized=true;setPhase("readback");
       const list=await read("list_agreements",[0,30]);
       if(!Number(list?.total))throw new Error("Finalized transaction did not produce a readable agreement record.");
