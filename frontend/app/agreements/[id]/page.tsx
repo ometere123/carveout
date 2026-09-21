@@ -8,6 +8,8 @@ import { useInjectedWallet } from "@/lib/wallet";
 import { TxNotice } from "@/components/TxNotice";
 import { isExpectedActionState, NO_RESUBMIT_UNTIL_VERIFIED, resolveWriteVerification } from "@/lib/actionVerification";
 import { canonicalUtcTimestamp, formatWatTimestamp } from "@/lib/time";
+import { isMissingAgreementRead } from "@/lib/agreementLookup";
+import Link from "next/link";
 
 const now = () => Math.floor(Date.now()/1000);
 const genText = (v:any) => `${formatGenAmount(BigInt(String(v || 0)), 6)} GEN`;
@@ -28,6 +30,7 @@ export default function AgreementDetail(){
   const searchParams=useSearchParams();
   const wallet=useInjectedWallet();
   const [agreement,setAgreement]=useState<any>(null),[incident,setIncident]=useState<any>(null);
+  const [notFound,setNotFound]=useState(false);
   const [phase,setPhase]=useState(""),[hash,setHash]=useState(""),[error,setError]=useState(""),[message,setMessage]=useState("");
   const submittedHash=useRef("");
   const finalityKnown=useRef(false);
@@ -37,7 +40,9 @@ export default function AgreementDetail(){
 
   const refresh=useCallback(async()=>{
     try{
-      const a=await read("get_agreement",[id]);setAgreement(a);
+      const a=await read("get_agreement",[id]);
+      if(!a||!a.id){setAgreement(null);setIncident(null);setNotFound(true);setError("");return {agreement:null,incident:null};}
+      setAgreement(a);setNotFound(false);
       setMiss(x=>({...x,evidence:x.evidence==="[]"?defaultEvidence(a.source_policy,"measurement"):x.evidence}));
       setClaim(x=>({...x,evidence:x.evidence==="[]"?defaultEvidence(a.source_policy,"exception"):x.evidence}));
       setChallenge(x=>({...x,url:x.url||defaultChallengeUrl(a.source_policy)}));
@@ -45,7 +50,10 @@ export default function AgreementDetail(){
       setIncident(nextIncident);
       setError("");
       return { agreement:a, incident:nextIncident };
-    }catch(e:any){setError(e?.message||String(e));throw e;}
+    }catch(e:any){
+      if(isMissingAgreementRead(e)){setAgreement(null);setIncident(null);setNotFound(true);setError("");return {agreement:null,incident:null};}
+      setNotFound(false);setError(e?.message||String(e));throw e;
+    }
   },[id]);
   useEffect(()=>{refresh().catch(()=>{})},[refresh]);
 
@@ -82,7 +90,7 @@ export default function AgreementDetail(){
   }
   async function doTx(name:string,args:any[]=[],value?:bigint){if(["signing","submitted","submitted-unverified","finalizing","verifying-execution","verifying-state","verification-incomplete"].includes(phase))return;try{await transact(name,args,value)}catch(e:any){const text=e?.message||String(e);if(text.startsWith("Transaction rolled back:")){setError(text);setPhase("failed");}else if(submittedHash.current){setError("");setMessage(finalityKnown.current?`The transaction finalized, but its expected state could not be verified. ${NO_RESUBMIT_UNTIL_VERIFIED} Check the Explorer transaction and contract state. ${text}`:`The write was submitted but finalization could not be confirmed. Do not resubmit while its status is unknown. Check the Explorer transaction. ${text}`);setPhase(finalityKnown.current?"verification-incomplete":"submitted-unverified");}else{setError(text);setPhase("")}}}
 
-  if(!agreement)return <section className="shell page"><div className="kicker">Agreement file</div><h1>{error?"Agreement unavailable":"Loading agreement…"}</h1>{error&&<div className="tx tx-error" role="alert">{error}</div>}</section>;
+  if(!agreement)return <section className="shell page"><div className="kicker">Agreement file</div><h1>{notFound?"Agreement not found":error?"Agreement unavailable":"Loading agreement…"}</h1>{notFound?<><p>This agreement ID does not have a record on the canonical CARVEOUT contract.</p><div className="action-row"><Link className="button primary" href="/agreements">Return to Agreements</Link><Link className="button" href="/open">Create a New Agreement</Link></div></>:error&&<div className="tx tx-error" role="alert">{error}</div>}</section>;
   const maxCredit=BigInt(agreement.max_credit_atto||0);
   const challengeBond=maxCredit/100n>100000000000000n?maxCredit/100n:100000000000000n;
   const exception=incident?.exception_code?(agreement.exceptions||[]).find((x:any)=>x.code===incident.exception_code):null;
