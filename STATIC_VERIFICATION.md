@@ -1,5 +1,17 @@
 # CARVEOUT static and release verification
 
+## 0.4.0 candidate status — 2026-09-21
+
+- Provider-neutral source intervals are clipped to the frozen observation window, sorted and merged; a source with intervals but no overlap is non-contributing.
+- Stable toolchain unchanged: Studionet 61999, GenVM `v0.2.16`, pinned `py-genlayer` dependency unchanged.
+- Direct Mode: 60 passed using unchanged `python run_direct_windows.py`.
+- GenVM lint, validation, schema generation and contract typecheck: PASS; schema at `deployments/studionet-0.4.0.schema.json`.
+- Contract/release/frontend-surface/deploy TypeScript/Python compile checks: PASS.
+- Frontend tests: 42 passed; TypeScript typecheck and production build: PASS.
+- Read-only integration is environment-gated and skipped. GitHub CI is pending; 0.4.0 is not deployed.
+- The 0.3.0 `cv-i-2` verification transaction `0x75daf13670200403477bed9beb07ea5200a83973f4bf106f296de66f12bfe0ba` is preserved `UNDETERMINED` evidence and must not be retried.
+- Observation fields accept readable WAT date/time input and convert using `Africa/Lagos` to Unix seconds for the contract; protocol timestamps remain unchanged.
+
 Static checks support but do not replace GenVM validation, Direct Mode, deployed source/schema reads, or user-operated browser evidence.
 
 ## Current 0.3.0 release

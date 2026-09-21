@@ -53,7 +53,7 @@ GOAL_PROMPT.txt                 compact finishing-agent goal
 STATIC_VERIFICATION.md          checks actually run while packaging
 ```
 
-Current contract surface: **21 public methods**. Release 0.3.0 changes consensus evidence handling without changing public signatures. It is deployed and source/schema verified at [`0x74D8aEc8BF79369BeDdCae000214552Dcc7D00A9`](https://explorer-studio.genlayer.com/address/0x74D8aEc8BF79369BeDdCae000214552Dcc7D00A9), deployment transaction [`0x0a7d3471aa60f1c4d8becff9e151ad7f655b13ad54dae6352f80b3353a860323`](https://explorer-studio.genlayer.com/tx/0x0a7d3471aa60f1c4d8becff9e151ad7f655b13ad54dae6352f80b3353a860323). See [docs/REVIEW_EVIDENCE.md](docs/REVIEW_EVIDENCE.md) for verified read-only release evidence; user-operated lifecycle writes remain pending.
+Current contract surface: **21 public methods**. Release 0.3.0 is deployed at [`0x74D8aEc8BF79369BeDdCae000214552Dcc7D00A9`](https://explorer-studio.genlayer.com/address/0x74D8aEc8BF79369BeDdCae000214552Dcc7D00A9), deployment transaction [`0x0a7d3471aa60f1c4d8becff9e151ad7f655b13ad54dae6352f80b3353a860323`](https://explorer-studio.genlayer.com/tx/0x0a7d3471aa60f1c4d8becff9e151ad7f655b13ad54dae6352f80b3353a860323). A live 0.3 measurement attempt ended `UNDETERMINED` after validators disagreed over relevant evidence with extra out-of-window history. Release 0.4.0 prepares generic interval normalization and is not deployed; do not retry that incident or use it as proof of the fix. New live testing must wait for a fresh verified release. See [docs/REVIEW_EVIDENCE.md](docs/REVIEW_EVIDENCE.md).
 
 ## Frontend
 
@@ -62,6 +62,8 @@ The UI is intentionally product-specific rather than a reusable crypto/AI dashbo
 Routes: `/`, `/agreements`, `/agreements/[id]`, `/open`, `/account`, and `/protocol`. Primary navigation is limited to Agreements, New Agreement, Account, and Protocol; incident-specific actions stay within the agreement workflow. The New Agreement form starts blank. **Load Sample Agreement** is an explicit opt-in and its illustrative terms must be checked and replaced before a real proposal. The dynamic detail route reads on-chain state and keeps signing, finality, readback, and error feedback beside the relevant workflow.
 
 User-facing timestamps are presented in West Africa Time using the IANA zone `Africa/Lagos`. UTC ISO values and Unix seconds remain canonical and are available on timestamp hover; no contract values or calculations are shifted.
+
+When customers report an observation interval, they enter readable date/time values labeled WAT. The frontend converts those values with the `Africa/Lagos` IANA timezone to Unix seconds before the contract call; invalid and reversed intervals are rejected before submission.
 
 ## Static checks included in the handoff
 
@@ -83,9 +85,9 @@ npm ci
 cd frontend && npm ci && npm test && npm run typecheck && npm run build
 ```
 
-Release 0.3.0 source commit `b70d49659b569ec7941a7607735ca5f096d10ebc` passed [GitHub CI run 35583968282](https://github.com/ometere123/carveout/actions/runs/35583968282). The current canonical contract is 0.3.0 at `0x74D8aEc8BF79369BeDdCae000214552Dcc7D00A9`; the 0.2.0 deployment is historical. A prior live observation on 0.2.0 reached `UNDETERMINED` after validator rotations and remains `MEASUREMENT_PENDING`; it is retained as failure evidence and must not be retried. The complete 0.3.0 adjudication/challenge/settlement/withdrawal lifecycle is not yet demonstrated.
+The deployed 0.3.0 source commit `b70d49659b569ec7941a7607735ca5f096d10ebc` passed [GitHub CI run 35583968282](https://github.com/ometere123/carveout/actions/runs/35583968282). The 0.3.0 live measurement for `cv-i-2` (transaction `0x75daf13670200403477bed9beb07ea5200a83973f4bf106f296de66f12bfe0ba`) reached `UNDETERMINED` and remains `MEASUREMENT_PENDING`; do not retry it. The full economic lifecycle is not demonstrated.
 
-**Release boundary:** 0.3.0 at `0x74D8aEc8BF79369BeDdCae000214552Dcc7D00A9` is the canonical verified Studionet contract and production frontend target. Lifecycle transactions are reserved for the user.
+**Release boundary:** 0.3.0 at `0x74D8aEc8BF79369BeDdCae000214552Dcc7D00A9` remains deployed canonical until 0.4.0 has green CI, is deployed and source/schema verified. The 0.4.0 candidate is not safe for live writes yet. Lifecycle transactions remain user-approved.
 
 ## Previously deployed baseline
 

@@ -1,5 +1,9 @@
 # Verification status — CARVEOUT 0.3.0 release
 
+## Current candidate 0.4.0 — 2026-09-21
+
+The active 0.3.0 measurement attempt for `cv-i-2`, tx `0x75daf13670200403477bed9beb07ea5200a83973f4bf106f296de66f12bfe0ba`, ended `UNDETERMINED`; canonical status remains `MEASUREMENT_PENDING`. Do not retry. Candidate 0.4.0 changes provider-neutral event interval normalization only; source SHA-256 `0af5222346cf2d0537f85ca0f2981f5368f2bb28548525110df9364ece2e7d2f`, schema file `deployments/studionet-0.4.0.schema.json`. Direct Mode 60/60, GenVM lint/validate/schema/typecheck, static guards, frontend tests 42/42, frontend typecheck and production build pass locally. Read-only integration skipped by its environment gate; GitHub CI pending. Candidate is not deployed; a fresh agreement on its verified deployment is required before restarting live lifecycle.
+
 ## Completed locally
 
 - Direct Mode: **59 passed** via `python run_direct_windows.py`.

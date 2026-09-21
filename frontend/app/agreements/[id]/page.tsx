@@ -7,7 +7,7 @@ import { formatGenAmount } from "@/lib/amount";
 import { useInjectedWallet } from "@/lib/wallet";
 import { TxNotice } from "@/components/TxNotice";
 import { isExpectedActionState, NO_RESUBMIT_UNTIL_VERIFIED, resolveWriteVerification } from "@/lib/actionVerification";
-import { canonicalUtcTimestamp, formatWatTimestamp } from "@/lib/time";
+import { canonicalUtcTimestamp, formatWatTimestamp, localDateTimeToUnixSeconds } from "@/lib/time";
 import { isMissingAgreementRead } from "@/lib/agreementLookup";
 import Link from "next/link";
 
@@ -129,10 +129,11 @@ export default function AgreementDetail(){
         {!incident && agreement.status==="ACTIVE" && <div className="incident-empty">
           <div className="kicker">No open incident</div><h2>The service agreement is active.</h2><p>The customer can report a measured miss. Liability is not established until independent evidence verifies the service and observation window.</p>
           {role==="customer" && <div className="form-sheet compact action-panel">
-            <div className="two"><Field label="Claimed availability (basis points)" value={miss.actual} set={v=>setMiss({...miss,actual:v})}/><Field label="Observation start (Unix time)" value={miss.from} set={v=>setMiss({...miss,from:v})}/></div>
-            <Field label="Observation end (Unix time)" value={miss.to} set={v=>setMiss({...miss,to:v})}/>
+            <div className="two"><Field label="Claimed availability (basis points)" value={miss.actual} set={v=>setMiss({...miss,actual:v})}/><label className="field"><span>Observation start · WAT (Africa/Lagos)</span><input type="datetime-local" value={miss.from} onChange={e=>setMiss({...miss,from:e.target.value})}/></label></div>
+            <label className="field"><span>Observation end · WAT (Africa/Lagos)</span><input type="datetime-local" value={miss.to} onChange={e=>setMiss({...miss,to:e.target.value})}/></label>
+            <p className="micro-note">Enter the observed interval in WAT. The app converts it to Unix seconds for the contract; protocol timestamps remain timezone-independent.</p>
             <Area label="Measurement evidence (JSON)" value={miss.evidence} set={v=>setMiss({...miss,evidence:v})}/>
-            <button className="button red" onClick={()=>doTx("open_incident",[id,Number(miss.actual),Number(miss.from),Number(miss.to),miss.evidence])}>Open measured miss</button>
+            <button className="button red" onClick={()=>{try{const from=localDateTimeToUnixSeconds(miss.from),to=localDateTimeToUnixSeconds(miss.to);if(to<=from)throw new Error("Observation end must be later than observation start.");void doTx("open_incident",[id,Number(miss.actual),from,to,miss.evidence])}catch(e:any){setError(e?.message||String(e))}}}>Open measured miss</button>
           </div>}
           {now()>Number(agreement.window_end)&&<div className="action-panel"><div className="kicker">Next action</div><button className="button primary" onClick={()=>doTx("expire_agreement",[id])}>Close expired agreement</button></div>}
         </div>}

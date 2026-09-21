@@ -1,6 +1,6 @@
 # CARVEOUT manual Studionet lifecycle
 
-This is a user-operated browser-wallet runbook. The agent must not sign or submit any application writes. Release `0.3.0-studionet` is deployed and verified at [`0x74D8aEc8BF79369BeDdCae000214552Dcc7D00A9`](https://explorer-studio.genlayer.com/address/0x74D8aEc8BF79369BeDdCae000214552Dcc7D00A9); deployment tx [`0x0a7d3471aa60f1c4d8becff9e151ad7f655b13ad54dae6352f80b3353a860323`](https://explorer-studio.genlayer.com/tx/0x0a7d3471aa60f1c4d8becff9e151ad7f655b13ad54dae6352f80b3353a860323) is finalized with successful execution. Read-only source/schema comparison and `get_stats()` passed. Production frontend is deployed at [https://carve-out.vercel.app](https://carve-out.vercel.app) and its compiled contract address was verified. The earlier 0.2.0 measurement transaction finalized UNDETERMINED and must not be retried or continued.
+This is a user-operated browser-wallet runbook. The agent must not sign or submit any application writes. Release `0.3.0-studionet` is deployed at [`0x74D8aEc8BF79369BeDdCae000214552Dcc7D00A9`](https://explorer-studio.genlayer.com/address/0x74D8aEc8BF79369BeDdCae000214552Dcc7D00A9). The current `cv-i-2` verification transaction `0x75daf13670200403477bed9beb07ea5200a83973f4bf106f296de66f12bfe0ba` finalized `UNDETERMINED`; do not retry or continue it. Candidate 0.4.0 requires green CI and a fresh user-approved deployment, followed by source/schema verification, before this runbook is used again. Start with a fresh agreement on that deployment.
 
 ## Prepare genuine public test evidence
 

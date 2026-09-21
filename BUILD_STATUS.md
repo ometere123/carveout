@@ -1,5 +1,11 @@
 # Build status — CARVEOUT 0.3.0 release
 
+## Active work — 0.4.0 candidate (2026-09-21)
+
+The 0.3.0 live measurement on `cv-i-2` finalized `UNDETERMINED` in transaction `0x75daf13670200403477bed9beb07ea5200a83973f4bf106f296de66f12bfe0ba`; canonical incident state remains `MEASUREMENT_PENDING`. It is preserved and must not be retried. Contract candidate 0.4.0 normalizes event intervals against the frozen window and has no public ABI change. Source SHA-256: `0af5222346cf2d0537f85ca0f2981f5368f2bb28548525110df9364ece2e7d2f`; generated schema: `deployments/studionet-0.4.0.schema.json`, file SHA-256 `26de6f5a55a686fb6f38bffd320d14ba53d4b74162a2ad15bdb123aed6f345fd`.
+
+Current local result: Direct Mode 60/60; GenVM lint/validate/schema/typecheck PASS; guards PASS; frontend tests 42/42; frontend typecheck/build PASS. Read-only integration was skipped by its environment gate. GitHub CI has not yet run for this candidate. 0.3.0 remains deployed canonical while 0.4.0 awaits green CI and user-approved deployment.
+
 - Base checkout: `main` at `5ccc4ee` before these changes; work preserves the stable Studionet toolchain and existing single-contract design.
 - Candidate source: `contracts/carveout.py`, SHA-256 `93d8c7cbd0329e8b07ccc6806b32476cda206a6a88acb36367602d018bb41ae6`; source commit: `b70d49659b569ec7941a7607735ca5f096d10ebc`.
 - Schema: `deployments/studionet.schema.json`, SHA-256 `26de6f5a55a686fb6f38bffd320d14ba53d4b74162a2ad15bdb123aed6f345fd`; public interface remains 21 methods.

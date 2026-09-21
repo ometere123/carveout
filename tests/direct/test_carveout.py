@@ -573,6 +573,26 @@ def test_dynamic_metadata_and_json_order_changes_do_not_change_consequential_man
     assert direct_vm.run_validator() is True
 
 
+def test_historical_source_events_outside_window_do_not_break_canonical_consensus(direct_vm,direct_deploy,direct_alice,direct_bob):
+    c=deploy(direct_deploy)
+    current={"from_ts":1789820000,"to_ts":1789820100}
+    historical={"from_ts":1789810000,"to_ts":1789810100}
+    boundary={"from_ts":1789819190,"to_ts":1789819210}
+    def decision(intervals,body):
+        aid=create(direct_vm,c,direct_alice,direct_bob);direct_vm.sender=direct_bob
+        iid=c.open_incident(aid,9900,1789819200,1789822800,EVIDENCE)
+        direct_vm.mock_web(r".*",{"status":200,"body":body})
+        sources=[{"source_id":"E1","available":True,"service_matches":True,"window_matches":True,"supports_requested_fact":True,"availability_bps":9900,"outage_intervals":intervals,"facts":["same frozen historical interval"]},{"source_id":"E2","available":True,"service_matches":True,"window_matches":True,"supports_requested_fact":True,"availability_bps":9900,"outage_intervals":[current],"facts":["same frozen historical interval"]}]
+        mock_llm(direct_vm,r".*",json.dumps({"result":"VERIFIED","measured_bps":9900,"service_matches":True,"window_matches":True,"basis":"same measured interval","sources":sources}))
+        out=c.verify_measurement(iid);saved=c.get_incident(iid);direct_vm.clear_mocks()
+        assert out["result"]=="VERIFIED" and saved["status"]=="OPEN"
+        return saved["measurement_evidence_digest"],saved["measurement_evidence_content_digest"],saved["measurement_evidence_record"],saved["measurement_observation_digest"]
+    baseline=decision([boundary,current],'{"checked_at":"2026-09-21T12:00:00Z","events":[{"from":1789820000,"to":1789820100}],"counter":5}')
+    reordered=decision([current,historical,boundary,current],'{"counter":6,"unrelated_current":["different event"],"events":[{"to":1789820100,"from":1789820000}],"checked_at":"2026-09-21T12:03:00Z"}')
+    assert baseline[0]==reordered[0] and baseline[1]==reordered[1] and baseline[2]==reordered[2]
+    assert baseline[3]!=reordered[3]
+
+
 def test_independent_source_must_contribute_to_verified_measurement(direct_vm,direct_deploy,direct_alice,direct_bob):
     c=deploy(direct_deploy);aid=create(direct_vm,c,direct_alice,direct_bob);direct_vm.sender=direct_bob
     iid=c.open_incident(aid,9900,1789819200,1789822800,EVIDENCE)

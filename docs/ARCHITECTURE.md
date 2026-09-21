@@ -83,3 +83,7 @@ This invariant is tested across proposal expiry, rejection, retries, adjudicatio
 ## Frontend timestamps
 
 Contract timestamps remain canonical UTC Unix seconds. User-facing times use IANA timezone `Africa/Lagos` (WAT/UTC+1); tooltips retain canonical UTC ISO and Unix seconds. Display conversion never changes timestamps, hashes or protocol calculations.
+
+## Release 0.4 evidence interval normalization
+
+The 0.4 candidate treats historical events outside the frozen observation interval as irrelevant source records, not malformed evidence. It validates event intervals, clips them to the observation bounds, sorts and merges duplicate/overlapping intervals before consensus comparison. When a source supplies events but none overlap the frozen interval, it is marked as not matching the window and not supporting measurement. Service attribution and the independent-source contribution requirements remain enforced. This is provider-neutral and does not parse vendor-specific metadata.

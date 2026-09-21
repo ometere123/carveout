@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { canonicalUtcTimestamp, formatWatTimestamp } from "./time";
+import { canonicalUtcTimestamp, formatWatTimestamp, localDateTimeToUnixSeconds, unixSecondsToLocalDateTime } from "./time";
 
 test("formats canonical UTC timestamps as West Africa Time without changing the value", () => {
   const utc = "2026-09-21T03:45:50.000Z";
@@ -23,4 +23,13 @@ test("renders zero and unset contract timestamps as unset, not the Unix epoch", 
   const unixSeconds = 1789962350;
   assert.equal(formatWatTimestamp(unixSeconds), "21 Sep 2026, 04:45:50 WAT");
   assert.equal(String(unixSeconds), "1789962350");
+});
+
+test("observation inputs use readable WAT and convert to canonical Unix seconds", () => {
+  const wat = "2026-09-21T13:24";
+  const unixSeconds = localDateTimeToUnixSeconds(wat);
+  assert.equal(unixSeconds, Math.floor(Date.parse("2026-09-21T12:24:00.000Z") / 1000));
+  assert.equal(unixSecondsToLocalDateTime(unixSeconds), wat);
+  assert.equal(canonicalUtcTimestamp(unixSeconds), "2026-09-21T12:24:00.000Z");
+  assert.throws(() => localDateTimeToUnixSeconds("2026-02-30T13:00"), /valid observation date/);
 });
