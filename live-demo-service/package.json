@@ -1,0 +1,6 @@
+{
+  "name": "carveout-live-demo-service",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Isolated controlled service for truthful CARVEOUT lifecycle evidence"
+}

@@ -1,0 +1,6 @@
+{
+  "rewrites": [
+    { "source": "/health", "destination": "/api/health" },
+    { "source": "/incidents/controlled-outage", "destination": "/api/incidents/controlled-outage" }
+  ]
+}
