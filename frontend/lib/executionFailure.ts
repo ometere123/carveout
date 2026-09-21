@@ -4,6 +4,7 @@ type LeaderResult = string | {
 };
 
 type LeaderReceiptLike = {
+  execution_result?: unknown;
   error?: unknown;
   result?: LeaderResult;
 };
@@ -13,12 +14,31 @@ export type FinalizedTransactionLike = {
   txExecutionResult?: unknown;
   txExecutionResultName?: unknown;
   consensus_data?: {
-    leader_receipt?: LeaderReceiptLike[];
+    leader_receipt?: LeaderReceiptLike[] | LeaderReceiptLike;
   };
 };
 
+export type ExecutionState = "success" | "failure" | "unknown";
+
+function leaders(receipt: FinalizedTransactionLike): LeaderReceiptLike[] {
+  const value = receipt.consensus_data?.leader_receipt;
+  if (Array.isArray(value)) return value;
+  return value && typeof value === "object" ? [value] : [];
+}
+
+export function finalizedExecutionState(receipt: FinalizedTransactionLike): ExecutionState {
+  if (receipt.txExecutionResultName === "FINISHED_WITH_RETURN") return "success";
+  if (receipt.txExecutionResultName === "FINISHED_WITH_ERROR") return "failure";
+
+  const leaderReceipts = leaders(receipt);
+  if (leaderReceipts.length !== 1) return "unknown";
+  if (leaderReceipts[0].execution_result === "SUCCESS") return "success";
+  if (leaderReceipts[0].execution_result === "ERROR") return "failure";
+  return "unknown";
+}
+
 function leaderRollbackReason(receipt: FinalizedTransactionLike): string | undefined {
-  for (const leader of receipt.consensus_data?.leader_receipt ?? []) {
+  for (const leader of leaders(receipt)) {
     if (typeof leader.error === "string" && leader.error.trim()) return leader.error.trim();
     if (leader.result && typeof leader.result === "object") {
       const status = leader.result.status;
@@ -38,7 +58,7 @@ export function finalizedExecutionFailure(receipt: FinalizedTransactionLike): st
       ? String(receipt.txExecutionResult)
       : "unknown execution result";
   const reason = leaderRollbackReason(receipt);
-  if (reason || execution === "FINISHED_WITH_ERROR") {
+  if (reason || execution === "FINISHED_WITH_ERROR" || leaders(receipt).some((leader) => leader.execution_result === "ERROR")) {
     return `Transaction rolled back: ${reason ?? "the finalized execution failed and the network did not provide a rollback reason."}`;
   }
   const status = typeof receipt.statusName === "string" ? receipt.statusName : "unknown status";

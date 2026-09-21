@@ -17,12 +17,20 @@ for action in required_actions:
 config=(front/"lib/config.ts").read_text(encoding="utf-8")
 wallet=(front/"lib/wallet.ts").read_text(encoding="utf-8")
 contract=(front/"lib/contract.ts").read_text(encoding="utf-8")
+receipt=(front/"lib/finalizedReceipt.ts").read_text(encoding="utf-8")
+execution=(front/"lib/executionFailure.ts").read_text(encoding="utf-8")
 for required in ('CHAIN_ID = 61999','https://studio.genlayer.com/api'):
     if required not in config: failures.append("missing frontend release lock: " + required)
 for required in ('window.ethereum','eth_requestAccounts','wallet_switchEthereumChain','wallet_addEthereumChain'):
     if required not in wallet: failures.append("missing EIP-1193 path: " + required)
-for required in ('writeContract','waitForTransactionReceipt','FINALIZED','FINISHED_WITH_RETURN','LATEST_FINAL'):
-    if required not in contract: failures.append("missing finalized GenLayer integration behavior: " + required)
+for required, source in (
+    ('writeContract', contract),
+    ('LATEST_FINAL', contract),
+    ('waitForTransactionReceipt', receipt),
+    ('FINALIZED', receipt),
+    ('FINISHED_WITH_RETURN', execution),
+):
+    if required not in source: failures.append("missing finalized GenLayer integration behavior: " + required)
 for forbidden in ('wallet_getSnaps','wallet_requestSnaps','WalletConnect','Privy'):
     if forbidden in all_source: failures.append("forbidden wallet path: " + forbidden)
 if failures:
