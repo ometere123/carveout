@@ -127,7 +127,12 @@
       "typecheck": "PASS",
       "productionBuild": "PASS"
     },
-    "candidateGithubCi": "PENDING_PUSH",
+    "candidateGithubCi": {
+      "status": "PASS",
+      "runId": "35561427861",
+      "runUrl": "https://github.com/ometere123/carveout/actions/runs/35561427861",
+      "testedMainCommit": "344446ab0f1790af6700d972ad22d7892373c7ce"
+    },
     "historicalBaselineReadonlyIntegration": "PASS; prior deployed 0.1.0 address only, not candidate verification",
     "liveLifecycle": "PENDING_USER_BROWSER_WALLET_ACTIONS"
   }

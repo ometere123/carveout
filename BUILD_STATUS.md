@@ -14,7 +14,7 @@ This checkout started from latest `origin/main` commit `a5e73d2d1e7f82c529ca2d1f
 | Static release guards | PASS: contract patterns, Studionet lock and six-route frontend surface. Candidate manifest hash verifier passes. |
 | GenVM check / validate / schema / typecheck | PASS: static checks, validation (21 methods), schema generation matching recorded hash, and typecheck. |
 | Read-only Studionet integration | PASS against the historical 0.1.0 address only; candidate deployment/readback remains pending. No live application writes were performed. |
-| GitHub main CI | PENDING candidate push. Latest pre-candidate main CI is recorded as run `35557155393` in the prior handoff; it does not verify this candidate. |
+| GitHub main CI | PASS: [run `35561427861`](https://github.com/ometere123/carveout/actions/runs/35561427861), tested main commit `344446ab0f1790af6700d972ad22d7892373c7ce`. |
 | Contract deployment | PENDING user signature. The previous deployed address is incompatible with candidate UI; do not wire/deploy candidate frontend to it. |
 | Canonical production frontend | Existing Vercel deployment is the previous release. Candidate frontend deploy is blocked until a new source/schema-verified contract address is returned. |
 | User browser-wallet lifecycle | PENDING user execution; no agent-side application writes. |

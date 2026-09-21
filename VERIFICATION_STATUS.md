@@ -13,7 +13,7 @@
 
 - GenVM lint and validate: **PASS** (21 methods; 6 views, 15 writes). Schema generation: **PASS**, SHA-256 matches the recorded schema. `genvm-lint typecheck`: **PASS** using the local venv pyright wrapper.
 - Read-only Studionet smoke: **PASS against the prior 0.1.0 deployment only**. Candidate read-only integration awaits candidate deployment.
-- Full GitHub CI: **PENDING candidate push**.
+- Full GitHub CI: **PASS**, [run `35561427861`](https://github.com/ometere123/carveout/actions/runs/35561427861), testing candidate main commit `344446ab0f1790af6700d972ad22d7892373c7ce`.
 - Candidate source changes the contract. The old deployment (`0x75f2e473E6f010B510F1d281C8E4679fD2043054`) is not a valid target for candidate frontend configuration.
 - Candidate Studionet deployment/source/schema readback: **PENDING the user's signing action**. Candidate frontend address wiring and Vercel production deployment follow only after that returned address is verified.
 - Real browser-wallet lifecycle and meaningful fail-closed transaction: **PENDING USER**. No fabricated/live evidence is recorded.

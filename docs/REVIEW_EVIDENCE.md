@@ -17,7 +17,7 @@
 - Candidate schema: unchanged public signatures (21 public methods; 6 views and 15 writes), SHA-256 `26de6f5a55a686fb6f38bffd320d14ba53d4b74162a2ad15bdb123aed6f345fd`. Local `genvm-lint check`/validate, schema generation (hash match), and typecheck all pass; candidate CI remains required.
 - Target network is hard-locked to Studionet `61999`, RPC `https://studio.genlayer.com/api`; new contract address and deployment transaction: **pending user-controlled deployment/signature**.
 - Candidate production frontend contract address: **unset until the candidate contract address is verified**. Do not deploy this frontend while it points at the previous contract.
-- Final code commit: pending final manifest/documentation commit and push. Latest green CI for candidate commit: pending.
+- Candidate release commit tested by CI: `344446ab0f1790af6700d972ad22d7892373c7ce`; GitHub CI [run `35561427861`](https://github.com/ometere123/carveout/actions/runs/35561427861) passed all jobs. Documentation records this tested candidate commit; any later docs-only commit must also retain green CI.
 
 ## Candidate local gates
 

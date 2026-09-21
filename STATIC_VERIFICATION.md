@@ -19,6 +19,7 @@ Static checks support, but do not replace, GenVM validation, Direct Mode, canoni
 - Frontend: 38 tests passed, typecheck PASS, production build PASS.
 - `genvm-lint check contracts/carveout.py --json`: static checks and validate PASS (21 methods, 6 views, 15 writes); `genvm-lint schema` PASS and output matches the recorded schema SHA-256; `genvm-lint typecheck` PASS with the local pyright wrapper on PATH.
 - Opt-in read-only Studionet smoke test: PASS against historical address `0x75f2e473E6f010B510F1d281C8E4679fD2043054` only. The candidate has no deployment address yet, so candidate canonical integration/readback remains pending user deployment.
+- Full GitHub Actions suite: PASS, run `35561427861`, tested commit `344446ab0f1790af6700d972ad22d7892373c7ce`.
 
 ## Known evidence limit
 
