@@ -1,79 +1,32 @@
-# CARVEOUT final execution handoff
+# CARVEOUT release handoff
 
-## Goal
+## Current candidate
 
-Take this extracted repository from its current source-complete state to a **live, tested, deployed, reviewer-verifiable Studionet release**. This is an execution task, not a review or planning task. Preserve the protocol thesis and the existing visual identity. Do not stop at recommendations.
+This branch began at the latest `origin/main` commit `a5e73d2d1e7f82c529ca2d1f5acf7fa91893b723`. It preserves the existing agreement contract and browser adapter, adds bounded durable evidence representations/digests and WAT-only display formatting, and is intended to remain on stable Studionet 61999 (`https://studio.genlayer.com/api`) with `genlayer-js@1.1.8` and the current stable contract runtime.
 
-## Hard release constraints
+Local Direct Mode is 52/52 on Python 3.12.10 using `run_direct_windows.py`. Frontend tests (38), TypeScript typecheck and production build pass. Static release guards, GenVM lint/validate/schema/typecheck pass; the generated schema matches the recorded schema hash. The opt-in live smoke test passes against the historical baseline only, not the undeployed candidate. Candidate CI must pass before deployment.
 
-- **Studionet only: chain 61999.**
-- RPC exactly `https://studio.genlayer.com/api`.
-- Generic injected EIP-1193 `window.ethereum` browser wallet only.
-- No 61997, Studio-dev, Snaps, WalletConnect, embedded wallet, browser private key or backend signer.
-- Keep one substantive Intelligent Contract unless a verified current GenLayer limitation requires a change.
-- Missing, unavailable, contradictory or unproven evidence must never be silently promoted into a favourable economic verdict.
-- Do not replace semantic validator replay with shape-only JSON validation.
+## Human-controlled deployment boundary
 
-## Product that must survive finishing
+The contract source changed. The old deployed instance at `0x75f2e473E6f010B510F1d281C8E4679fD2043054` is incompatible with the candidate frontend fields. Do not repoint the frontend to that address and do not deploy the frontend until a new contract address is finalized and its source/schema/read-only state are verified.
 
-A provider-backed SLA exception protocol: independently prove the miss first, then let GenLayer decide whether a frozen carve-out actually excuses it.
+After the candidate source is pushed and CI is green, the user performs the deployment signing step:
 
-CARVEOUT deliberately keeps SLA arithmetic deterministic. A customer cannot expose provider collateral merely by typing a poor availability number, and a provider cannot invent an exception after failure. Independent measurement consensus opens the incident; only then can a frozen exception be adjudicated and challenged.
+1. From repository root, run `.\.genlayer-stable\node_modules\.bin\genlayer.cmd network set studionet`, then `network info`. Confirm alias `studionet`, chain `61999`, RPC `https://studio.genlayer.com/api`.
+2. Confirm the active signer is the user's intended release wallet. The prior deployment was signed by `party_b` address `0xA7EeAE0E93793e3146Cb14b0700251B8b0EBADFB`; use it only if the user controls and intentionally selects that same account. No one should reveal or transmit a key.
+3. Run `.\.genlayer-stable\node_modules\.bin\genlayer.cmd deploy --contract contracts/carveout.py`. This contract has no constructor arguments and requires `0 GEN` value on gasless Studionet. Confirm the displayed source is candidate SHA-256 from `deployments/studionet.json` and approve the deployment from the intended signer.
+4. Return the finalized deployment transaction hash and new contract address. Also capture the finalized receipt/execution result. Do not run browser lifecycle writes at this deployment step.
 
-Current lifecycle: `create_agreement → accept_agreement → open_incident → verify_measurement → claim_exception → adjudicate_exception → optional challenge_exception/resolve_challenge → finalize_incident (or bounded default breach) → withdraw_credit`.
+Once the user returns that deployment evidence, verify the address on Studionet, compare deployed source and generated schema with the candidate, read `get_stats()` and accounting, update `deployments/studionet.json`, wire the frontend address, rerun CI, deploy the frontend, and stop before any browser application transaction.
 
-## Start here
+## User-run application lifecycle
 
-1. Read `README.md`, `STATIC_VERIFICATION.md`, `docs/ARCHITECTURE.md`, `docs/SECURITY.md`, `docs/LIVE_DEMO.md`, the entire contract and all tests.
-2. Install/use the current official GenLayer skills and Docs MCP when available; verify any GenLayer-specific API before changing it.
-3. Run `python scripts/check_release.py` and `python scripts/check_contract_patterns.py`. Any alternate network or prohibited wallet path is a release blocker.
+The user personally signs provider proposal/funding, customer acceptance, incident and evidence writes, exception adjudication, challenges or challenge-window completion, finalization and withdrawal. No agent may submit those writes or use any alternate/private-key signer. Use the precise manual sequence in [`docs/LIVE_DEMO.md`](docs/LIVE_DEMO.md). Real transaction hashes, public evidence results and balance reads remain blank until returned by the user.
 
-## Contract gates
+## Current artifacts
 
-```bash
-pip install -r requirements.txt
-genvm-lint check contracts/carveout.py --json
-pytest tests/direct/ -v
-```
-
-Fix genuine GenVM/storage/closure/type/toolchain failures without weakening the economic or semantic rules. Keep or expand tests for exact payable checks, access control, state transitions, evidence unavailable/inconclusive states, malformed model output, substantive validator agreement/disagreement, replay/duplicate protection, bounded liveness, challenge outcomes, pull-credit withdrawal and accounting conservation.
-
-Then run integration/real-network checks that are appropriate to current tooling. The included `tests/integration/test_studionet_smoke.py` points to the canonical address in CI and has passed as a read-only `get_stats()` check. That verifies deployed reads only; it is not real consensus or lifecycle proof. See `docs/REVIEW_EVIDENCE.md` for the exact boundary.
-
-## Frontend gates
-
-```bash
-cd frontend
-npm install
-npm run typecheck
-npm run build
-```
-
-Preserve the current design system: **forensic SLA dossier: ivory ruled sheets, red examiner marks, evidence tabs and incident timelines**. Do not replace it with a template dashboard, glass/gradient AI aesthetic, chatbot, or one-scroll site. Keep the hero landing page and the separate product routes `/`, `/agreements`, `/agreements/[id]`, `/open`, `/account`, `/protocol`. Verify every visible write reaches the real contract and presents signing, submitted/finalizing, finalized and readable error states.
-
-## Deployment
-
-The repository already records a finalized Studionet deployment. Do not redeploy for frontend-only changes. If the contract source genuinely changes, use only the built-in Studionet network, explicitly verify chain ID `61999` and RPC `https://studio.genlayer.com/api`, and deploy only after lint/tests pass. Wait for FINALIZED **and** successful execution. Inspect deployed code/schema and `get_stats()` and compare them with this repository. Record any new canonical deployment in `deployments/studionet.json` and `docs/REVIEW_EVIDENCE.md`.
-
-## Live proof
-
-Execute `docs/LIVE_DEMO.md` with real, stable public evidence. The positive path must reach the actual semantic decision and the native-GEN economic consequence; also prove at least one meaningful negative/fail-closed path. If the evidence cannot truthfully satisfy the positive case, change the demo case, not the protocol.
-
-## Publish and freeze
-
-The public production frontend is `https://carve-out.vercel.app`, with the 100%-zoom UI from source commit `351d283` deployed as Vercel deployment `dpl_DvNdou86SF8oGDqF3Ya1kidSVEco`. It is wired to the canonical address on chain 61999. Do not redeploy the contract for UI-only changes. The full live SLA lifecycle and native GEN withdrawal still require genuine evidence; use `docs/LIVE_DEMO.md` and record only finalized receipts and canonical reads.
-
-## Definition of done
-
-- linter clean;
-- all Direct Mode tests green;
-- required real-network/integration checks green;
-- production frontend typecheck/build green;
-- exact final source deployed on 61999;
-- deployed source/schema match repository;
-- public frontend points only to the canonical address;
-- live semantic consensus proven with real external evidence;
-- live native GEN economic path proven;
-- `get_stats().accounting_balanced` remains true after the demo;
-- docs contain real evidence and no stale/aspirational deployment claims;
-- CI/main/working tree green and clean.
+- `deployments/studionet.json` keeps the previous deployed baseline separate from the undeployed candidate.
+- `docs/REVIEW_EVIDENCE.md` contains explicitly pending live-evidence rows.
+- `scripts/verify_release_manifest.py` checks source/schema hashes and prevents premature candidate address wiring.
+- `scripts/verify_accounting.py` checks a saved `get_stats()` response.
+- All user-facing timestamps display `Africa/Lagos`; contract, Unix and evidence timestamps remain unchanged.

@@ -1,55 +1,68 @@
-# CARVEOUT review evidence
+# CARVEOUT reviewer evidence ledger
 
-## Canonical release
+## Existing deployed baseline (historical/current chain state)
 
-- Network: GenLayer Studionet, alias `studionet`, chain `61999`; RPC `https://studio.genlayer.com/api`.
-- Canonical contract: [`0x75f2e473E6f010B510F1d281C8E4679fD2043054`](https://explorer-studio.genlayer.com/address/0x75f2e473E6f010B510F1d281C8E4679fD2043054).
-- Deployment transaction: [`0x07ed7c7495129adc7ed26091c673b37dfe9dbd9b50fa85d21dd6a63b29722ddf`](https://explorer-studio.genlayer.com/tx/0x07ed7c7495129adc7ed26091c673b37dfe9dbd9b50fa85d21dd6a63b29722ddf), FINALIZED / MAJORITY_AGREE / SUCCESS at 2026-09-20 10:19:20 UTC.
-- Deployed source SHA-256: `144caccbd8b6daa8cbebc72ae9a4a5737c44147cbc100e8f7f1cb23cadf35f98`, matching `contracts/carveout.py` at source commit `8f1302f10e0fee65f79187241e7da853225240d4`.
-- Constructor arguments: none. Deployer: local stable CLI account `party_b`, `0xA7EeAE0E93793e3146Cb14b0700251B8b0EBADFB`.
-- Schema SHA-256: `26de6f5a55a686fb6f38bffd320d14ba53d4b74162a2ad15bdb123aed6f345fd`; deployed schema matched the local generated schema (21 methods: 6 views, 15 writes).
-- Production frontend: [https://carve-out.vercel.app](https://carve-out.vercel.app), Vercel deployment `dpl_DvNdou86SF8oGDqF3Ya1kidSVEco`, READY on UI commit `351d283`, Node 22, `npm ci`; verified routes `/`, `/agreements`, `/open`, `/account`, `/protocol`, and `/agreements/1` all return HTTP 200 with CARVEOUT branding. The `/icon.svg` asset is served to the browser, and public client bundles contain the canonical contract address, chain `61999`, and Studionet RPC.
-- Initial `get_stats()`: version `0.1.0-studionet`; network `Studionet`; chain `61999`; agreements `0`; incidents `0`; finalized breaches `0`; proven exceptions `0`; total deposited, agreement escrow, challenge escrow, claimable, and withdrawn all `0`; `accountingBalanced=true`; `adminControls=false`.
+- Network: GenLayer Studionet, alias `studionet`, chain ID `61999`; RPC `https://studio.genlayer.com/api`; explorer `https://explorer-studio.genlayer.com`.
+- Previously deployed contract: [`0x75f2e473E6f010B510F1d281C8E4679fD2043054`](https://explorer-studio.genlayer.com/address/0x75f2e473E6f010B510F1d281C8E4679fD2043054).
+- Previous deployment transaction: [`0x07ed7c7495129adc7ed26091c673b37dfe9dbd9b50fa85d21dd6a63b29722ddf`](https://explorer-studio.genlayer.com/tx/0x07ed7c7495129adc7ed26091c673b37dfe9dbd9b50fa85d21dd6a63b29722ddf).
+- That deployed instance corresponds to source commit `8f1302f10e0fee65f79187241e7da853225240d4`, source SHA-256 `144caccbd8b6daa8cbebc72ae9a4a5737c44147cbc100e8f7f1cb23cadf35f98`, and schema SHA-256 `26de6f5a55a686fb6f38bffd320d14ba53d4b74162a2ad15bdb123aed6f345fd`.
+- **This old address does not contain the evidence-commitment/neutral-timeout candidate now in this repository. Do not use it with the candidate frontend.** A user-controlled Studionet deployment and canonical source/schema readback are required before frontend release.
+- Previously deployed frontend baseline: [https://carve-out.vercel.app](https://carve-out.vercel.app), deployment `dpl_DvNdou86SF8oGDqF3Ya1kidSVEco`, source commit `351d283278b39870f123495dde6643f52151cdea`. It predates the current WAT/evidence-record UI.
 
-## Local quality gates
+## Candidate contract/frontend release
 
-- Compatible Python pins: `genlayer-test==0.29.2`, `genlayer-py==0.16.3`, `genvm-linter==0.11.0`, `pyright==1.1.414`, `pytest==9.0.2`.
-- `python -m py_compile contracts/carveout.py`: PASS.
-- `genvm-lint check contracts/carveout.py --json`: PASS, `ok=true`, 3 checks.
-- `genvm-lint validate contracts/carveout.py`: PASS; 21 methods (6 views, 15 writes), zero constructor arguments.
-- `genvm-lint schema contracts/carveout.py`: PASS.
-- `genvm-lint typecheck contracts/carveout.py`: PASS with `GENVM_VERSION=v0.2.16`, matching the contract stable runtime pin.
-- Direct Mode: `py -3.12 run_direct_windows.py`: **46 passed**. The helper works around a Windows temp-file locking issue in `genlayer-test 0.29.2`; the assertions are the repository’s full `tests/direct/` suite. Linux CI should run the workflow command `pytest tests/direct/ -v` directly.
-- `scripts/check_release.py`: PASS, Studionet 61999 and required RPC only.
-- `scripts/check_contract_patterns.py`: PASS.
-- `npm run check:static`: PASS, Python compilation, all static release guards and deploy-helper TypeScript check.
-- `scripts/check_frontend_surface.py`: PASS, six routes and required protocol actions including bilateral acceptance and proposal expiry.
-- Root and frontend `npm ci`: PASS. Direct frontend dependencies are exact-version pinned and lockfiles are committed.
-- Frontend `npm test`: PASS, 6 tests, including blank-by-default and explicit illustrative-sample form regression coverage; `npm run typecheck`: PASS; `npm run build`: PASS for the UI revision.
-- Deploy helper `npm run check:deploy`: PASS; it locks both chain ID and RPC and waits for `FINALIZED` plus successful execution.
-- Stable release pins: local GenLayer CLI `0.39.1`; `genlayer-js@1.1.8`; Node 22 in CI and Vercel; Studionet alias `studionet`, chain `61999`, RPC `https://studio.genlayer.com/api`; the contract runtime is pinned in `contracts/carveout.py`. The global CLI was not changed.
-- GitHub Actions on main commit `351d283`: [run 35519567715](https://github.com/ometere123/carveout/actions/runs/35519567715), **PASS** in 3m25s. It ran Python compile, GenVM lint/check/validate/schema/typecheck, the pinned GenVM runner, all 46 Direct Mode tests, the live Studionet read integration test, release/contract/frontend static checks, root `npm ci`, deploy-helper checks, frontend `npm ci`, frontend tests, typecheck, and production build.
-- The read-only integration test targets the public canonical address; `get_stats()` returned the expected 61999 network identity, balanced accounting and disabled admin controls. It uses an ephemeral in-memory reader address only; it does not sign or submit a transaction.
-- `pytest tests/integration/ -v` without `CARVEOUT_CONTRACT`: intentionally skips. CI supplies the canonical address; 1 live Studionet read test passed locally and in run 35507310425.
+- Candidate version: `0.2.0-studionet`.
+- Candidate contract source SHA-256: `d8a0c3eb5ae2f7f164bb5526c42ec24557dbfa06f8a2cf540e30215210978a99` (verify again against final commit).
+- Candidate schema: unchanged public signatures (21 public methods; 6 views and 15 writes), SHA-256 `26de6f5a55a686fb6f38bffd320d14ba53d4b74162a2ad15bdb123aed6f345fd`. Local `genvm-lint check`/validate, schema generation (hash match), and typecheck all pass; candidate CI remains required.
+- Target network is hard-locked to Studionet `61999`, RPC `https://studio.genlayer.com/api`; new contract address and deployment transaction: **pending user-controlled deployment/signature**.
+- Candidate production frontend contract address: **unset until the candidate contract address is verified**. Do not deploy this frontend while it points at the previous contract.
+- Final code commit: pending push. Latest green CI for candidate commit: pending.
 
-## UI finishing pass (2026-09-20)
+## Candidate local gates
 
-- Navigation is limited to Agreements, New Agreement, Account, and Protocol; contextual lifecycle actions remain on their agreement workflow. The logo links to `/`.
-- The `/open` agreement form is blank by default; `Load Sample Agreement` is explicit opt-in, marked illustrative, and has regression tests.
-- Layout CSS now defines desktop/tablet/mobile breakpoints and 100%-zoom editorial type without global scaling. The local production server returned HTTP 200 with CARVEOUT branding on `/`, `/agreements`, `/open`, `/account`, `/protocol`, and `/agreements/1`.
-- Local frontend checks: `npm ci`, 6 tests, typecheck and `next build` PASS. Python 3.12 Direct Mode: 46 passed. Live integration read: 1 passed. Static release gates PASS.
-- Local 100%-zoom screenshots were captured and visually reviewed for the home page and agreement form at 1366×768. The home layout was checked at 1366, 1440, 1536, 1600 and 1920px; 820px tablet and 390px mobile layouts were also checked. No horizontal overflow was found. Axe WCAG 2.1 AA scans reported zero violations across `/`, `/agreements`, `/agreements/1`, `/open`, `/account` and `/protocol`. The remaining unverified release evidence is the real SLA economic lifecycle listed below.
+- Stable pins: Python 3.12; GenLayer CLI `0.39.1`; `genlayer-js==1.1.8`; `genlayer-test==0.29.2`; `genlayer-py==0.16.3`; `genvm-linter==0.11.0`; stable contract runtime hash retained.
+- `run_direct_windows.py`: **52 Direct Mode tests passed** using Python 3.12 and the repository's Windows temp-file-lock workaround.
+- Frontend tests: **38 passed**; typecheck: PASS; production Next.js build: PASS for the candidate UI.
+- `scripts/check_contract_patterns.py`, `scripts/check_release.py`, and `scripts/check_frontend_surface.py`: PASS.
+- GenVM lint/validate/schema/typecheck: PASS (21 methods; 6 views and 15 writes; generated schema hash matches).
+- Read-only integration smoke: PASS against prior deployment `0x75f2e473E6f010B510F1d281C8E4679fD2043054` only; it does not verify candidate behavior. No consensus write or user wallet operation has been performed.
+- Local 100% viewport/browser review and final canonical Vercel deployment: pending after verified contract deployment. The existing editorial design and prior desktop layout are retained; new timestamp and evidence-record displays need final browser inspection.
 
-## Live semantic/economic gates (not demonstrated)
+## Candidate evidence-integrity behavior
 
-- Deployed source/schema comparison and `get_stats()`: **PASS**; exact source and schema hashes are recorded above and `get_stats()` returned zero activity with balanced accounting and no admin controls.
-- Independent measurement consensus with stable public evidence: **not run**.
-- Exception adjudication, full-case challenge or finalization on Studionet: **not run**.
-- Customer/provider native GEN credits and withdrawal: **not run**.
-- Meaningful live negative/fail-closed transaction path and final accounting: **not run**.
+- Stored records include exact submitted URL, normalized origin, evidence family, service identity, observation bounds, decision timestamp, canonical excerpt (at most 800 characters/source) and truncation flag. A full decision digest binds the timestamp and representation; a companion content digest omits only decision time. Both supplement each existing case hash.
+- Whitespace and designated common page chrome normalize to the same record; substantive excerpt changes alter both digests, while a later decision timestamp alters only the full digest. Overlong records fail closed as `SOURCE_UNAVAILABLE`/`INCONCLUSIVE` rather than making decisions from incomplete excerpts.
+- Validators compare consequential structured results, service/window attribution, intervals and both evidence digests. Free-form reasoning prose is not an equivalence criterion.
+- GenVM's renderer does not expose a reliable redirect chain/final URL. The contract enforces the submitted URL/origin and records this runtime limitation; it does not claim final-destination proof.
+- Evidence unavailability is a non-decision. Measurement retry exhaustion rejects an unproven report. Exception adjudication unavailability closes neutrally and returns provider collateral. Challenge non-decisions preserve the pending allocation and bounded expiry refunds the challenger.
+- WAT display uses `Africa/Lagos`; raw timestamps and all contract/evidence values remain UTC Unix seconds.
 
-These lifecycle entries require a genuine provider/customer agreement, real public evidence, and finalized transactions. Record only observed receipts, states and explorer links; do not treat deployment or an empty initial `get_stats()` response as lifecycle proof.
+## Live lifecycle ledger (all pending; no live application writes performed by the agent)
 
-## Reviewer thesis
+Record only user-generated, finalized transactions and actual readbacks. Use the new deployed address and link each hash directly to the explorer.
 
-CARVEOUT remains a provider-backed SLA exception protocol: public multi-origin measurement must first independently prove the miss; GenLayer then decides whether a clause frozen and customer-accepted before exposure excuses the verified miss. The model cannot choose GEN or partial percentages.
+| Evidence item | Actual value / explorer link |
+| --- | --- |
+| Candidate contract deployment transaction/address/source/schema readback | PENDING USER DEPLOYMENT |
+| Provider proposal/funding transaction + agreement ID | PENDING USER BROWSER WALLET |
+| Named customer acceptance transaction | PENDING USER BROWSER WALLET |
+| Incident opening transaction + incident ID | PENDING USER BROWSER WALLET |
+| Measurement decision transaction + `measurement_case_hash` + `measurement_evidence_digest` | PENDING USER BROWSER WALLET |
+| Exception claim transaction + `exception_case_hash` | PENDING USER BROWSER WALLET |
+| Exception adjudication transaction/result + `exception_evidence_digest` | PENDING USER BROWSER WALLET |
+| Challenge transaction/result + `challenge_case_hash` + `challenge_evidence_digest` OR finalized challenge-window completion read | PENDING USER BROWSER WALLET |
+| Deterministic finalization transaction + payout/provider return | PENDING USER BROWSER WALLET |
+| Native GEN withdrawal transaction | PENDING USER BROWSER WALLET |
+| Fail-closed healthy-service/false-claim path transactions and state | PENDING USER BROWSER WALLET |
+| Provider/customer balances before and after | PENDING USER READBACK |
+| Final `get_stats()` JSON | PENDING USER READBACK |
+| Accounting proof `deposited == agreement escrow + challenge escrow + claimable + withdrawn` | PENDING USER READBACK |
+| Explorer links and screenshots for every consequential step | PENDING USER EVIDENCE |
+
+## Accounting evidence requirements
+
+For each settlement and withdrawal, save the relevant party `get_credit()` values before and after, plus all five `get_stats()` amounts. Run `python scripts/verify_accounting.py path/to/get-stats.json` on the final stats response. The verifier checks chain/RPC identity and the exact conservation equation; it does not itself prove that transaction hashes are genuine.
+
+## Manual runbook
+
+See [`LIVE_DEMO.md`](LIVE_DEMO.md) for the wallet-by-wallet sequence, concrete form values, truthful controlled-service test setup, exact source URL shapes, approval values, expected canonical state and screenshot/hash return packet. All transaction hashes and live lifecycle evidence remain pending until the user supplies them.

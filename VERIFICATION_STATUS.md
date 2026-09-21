@@ -1,15 +1,21 @@
 # Verification status
 
-## Passed in this checkout (2026-09-20)
+## Candidate local results (2026-09-21)
 
-- Stable pins: `genlayer-test==0.29.2`, `genlayer-py==0.16.3`, `genvm-linter==0.11.0`, `pyright==1.1.414`, `pytest==9.0.2`; Python 3.12.
-- Stable GenVM lint, validate, schema, and typecheck: PASS against runner `v0.2.16` matching the contract dependency.
-- Complete Direct Mode suite: PASS, 46 tests using `py -3.12 run_direct_windows.py`. Python 3.14 without that workaround fails before contract execution due to a Windows temporary-file lock; the project-pinned Python 3.12 path passes.
-- Python compile, static release guards, and deployment-helper TypeScript check: PASS.
-- Stable frontend/client pins: `genlayer-js==1.1.8`, Node 22 in CI and Vercel, local CLI `0.39.1`; the global CLI was not changed.
-- Root/frontend `npm ci`, frontend tests (6 passed), typecheck and production build: PASS for the current UI changes.
-- Release/static gates and local HTTP checks for all six routes: PASS. At 100% browser zoom, screenshots were visually reviewed for the home page and agreement form at 1366×768; desktop widths 1366/1440/1536/1600/1920, tablet 820 and mobile 390 showed no horizontal overflow. Automated WCAG 2.1 AA scans reported zero violations on all six routes.
+- Starting point: current `origin/main` `a5e73d2d1e7f82c529ca2d1f5acf7fa91893b723`; no existing work was overwritten.
+- Direct Mode: **52 passed** with Python 3.12 via `run_direct_windows.py`, the repository helper for the `genlayer-test 0.29.2` Windows temp-file lock.
+- Frontend tests: **38 passed**; TypeScript typecheck: **PASS**; Next.js production build: **PASS**.
+- `scripts/check_contract_patterns.py`, `scripts/check_release.py`, `scripts/check_frontend_surface.py`, candidate manifest hash verifier: **PASS**.
+- WAT tests confirm `2026-09-21T03:45:50Z` displays as `21 Sep 2026, 04:45:50 WAT`, and the Unix seconds/UTC input remain unchanged.
+- No wallet connection, contract transaction, alternative signer or other application write was used.
 
-## Not verified
+## Gates awaiting candidate CI or user action
 
-The canonical Studionet contract and public frontend are recorded in `deployments/studionet.json` and `docs/REVIEW_EVIDENCE.md`; stable-CLI reads confirm the deployed schema/source and balanced zero accounting. GitHub Actions run [35519567715](https://github.com/ometere123/carveout/actions/runs/35519567715) passed for main commit `351d283`. Production deployment `dpl_DvNdou86SF8oGDqF3Ya1kidSVEco` is READY at `https://carve-out.vercel.app`; all six routes return HTTP 200, the favicon route returns the CARVEOUT icon, and the public client bundle contains the canonical address, chain `61999`, and Studionet RPC. Desktop/mobile screenshots, overflow checks, and six-route WCAG scans passed locally. The full live SLA lifecycle/native GEN movement remains unverified.
+- GenVM lint and validate: **PASS** (21 methods; 6 views, 15 writes). Schema generation: **PASS**, SHA-256 matches the recorded schema. `genvm-lint typecheck`: **PASS** using the local venv pyright wrapper.
+- Read-only Studionet smoke: **PASS against the prior 0.1.0 deployment only**. Candidate read-only integration awaits candidate deployment.
+- Full GitHub CI: **PENDING candidate push**.
+- Candidate source changes the contract. The old deployment (`0x75f2e473E6f010B510F1d281C8E4679fD2043054`) is not a valid target for candidate frontend configuration.
+- Candidate Studionet deployment/source/schema readback: **PENDING the user's signing action**. Candidate frontend address wiring and Vercel production deployment follow only after that returned address is verified.
+- Real browser-wallet lifecycle and meaningful fail-closed transaction: **PENDING USER**. No fabricated/live evidence is recorded.
+
+See [`docs/REVIEW_EVIDENCE.md`](docs/REVIEW_EVIDENCE.md) for the ledger and [`docs/LIVE_DEMO.md`](docs/LIVE_DEMO.md) for the manual-only runbook. All displayed UI timestamps use `Africa/Lagos`; protocol timestamps remain UTC Unix seconds.

@@ -6,7 +6,7 @@
     "check:python": "python -m compileall -q contracts tests/direct tests/integration",
     "check:release": "python scripts/check_release.py",
     "check:contract-patterns": "python scripts/check_contract_patterns.py",
-    "check:static": "npm run check:python && npm run check:contract-patterns && npm run check:release && npm run check:frontend-surface && npm run check:deploy",
+    "check:static": "npm run check:python && npm run check:contract-patterns && npm run check:release && npm run check:frontend-surface && npm run check:deploy && python scripts/verify_release_manifest.py",
     "check:frontend-surface": "python scripts/check_frontend_surface.py",
     "probe:studionet:receipt": "node scripts/probe_studionet_receipt.mjs",
     "check:deploy": "tsc --noEmit --target ES2022 --module NodeNext --moduleResolution NodeNext --skipLibCheck deploy/deployScript.ts"

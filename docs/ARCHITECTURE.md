@@ -1,10 +1,10 @@
 # CARVEOUT architecture
 
-## Product boundary
+## Why GenLayer is used
 
-CARVEOUT is a provider-backed SLA exception protocol. It does not ask GenLayer to compare `99.00 < 99.95`. Threshold arithmetic remains deterministic. The contested question is whether an exception clause frozen before the incident actually excuses an independently established SLA miss.
+Deterministic systems can establish a measured SLA result. They cannot reliably decide whether a frozen semantic clause such as “an upstream infrastructure failure materially caused this service impact” is established by conflicting public evidence, whether causation matches the observation interval, or whether that exact frozen exception applies. CARVEOUT uses deterministic code for timing, thresholds, interval arithmetic and money, while GenLayer consensus is restricted to the contested semantic interpretation.
 
-The provider funds the maximum service credit when the agreement is created. The customer cannot create liability merely by typing a bad metric, and the provider cannot invent a new exception after failure.
+Deterministic duties are agreement formation, authorization, timing, source-policy enforcement, measurement threshold comparison, interval validation, partial-liability arithmetic, GEN allocation, settlement and accounting. Consensus duties are semantic interpretation of public evidence, applying the frozen exception to facts, assessing causation against the impact interval, and challenge re-evaluation. GenLayer is not claimed as necessary for arithmetic or ordinary deterministic oracle facts.
 
 ## Lifecycle
 
@@ -12,90 +12,74 @@ The provider funds the maximum service credit when the agreement is created. The
 provider bond + frozen SLA, source policy and exceptions
           ↓
        PROPOSED
-          ↓ customer signs before the formation deadline
+          ↓ named customer accepts before exposure and deadline
        ACTIVE
-          ↓ customer submits claimed miss + measurement packet
+          ↓ customer submits completed miss + evidence packet
  MEASUREMENT_PENDING
-          ↓ GenLayer independently re-fetches measurement sources
-   ┌──────┼───────────────────┐
-NOT_PROVEN SOURCE_UNAVAILABLE  VERIFIED MISS
-   ↓            ↓                   ↓
-reject      bounded retry        OPEN INCIDENT
-                                    ↓ provider response window
-                           claim frozen exception
-                                    ↓
-                         exception adjudication
-                         ├─ PROVEN      0 liable bps
-                         ├─ PARTIAL     1..9999
-                         ├─ NOT_PROVEN  10000
-                         └─ unavailable/inconclusive
-                                    ↓
-                           symmetric bonded challenge
-                                    ↓
-                           deterministic service credit
+          ↓ GenLayer validators independently re-fetch and compare evidence digests
+   ┌──────┼──────────────────┐
+NOT_PROVEN SOURCE_UNAVAILABLE VERIFIED MISS
+   ↓          ↓                    ↓
+reject   bounded retry       OPEN INCIDENT
+                               ↓ provider response window
+                      frozen exception claim
+                               ↓
+                    semantic adjudication
+                  ┌────────────┴─────────────┐
+              decision                   non-decision
+         bounded challenge         bounded retry/neutral close
+                  └────────────┬─────────────┘
+                    deterministic settlement
 ```
 
-## Measurement gate
+`create_agreement()` freezes service, terms, source policy, exceptions and collateral. The named customer must accept the complete proposal before exposure, with at least 300 seconds remaining. Proposal creation itself must execute at least 600 seconds before exposure. A proposed agreement can be expired for a provider bond refund.
 
-`open_incident()` records only a **claimed** miss. The provider first proposes and bonds the complete specification. The named customer must accept at least 300 seconds before the window and before the proposal deadline. Unaccepted proposals can be expired for a provider bond refund. Agreement terms and the structured source policy are committed in `spec_hash` and cannot be changed.
+## Source policy and measurement
 
-The measurement packet must contain 2..8 unique HTTPS origins, at least two allowed source families, and an `INDEPENDENT_PROBE` whose frozen host is not the service host or a subdomain. Evidence origins and path prefixes must match the policy accepted at formation; a self-applied family label is insufficient. Allowed measurement families are:
+Measurement evidence requires 2..8 unique origins, at least two source families, and an `INDEPENDENT_PROBE` outside the service domain. Each URL must match a frozen family, public DNS host and path prefix. The case hash binds the submitted evidence locations and claim.
 
-- `INDEPENDENT_PROBE`
-- `STATUS_AGGREGATOR`
-- `PUBLIC_TELEMETRY`
-- `PROVIDER_STATUS`
+`verify_measurement()` independently fetches each source and evaluates bounded rendered-text excerpts. A decisive result must explicitly attribute the complete source set to the frozen service and observation window. Only a measured value below the target opens the incident. `NOT_PROVEN` rejects the report without touching provider collateral. `SOURCE_UNAVAILABLE`, empty or malformed evidence yields a bounded non-decision/retry. After measurement retry exhaustion, the unproven incident can be dismissed and the agreement remains available for a later real attempt.
 
-`verify_measurement()` independently re-fetches the packet and reproduces:
+## Durable canonical evidence commitments
 
-- `result`
-- exact integer `measured_bps`
-- `service_matches`
-- `window_matches`
+Each measurement, exception adjudication and challenge decision stores a canonical evidence record and two SHA-256 digests. A full decision digest binds the exact record, including decision timestamp; a companion content digest omits only that timestamp to distinguish a materially changed evidence representation from identical content evaluated at a later time. A source record binds its exact submitted URL, normalized origin, frozen evidence family, service identity, observed interval, decision timestamp and rendered-text excerpt. Excerpts are normalized for whitespace, common page chrome and capped at 800 characters per source; whole webpages/HTML are never persisted. Source counts are bounded by the contract's evidence limits.
 
-Only a verified value below the frozen target opens the contractual incident. A value at/above target or `NOT_PROVEN` clears the incident without touching provider funds. `SOURCE_UNAVAILABLE` creates a bounded retry state; if evidence stays unavailable, anyone can dismiss the unproven incident after the retry deadline. This prevents unavailable measurement evidence from becoming a breach.
+The record and digests supplement, rather than replace, `measurement_case_hash`, `exception_case_hash` and `challenge_case_hash`. Validators independently re-fetch the same frozen sources and compare both consequential structured outputs and canonical evidence digests. Boilerplate/whitespace-only changes are normalized; substantive excerpt changes alter both digests, while a later decision timestamp changes only the full decision digest. The contract does not compare free-form reasoning prose.
 
-## Provider burden after a verified miss
+The GenVM `render(..., mode="text")` API does not expose a reliable redirect chain or final URL. CARVEOUT enforces and records the submitted URL/origin but does not claim to prove a final redirect destination. Structured semantic attribution to the frozen service/window is required for decisive measurement, exception and challenge outputs; if it cannot be established, the operation is non-decisive. Reviewers should treat redirect provenance as a runtime limitation.
 
-Once the miss itself is established, the provider has a bounded response window. It may invoke only an exception code frozen in the agreement and must attach public evidence. If it does nothing, the independently proven miss can default to full liability after the response deadline.
+Fetched page text is untrusted data, including prompt-like instructions. Consensus prompts explicitly exclude such instructions. Empty, malformed, unavailable or contradictory material cannot create a favorable semantic result or manufacture liability.
 
-If exception evidence remains unavailable/inconclusive past the adjudication grace period, the provider has still failed to establish its excuse and `finalize_default_breach()` can settle full liability. This burden applies **only after** the measurement gate independently proves the SLA miss.
+## Provider burden and exception judgment
 
-## Exception consensus
+After a verified miss, the provider may claim only a clause frozen in the agreement and must submit evidence from allowed origins. If the provider does not claim an exception within the response window, the already independently verified miss can default to full liability.
 
-`adjudicate_exception()` re-fetches the measurement and exception evidence together and decides only the frozen carve-out. Consequential outputs are:
+`adjudicate_exception()` re-fetches measurement and exception evidence together. Consequential outcomes are `PROVEN` (0 liable bps), `NOT_PROVEN` (10,000 liable bps), `PARTIAL` (validated intervals, with liability computed by contract code), or `INCONCLUSIVE`/`SOURCE_UNAVAILABLE` (no semantic decision). A provider failing to prove an exception after a verified miss does not retroactively create that breach; the measurement gate established the miss first.
 
-- `PROVEN` → `liable_bps = 0`
-- `NOT_PROVEN` → `liable_bps = 10000`
-- `PARTIAL` → bounded evidence-supported excused intervals; deterministic `liable_bps = 10000 - (excused_duration * 10000 // observed_duration)`, restricted to `1..9999`
-- `INCONCLUSIVE` / `SOURCE_UNAVAILABLE` → non-decision
+If evidence remains unavailable/inconclusive through the bounded adjudication period, the agreement closes neutrally: provider collateral is returned, no exception/liability judgment is recorded, and funds are not trapped. Unavailability is not converted to `NOT_PROVEN`.
 
-The normalizer rejects internally contradictory result/liable combinations. Validators independently repeat the web/semantic task and compare status plus the evidence-bound excused intervals; contract code derives all basis points. Natural-language fact/basis text remains auditable but is not required to match word-for-word. Measurement and exception evidence origins are checked against the frozen agreement source policy.
-
-## Symmetric challenge
-
-Either agreement party may file the one in-contract challenge while a settlement is pending. This matters because a customer may challenge an over-broad excuse and a provider may challenge a full-liability finding. The challenge must cite an origin/path allowed by the frozen challenge source policy and post the exact bond. On resolution, the leader and validators re-fetch the original measurement evidence, original exception evidence, and challenge evidence, then compare structured outcomes and any bounded interval revision against the same frozen clause and case context. `INCONCLUSIVE` and `SOURCE_UNAVAILABLE` do not alter liability. Measurement, exception and challenge inputs receive deterministic case commitments exposed in views.
-
-- upheld: the challenger receives their bond back and `liable_bps` is revised;
-- rejected: the bond goes to the opposing agreement party;
-- unavailable/inconclusive: no result is forced; after the bounded resolution deadline the bond is refunded and the original pending allocation may finalize.
-
-## Deterministic settlement
-
-The LLM never chooses GEN or partial percentages. It can only propose supported, bounded excused intervals; the contract rejects malformed, overlapping, unsupported or out-of-window intervals and computes liability from their union. The LLM never chooses GEN. The customer credit is:
+For `PARTIAL`, the contract rejects malformed, overlapping, unsupported or out-of-window intervals and deterministically calculates:
 
 ```text
-payout = min(provider_bond, max_credit * liable_bps / 10000)
+excused_bps = excused_duration * 10000 // observed_duration
+liable_bps = 10000 - excused_bps
+payout = min(provider_bond, max_credit * liable_bps // 10000)
 ```
 
-The remaining provider bond becomes provider pull credit. Each agreement settles once and closes.
+## Full-record challenge
 
-Accounting invariant:
+Either party may submit one bonded challenge while an allocation is pending, using an origin/path frozen at formation. The leader and validators reconstruct the complete case from measurement, exception and challenge evidence. Validators compare the structured outcome, revised status, attribution flags, intervals and evidence digest. `INCONCLUSIVE`/`SOURCE_UNAVAILABLE` do not change the pending allocation; after the bounded resolution period the challenge bond is returned and the pending judgment can finalize.
+
+## Deterministic accounting and withdrawals
+
+Consensus does not choose liability basis points or GEN. The contract allocates settlement, closes the agreement, enforces replay protection and exposes pull-based credits. A credit can only be withdrawn to its owner's address.
 
 ```text
 total_deposited == agreement_escrow + challenge_escrow + claimable + withdrawn
 ```
 
-## Frontend boundary
+This invariant is tested across proposal expiry, rejection, retries, adjudication, challenges, settlement and withdrawals. There is no admin outcome backdoor.
 
-The browser uses generic injected EIP-1193 only. The UI exposes the measurement gate separately from the exception phase so a reviewer can see the protocol did not trust the customer's claimed number. Finalized reads and execution-result checks are enforced in the shared GenLayer client adapter.
+## Frontend timestamps
+
+Contract timestamps remain canonical UTC Unix seconds. User-facing times use IANA timezone `Africa/Lagos` (WAT/UTC+1); tooltips retain canonical UTC ISO and Unix seconds. Display conversion never changes timestamps, hashes or protocol calculations.

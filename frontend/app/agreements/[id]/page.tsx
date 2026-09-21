@@ -7,10 +7,12 @@ import { formatGenAmount } from "@/lib/amount";
 import { useInjectedWallet } from "@/lib/wallet";
 import { TxNotice } from "@/components/TxNotice";
 import { isExpectedActionState, NO_RESUBMIT_UNTIL_VERIFIED, resolveWriteVerification } from "@/lib/actionVerification";
+import { canonicalUtcTimestamp, formatWatTimestamp } from "@/lib/time";
 
 const now = () => Math.floor(Date.now()/1000);
 const genText = (v:any) => `${formatGenAmount(BigInt(String(v || 0)), 6)} GEN`;
 const short = (v="") => v.length > 18 ? `${v.slice(0,9)}…${v.slice(-6)}` : v;
+function WatTime({value}:{value:string|number}){return <time dateTime={canonicalUtcTimestamp(value)} title={`Canonical UTC: ${canonicalUtcTimestamp(value)} · Unix seconds: ${String(value)}`}>{formatWatTimestamp(value)}</time>}
 function defaultEvidence(policy:any,group:string){
   const entries=policy?.[group]||[];
   return JSON.stringify(entries.slice(0,group==="measurement"?2:2).map((x:any,i:number)=>({
@@ -102,8 +104,11 @@ export default function AgreementDetail(){
         <div className="docket-line"><span>Target</span><b>{agreement.metric_name} · {(Number(agreement.target_bps)/100).toFixed(2)}%</b></div>
         <div className="docket-line"><span>Bond</span><b>{genText(agreement.bond_atto)} · max {genText(agreement.max_credit_atto)}</b></div>
         <div className="docket-line"><span>Challenge window</span><b>{agreement.challenge_window_seconds} seconds</b></div>
-        <div className="docket-line"><span>SLA window</span><b>{new Date(Number(agreement.window_start)*1000).toISOString()} → {new Date(Number(agreement.window_end)*1000).toISOString()}</b></div>
-        {agreement.status==="PROPOSED"&&<div className="docket-line"><span>Formation deadline</span><b>{new Date(Number(agreement.formation_deadline)*1000).toISOString()}</b></div>}
+        <div className="docket-line"><span>SLA window · WAT</span><b><WatTime value={agreement.window_start}/> → <WatTime value={agreement.window_end}/></b></div>
+        {agreement.created_at&&<div className="docket-line"><span>Proposal created · WAT</span><b><WatTime value={agreement.created_at}/></b></div>}
+        {agreement.status==="PROPOSED"&&<div className="docket-line"><span>Formation deadline · WAT</span><b><WatTime value={agreement.formation_deadline}/></b></div>}
+        {Number(agreement.accepted_at)>0&&<div className="docket-line"><span>Customer accepted · WAT</span><b><WatTime value={agreement.accepted_at}/></b></div>}
+        {agreement.expired_at&&<div className="docket-line"><span>Proposal expired · WAT</span><b><WatTime value={agreement.expired_at}/></b></div>}
         <div className="digest-row"><span>Specification hash</span><code>{agreement.spec_hash}</code></div>
       </aside>
 
@@ -135,17 +140,35 @@ export default function AgreementDetail(){
           </div>
 
           <div className="incident-facts">
-            <div><span>Observation</span><b>{new Date(Number(incident.observed_from)*1000).toISOString()}<br/>→ {new Date(Number(incident.observed_to)*1000).toISOString()}</b></div>
+            <div><span>Observation · WAT</span><b><WatTime value={incident.observed_from}/><br/>→ <WatTime value={incident.observed_to}/></b></div>
             <div><span>Provider liability</span><b>{(Number(incident.liable_bps)/100).toFixed(2)}%</b></div>
             <div><span>Exception</span><b>{exception?`${exception.code} / ${exception.title}`:"None"}</b></div>
+          </div>
+          <div className="incident-facts timestamp-facts">
+            {incident.opened_at&&<div><span>Incident opened · WAT</span><b><WatTime value={incident.opened_at}/></b></div>}
+            {incident.measurement_decided_at&&Number(incident.measurement_decided_at)>0&&<div><span>Measurement decision · WAT</span><b><WatTime value={incident.measurement_decided_at}/></b></div>}
+            {incident.measurement_verified_at&&Number(incident.measurement_verified_at)>0&&<div><span>Measurement verified · WAT</span><b><WatTime value={incident.measurement_verified_at}/></b></div>}
+            {incident.measurement_deadline&&Number(incident.measurement_deadline)>0&&<div><span>Measurement retry deadline · WAT</span><b><WatTime value={incident.measurement_deadline}/></b></div>}
+            {incident.response_deadline&&Number(incident.response_deadline)>0&&<div><span>Provider response deadline · WAT</span><b><WatTime value={incident.response_deadline}/></b></div>}
+            {incident.adjudicated_at&&<div><span>Exception decision · WAT</span><b><WatTime value={incident.adjudicated_at}/></b></div>}
+            {incident.challenge_deadline&&Number(incident.challenge_deadline)>0&&<div><span>Challenge deadline · WAT</span><b><WatTime value={incident.challenge_deadline}/></b></div>}
+            {incident.resolution_deadline&&Number(incident.resolution_deadline)>0&&<div><span>Resolution deadline · WAT</span><b><WatTime value={incident.resolution_deadline}/></b></div>}
+            {incident.finalized_at&&<div><span>Finalized · WAT</span><b><WatTime value={incident.finalized_at}/></b></div>}
           </div>
           {incident.facts?.length>0&&<div className="fact-sheet">{incident.facts.map((f:string,i:number)=><p key={i}><b>{String(i+1).padStart(2,"0")}</b>{f}</p>)}</div>}
           {incident.basis&&<div className="basis">Judgment basis · {incident.basis}</div>}
           <div className="basis" title={incident.measurement_case_hash}>Measurement case commitment · {incident.measurement_case_hash||"Pending"}</div>
           {incident.exception_case_hash&&<div className="basis">Exception case commitment · {incident.exception_case_hash}</div>}
           {incident.challenge_case_hash&&<div className="basis">Challenge case commitment · {incident.challenge_case_hash}</div>}
-          {incident.excused_intervals?.length>0&&<div className="fact-sheet"><div className="kicker">Excused intervals · liability is deterministic</div>{incident.excused_intervals.map((x:any,i:number)=><p key={i}><b>{String(i+1).padStart(2,"0")}</b>{new Date(Number(x.from_ts)*1000).toISOString()} → {new Date(Number(x.to_ts)*1000).toISOString()} · Evidence {x.evidence_ids.join(", ")}</p>)}</div>}
-          {challengeData&&<div className="challenge-record"><b>Challenge · {challengeData.status}</b><p>{challengeData.text}</p>{challengeData.basis&&<small>{challengeData.basis}</small>}</div>}
+          {incident.measurement_evidence_digest&&<div className="basis">Measurement evidence digest · {incident.measurement_evidence_digest}</div>}
+          {incident.measurement_evidence_content_digest&&<div className="basis">Measurement evidence content digest · {incident.measurement_evidence_content_digest}</div>}
+          {incident.exception_evidence_digest&&<div className="basis">Exception evidence digest · {incident.exception_evidence_digest}</div>}
+          {incident.exception_evidence_content_digest&&<div className="basis">Exception evidence content digest · {incident.exception_evidence_content_digest}</div>}
+          {incident.challenge_evidence_digest&&<div className="basis">Challenge evidence digest · {incident.challenge_evidence_digest}</div>}
+          {incident.challenge_evidence_content_digest&&<div className="basis">Challenge evidence content digest · {incident.challenge_evidence_content_digest}</div>}
+          {(incident.measurement_evidence_record||incident.exception_evidence_record||incident.challenge_evidence_record)&&<details className="evidence-record"><summary>Canonical evidence evaluated · bounded excerpts</summary><div className="evidence-record-body">{[["Measurement",incident.measurement_evidence_record],["Exception",incident.exception_evidence_record],["Challenge",incident.challenge_evidence_record]].filter(([,record])=>record).map(([label,record]:any)=><section key={label}><div className="kicker">{label} decision record</div><pre>{JSON.stringify(JSON.parse(record),null,2)}</pre></section>)}</div></details>}
+          {incident.excused_intervals?.length>0&&<div className="fact-sheet"><div className="kicker">Excused intervals · liability is deterministic · WAT</div>{incident.excused_intervals.map((x:any,i:number)=><p key={i}><b>{String(i+1).padStart(2,"0")}</b><WatTime value={x.from_ts}/> → <WatTime value={x.to_ts}/> · Evidence {x.evidence_ids.join(", ")}</p>)}</div>}
+          {challengeData&&<div className="challenge-record"><b>Challenge · {challengeData.status}</b><p>{challengeData.text}</p>{challengeData.basis&&<small>{challengeData.basis}</small>}{challengeData.checked_at&&<small> · Last checked <WatTime value={challengeData.checked_at}/></small>}{challengeData.resolved_at&&<small> · Resolved <WatTime value={challengeData.resolved_at}/></small>}</div>}
 
           <section className="action-panel workflow-actions"><div className="kicker">Available protocol actions</div><div className="action-row">
             {["MEASUREMENT_PENDING","MEASUREMENT_INCONCLUSIVE"].includes(incident.status)&&<button className="button primary" onClick={()=>doTx("verify_measurement",[incident.id])}>verify measurement</button>}
@@ -155,7 +178,7 @@ export default function AgreementDetail(){
             {challengeData?.status==="OPEN"&&now()>=Number(challengeData.resolution_deadline||0)&&<button className="button" onClick={()=>doTx("expire_challenge",[incident.id])}>expire challenge</button>}
             {incident.status==="PENDING"&&now()>=Number(incident.challenge_deadline||0)&&challengeData?.status!=="OPEN"&&<button className="button primary" onClick={()=>doTx("finalize_incident",[incident.id])}>finalize settlement</button>}
             {incident.status==="OPEN"&&now()>=Number(incident.response_deadline||0)&&<button className="button red" onClick={()=>doTx("finalize_default_breach",[incident.id])}>finalize provider default</button>}
-            {incident.status==="INCONCLUSIVE"&&now()>=Number(incident.resolution_deadline||0)&&<button className="button red" onClick={()=>doTx("finalize_default_breach",[incident.id])}>finalize unresolved default</button>}
+            {incident.status==="INCONCLUSIVE"&&now()>=Number(incident.resolution_deadline||0)&&<button className="button" onClick={()=>doTx("finalize_default_breach",[incident.id])}>close without decision · return bond</button>}
           </div></section>
 
           {role==="provider"&&incident.status==="OPEN"&&now()<Number(incident.response_deadline||0)&&<div className="form-sheet compact action-panel">
