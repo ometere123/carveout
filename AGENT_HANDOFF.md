@@ -2,7 +2,7 @@
 
 ## Current state
 
-Work is based on `main` commit `5ccc4ee` and leaves the existing stable toolchain, contract address, chain, RPC, SDK family and injected-wallet architecture unchanged. Contract source changes to `0.3.0-studionet` because the evidence-equivalence behavior changed. The contract source hash is `93d8c7cbd0329e8b07ccc6806b32476cda206a6a88acb36367602d018bb41ae6`; schema hash is `26de6f5a55a686fb6f38bffd320d14ba53d4b74162a2ad15bdb123aed6f345fd`; public signatures did not change.
+Release 0.3.0 is deployed and canonical on Studionet 61999 at [`0x74D8aEc8BF79369BeDdCae000214552Dcc7D00A9`](https://explorer-studio.genlayer.com/address/0x74D8aEc8BF79369BeDdCae000214552Dcc7D00A9), deployment tx [`0x0a7d3471aa60f1c4d8becff9e151ad7f655b13ad54dae6352f80b3353a860323`](https://explorer-studio.genlayer.com/tx/0x0a7d3471aa60f1c4d8becff9e151ad7f655b13ad54dae6352f80b3353a860323). Receipt finalized successfully (MAJORITY_AGREE); read-only source and schema verification passed. Source SHA-256 `93d8c7cbd0329e8b07ccc6806b32476cda206a6a88acb36367602d018bb41ae6`; schema SHA-256 `26de6f5a55a686fb6f38bffd320d14ba53d4b74162a2ad15bdb123aed6f345fd`; public signatures are unchanged. Stable toolchain, injected-wallet architecture, chain and RPC remain unchanged.
 
 ## Local verification
 
@@ -10,12 +10,12 @@ Direct Mode 59/59; GenVM lint + validate PASS; schema generation PASS; contract 
 
 Source commit `b70d49659b569ec7941a7607735ca5f096d10ebc` is pushed to main and passed [GitHub CI run 35583968282](https://github.com/ometere123/carveout/actions/runs/35583968282).
 
-## Exact release gates still outstanding
+## Release status and outstanding work
 
-1. User deploys the verified release source after reviewing the source commit and green CI evidence.
-2. User deploys `contracts/carveout.py` via GenLayer Studio on Studionet 61999, canonical RPC; no constructor args and 0 value. Expected wallet `0xA7EeAE0E93793e3146Cb14b0700251B8b0EBADFB`. Expected source SHA-256 above. Collect finalized deployment tx + new address.
-3. Read deployed code/schema/stats; compare exact source/schema. Update `deployments/studionet.json` and only then configure and deploy frontend to the new address.
-4. User executes a fresh lifecycle and returns actual hashes/readbacks/screenshots. Never retry the 0.2.0 UNDETERMINED transaction.
+1. Production frontend [`dpl_G6u9nyjfcTX7yXWoGRo5XVCMqrwk`](https://vercel.com/delealufejoel-4184s-projects/carveout/dpl_G6u9nyjfcTX7yXWoGRo5XVCMqrwk) is READY at `https://carve-out.vercel.app`, configured for the verified address; public route and compiled address readback passed.
+2. User executes a fresh lifecycle and returns actual hashes/readbacks/screenshots. Never retry the 0.2.0 UNDETERMINED transaction.
+
+Latest green main CI: [run 35584496491](https://github.com/ometere123/carveout/actions/runs/35584496491), commit `1048b7def2c71233695713c2633ab2e59215cd55`.
 
 ## Preserved failure evidence
 

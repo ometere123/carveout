@@ -1,4 +1,4 @@
-# Build status — CARVEOUT 0.3.0 candidate
+# Build status — CARVEOUT 0.3.0 release
 
 - Base checkout: `main` at `5ccc4ee` before these changes; work preserves the stable Studionet toolchain and existing single-contract design.
 - Candidate source: `contracts/carveout.py`, SHA-256 `93d8c7cbd0329e8b07ccc6806b32476cda206a6a88acb36367602d018bb41ae6`; source commit: `b70d49659b569ec7941a7607735ca5f096d10ebc`.
@@ -15,8 +15,10 @@
 - Pattern/release/frontend-surface guards: **PASS**.
 - Frontend tests: **41/41 PASS**; typecheck **PASS**; production build **PASS**.
 - GitHub CI: **PASS**, [run 35583968282](https://github.com/ometere123/carveout/actions/runs/35583968282), testing the exact source commit.
-- New-address read-only integration: PENDING user-signed deployment.
+- New-address read-only integration: PASS against 0.3.0; see `get_stats()` evidence in the deployment manifest.
 
-## Deployment boundary
+## Deployment status
 
-Current deployed address `0xA9C86FF6113187915C1Bd8e958fC718719337531` and production UI correspond to 0.2.0 and must not be treated as 0.3.0. Contract deployment, source/schema verification, and subsequent frontend deployment are pending. The user signs deployment and all application lifecycle transactions. The real 0.2.0 UNDETERMINED measurement remains preserved as failure evidence and must not be retried.
+Canonical deployment: [`0x74D8aEc8BF79369BeDdCae000214552Dcc7D00A9`](https://explorer-studio.genlayer.com/address/0x74D8aEc8BF79369BeDdCae000214552Dcc7D00A9), transaction [`0x0a7d3471aa60f1c4d8becff9e151ad7f655b13ad54dae6352f80b3353a860323`](https://explorer-studio.genlayer.com/tx/0x0a7d3471aa60f1c4d8becff9e151ad7f655b13ad54dae6352f80b3353a860323), finalized with successful execution. Read-only RPC confirms deployed source SHA-256 exactly matches local `93d8c7cbd0329e8b07ccc6806b32476cda206a6a88acb36367602d018bb41ae6`; deployed schema matches the local canonicalized schema. `get_stats()` reports release 0.3.0, chain 61999, and `accounting_balanced=true` with zero initial balances. Production frontend deployment [`dpl_G6u9nyjfcTX7yXWoGRo5XVCMqrwk`](https://vercel.com/delealufejoel-4184s-projects/carveout/dpl_G6u9nyjfcTX7yXWoGRo5XVCMqrwk) is READY; public `/open` returns HTTP 200 and the compiled client uses the canonical address. The user signs all application lifecycle transactions. The real 0.2.0 UNDETERMINED measurement remains preserved as historical failure evidence and must not be retried.
+
+Latest green `main` CI: [run 35584496491](https://github.com/ometere123/carveout/actions/runs/35584496491), commit `1048b7def2c71233695713c2633ab2e59215cd55`. Live 0.3.0 lifecycle remains pending user wallet actions.

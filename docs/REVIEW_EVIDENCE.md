@@ -3,9 +3,10 @@
 ## Release identity
 
 - Network: GenLayer Studionet `studionet`, chain `61999`; RPC `https://studio.genlayer.com/api`; explorer `https://explorer-studio.genlayer.com`.
-- **Currently deployed:** release `0.2.0-studionet`, contract [`0xA9C86FF6113187915C1Bd8e958fC718719337531`](https://explorer-studio.genlayer.com/address/0xA9C86FF6113187915C1Bd8e958fC718719337531), deployment [`0x518742b1e07f6c24c821a6e5fc9fb9acd24a2c944a31cf312121079693ae5726`](https://explorer-studio.genlayer.com/tx/0x518742b1e07f6c24c821a6e5fc9fb9acd24a2c944a31cf312121079693ae5726). It does **not** include the 0.3.0 evidence-consensus changes.
-- **Prepared candidate:** `0.3.0-studionet`; source `contracts/carveout.py`, SHA-256 `93d8c7cbd0329e8b07ccc6806b32476cda206a6a88acb36367602d018bb41ae6`; generated schema SHA-256 `26de6f5a55a686fb6f38bffd320d14ba53d4b74162a2ad15bdb123aed6f345fd` (same public ABI, 21 methods). Source commit [`b70d49659b569ec7941a7607735ca5f096d10ebc`](https://github.com/ometere123/carveout/commit/b70d49659b569ec7941a7607735ca5f096d10ebc) passed [GitHub CI run 35583968282](https://github.com/ometere123/carveout/actions/runs/35583968282). Deployment is pending the user's signature. Do not use an old agreement as evidence for this release.
-- Production `https://carve-out.vercel.app` still targets deployed 0.2.0. Do not point it at 0.3.0 until 0.3.0 is deployed and the deployed source/schema are verified.
+- **Canonical deployed contract:** release `0.3.0-studionet`, [`0x74D8aEc8BF79369BeDdCae000214552Dcc7D00A9`](https://explorer-studio.genlayer.com/address/0x74D8aEc8BF79369BeDdCae000214552Dcc7D00A9), deployment [`0x0a7d3471aa60f1c4d8becff9e151ad7f655b13ad54dae6352f80b3353a860323`](https://explorer-studio.genlayer.com/tx/0x0a7d3471aa60f1c4d8becff9e151ad7f655b13ad54dae6352f80b3353a860323), FINALIZED / SUCCESS / MAJORITY_AGREE. Read-only RPC verified deployed source byte-for-byte against SHA-256 `93d8c7cbd0329e8b07ccc6806b32476cda206a6a88acb36367602d018bb41ae6`; canonicalized deployed schema matches local schema (SHA-256 `4801e0ceeb22866c94f40cac36e48ee3b0606d1500272927e92ede67d9991a70`). Network is Studionet 61999; deployment value 0, constructor args empty.
+- Prior 0.2.0 contract [`0xA9C86FF6113187915C1Bd8e958fC718719337531`](https://explorer-studio.genlayer.com/address/0xA9C86FF6113187915C1Bd8e958fC718719337531), deployment [`0x518742b1e07f6c24c821a6e5fc9fb9acd24a2c944a31cf312121079693ae5726`](https://explorer-studio.genlayer.com/tx/0x518742b1e07f6c24c821a6e5fc9fb9acd24a2c944a31cf312121079693ae5726), is historical and does not contain the 0.3.0 changes.
+- `get_stats()` on 0.3.0 returned `version=0.3.0-studionet`, `chain_id=61999`, `accounting_balanced=true`, all counts/balances zero, and no admin outcome controls. Initial accounting: `0 deposited = 0 agreement escrow + 0 challenge escrow + 0 claimable + 0 withdrawn`.
+- Production frontend [`dpl_G6u9nyjfcTX7yXWoGRo5XVCMqrwk`](https://vercel.com/delealufejoel-4184s-projects/carveout/dpl_G6u9nyjfcTX7yXWoGRo5XVCMqrwk) is READY at [https://carve-out.vercel.app](https://carve-out.vercel.app). `/open` returned HTTP 200; fetched compiled JavaScript contains the 0.3.0 address and not the old 0.2.0 address. The lifecycle below must use a fresh 0.3.0 agreement. Do not use an old agreement as evidence for this release.
 - Historical 0.1 deployment [`0x75f2e473E6f010B510F1d281C8E4679fD2043054`](https://explorer-studio.genlayer.com/address/0x75f2e473E6f010B510F1d281C8E4679fD2043054) is provenance only.
 
 ## Preserved live failure evidence (0.2.0)
@@ -34,15 +35,15 @@ This result motivated extracting and comparing stable structured source facts ra
 | Frontend TypeScript typecheck | PASS |
 | Next.js production build | PASS |
 | GitHub CI | PASS — [run 35583968282](https://github.com/ometere123/carveout/actions/runs/35583968282) tested source commit `b70d49659b569ec7941a7607735ca5f096d10ebc` |
-| Read-only integration against 0.3 deployment | Pending user deployment |
-| 0.3 source/schema deployment verification | Pending user deployment |
-| 0.3 production frontend deployment | Pending deployment verification |
+| Read-only integration against 0.3 deployment | PASS — `get_stats()` read from canonical address, balanced initial state |
+| 0.3 source/schema deployment verification | PASS — source byte-for-byte; schema canonical comparison |
+| 0.3 production frontend deployment | PASS — Vercel deployment READY; production alias and compiled address verified |
 
 The current machine needed `GENVM_VERSION=v0.2.16` explicitly because another cached RC bundle otherwise took precedence. No runner, runtime pin, network, SDK family, or contract dependency was changed.
 
-## New-release deployment: user signature required
+## Release CI
 
-After reviewing the pushed source commit and green main CI, deploy `contracts/carveout.py` through GenLayer Studio on `studionet` / chain `61999`, canonical RPC `https://studio.genlayer.com/api`, no constructor arguments, value `0`. Expected deployer wallet: `0xA7EeAE0E93793e3146Cb14b0700251B8b0EBADFB`. Confirm the uploaded source hash is `93d8c7cbd0329e8b07ccc6806b32476cda206a6a88acb36367602d018bb41ae6`. Return the finalized deployment transaction hash and new contract address. Do not submit lifecycle transactions to the old address.
+Latest green main CI: [run 35584496491](https://github.com/ometere123/carveout/actions/runs/35584496491), tested commit `1048b7def2c71233695713c2633ab2e59215cd55`. The release source itself was also tested in [run 35583968282](https://github.com/ometere123/carveout/actions/runs/35583968282) at `b70d49659b569ec7941a7607735ca5f096d10ebc`.
 
 ## New-release lifecycle evidence slots
 

@@ -53,7 +53,7 @@ GOAL_PROMPT.txt                 compact finishing-agent goal
 STATIC_VERIFICATION.md          checks actually run while packaging
 ```
 
-Current contract surface: **21 public methods**. Release 0.3.0 changes consensus evidence handling without changing public signatures. It is not deployed yet; its exact source/schema, gates, and signed-deployment handoff are recorded in [docs/REVIEW_EVIDENCE.md](docs/REVIEW_EVIDENCE.md).
+Current contract surface: **21 public methods**. Release 0.3.0 changes consensus evidence handling without changing public signatures. It is deployed and source/schema verified at [`0x74D8aEc8BF79369BeDdCae000214552Dcc7D00A9`](https://explorer-studio.genlayer.com/address/0x74D8aEc8BF79369BeDdCae000214552Dcc7D00A9), deployment transaction [`0x0a7d3471aa60f1c4d8becff9e151ad7f655b13ad54dae6352f80b3353a860323`](https://explorer-studio.genlayer.com/tx/0x0a7d3471aa60f1c4d8becff9e151ad7f655b13ad54dae6352f80b3353a860323). See [docs/REVIEW_EVIDENCE.md](docs/REVIEW_EVIDENCE.md) for verified read-only release evidence; user-operated lifecycle writes remain pending.
 
 ## Frontend
 
@@ -83,14 +83,14 @@ npm ci
 cd frontend && npm ci && npm test && npm run typecheck && npm run build
 ```
 
-The currently deployed contract is 0.2.0 at `0xA9C86FF6113187915C1Bd8e958fC718719337531`; it does not contain the new consensus changes. Release 0.3.0 source commit `b70d49659b569ec7941a7607735ca5f096d10ebc` passed [GitHub CI run 35583968282](https://github.com/ometere123/carveout/actions/runs/35583968282). It is prepared for a user-signed Studionet deployment. Do not connect the release-0.3 frontend or create new agreements against the 0.2.0 instance. A prior live observation reached `UNDETERMINED` after validator rotations and remains `MEASUREMENT_PENDING`; it is retained as failure evidence and must not be retried. The complete adjudication/challenge/settlement/withdrawal lifecycle is not yet demonstrated.
+Release 0.3.0 source commit `b70d49659b569ec7941a7607735ca5f096d10ebc` passed [GitHub CI run 35583968282](https://github.com/ometere123/carveout/actions/runs/35583968282). The current canonical contract is 0.3.0 at `0x74D8aEc8BF79369BeDdCae000214552Dcc7D00A9`; the 0.2.0 deployment is historical. A prior live observation on 0.2.0 reached `UNDETERMINED` after validator rotations and remains `MEASUREMENT_PENDING`; it is retained as failure evidence and must not be retried. The complete 0.3.0 adjudication/challenge/settlement/withdrawal lifecycle is not yet demonstrated.
 
-**Release boundary:** 0.2.0 at `0xA9C86FF6113187915C1Bd8e958fC718719337531` remains the only current deployment and production frontend target while 0.3.0 is prepared. The 0.3.0 contract must be deployed and verified before production is pointed to its address. Lifecycle transactions are reserved for the user.
+**Release boundary:** 0.3.0 at `0x74D8aEc8BF79369BeDdCae000214552Dcc7D00A9` is the canonical verified Studionet contract and production frontend target. Lifecycle transactions are reserved for the user.
 
 ## Previously deployed baseline
 
-The previous frontend deployment is retained for provenance in `deployments/studionet.json`. The current public frontend still targets the 0.2.0 contract and does not include the release-0.3 consensus changes.
+The previous frontend deployment and 0.2.0 contract are retained for provenance in `deployments/studionet.json`.
 
-The prior contract deployment is recorded at [`0x75f2e473E6f010B510F1d281C8E4679fD2043054`](https://explorer-studio.genlayer.com/address/0x75f2e473E6f010B510F1d281C8E4679fD2043054), with deployment transaction [`0x07ed7c7495129adc7ed26091c673b37dfe9dbd9b50fa85d21dd6a63b29722ddf`](https://explorer-studio.genlayer.com/tx/0x07ed7c7495129adc7ed26091c673b37dfe9dbd9b50fa85d21dd6a63b29722ddf). The currently hosted frontend at [carve-out.vercel.app](https://carve-out.vercel.app) is also the previous release. Both are retained for provenance and do not implement the candidate evidence record fields.
+The earlier 0.1 contract deployment is recorded at [`0x75f2e473E6f010B510F1d281C8E4679fD2043054`](https://explorer-studio.genlayer.com/address/0x75f2e473E6f010B510F1d281C8E4679fD2043054), with deployment transaction [`0x07ed7c7495129adc7ed26091c673b37dfe9dbd9b50fa85d21dd6a63b29722ddf`](https://explorer-studio.genlayer.com/tx/0x07ed7c7495129adc7ed26091c673b37dfe9dbd9b50fa85d21dd6a63b29722ddf). Older deployments are historical provenance only.
 
 The previous 0.1 address must not be used with current UI code. The 0.2.0 live failure must not be retried. The release-0.3 economic lifecycle—including the new evidence measurement, exception adjudication, challenge, settlement, credits and withdrawals—has not yet been demonstrated; see [docs/LIVE_DEMO.md](docs/LIVE_DEMO.md). A deployment and a green CI run are not evidence that those lifecycle transactions occurred.

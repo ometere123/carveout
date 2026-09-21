@@ -1,6 +1,6 @@
 # CARVEOUT manual Studionet lifecycle
 
-This is a user-operated browser-wallet runbook. The agent must not sign or submit any application writes. Release `0.3.0-studionet` changes contract evidence consensus and is prepared but **not yet deployed**. The currently deployed contract `0xA9C86FF6113187915C1Bd8e958fC718719337531` and production frontend at [https://carve-out.vercel.app](https://carve-out.vercel.app) are release 0.2.0 only; do not use them to demonstrate the new consensus behavior. First follow the signed-deployment step in [REVIEW_EVIDENCE.md](REVIEW_EVIDENCE.md), verify deployed source/schema, and point the frontend at that new address. The earlier measurement transaction on 0.2.0 finalized UNDETERMINED and must not be retried or continued.
+This is a user-operated browser-wallet runbook. The agent must not sign or submit any application writes. Release `0.3.0-studionet` is deployed and verified at [`0x74D8aEc8BF79369BeDdCae000214552Dcc7D00A9`](https://explorer-studio.genlayer.com/address/0x74D8aEc8BF79369BeDdCae000214552Dcc7D00A9); deployment tx [`0x0a7d3471aa60f1c4d8becff9e151ad7f655b13ad54dae6352f80b3353a860323`](https://explorer-studio.genlayer.com/tx/0x0a7d3471aa60f1c4d8becff9e151ad7f655b13ad54dae6352f80b3353a860323) is finalized with successful execution. Read-only source/schema comparison and `get_stats()` passed. Production frontend is deployed at [https://carve-out.vercel.app](https://carve-out.vercel.app) and its compiled contract address was verified. The earlier 0.2.0 measurement transaction finalized UNDETERMINED and must not be retried or continued.
 
 ## Prepare genuine public test evidence
 
@@ -20,7 +20,7 @@ Use the independent monitor's actual public hostname, not a provider-controlled 
 
 ## Wallets and proposal
 
-1. Connect the user's own provider wallet through injected `window.ethereum`, on Studionet `61999`. Open `https://carve-out.vercel.app/open` after the candidate frontend is deployed. Confirm the page shows chain `61999` and that the form starts blank.
+1. Connect the user's own provider wallet through injected `window.ethereum`, on Studionet `61999`. Open `https://carve-out.vercel.app/open`. Confirm the page shows chain `61999` and that the form starts blank.
 2. Enter these New Agreement fields:
    - Customer wallet: the user's own distinct customer wallet address.
    - Service name: `CARVEOUT Controlled Demo API`.
