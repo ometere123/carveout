@@ -8,7 +8,7 @@
 - GenVM lint, validation, schema generation and contract typecheck: PASS; schema at `deployments/studionet-0.4.0.schema.json`.
 - Contract/release/frontend-surface/deploy TypeScript/Python compile checks: PASS.
 - Frontend tests: 42 passed; TypeScript typecheck and production build: PASS.
-- Read-only integration is environment-gated and skipped. GitHub CI is pending; 0.4.0 is not deployed.
+- Read-only integration is environment-gated and skipped. GitHub CI passed at [run 35606141013](https://github.com/ometere123/carveout/actions/runs/35606141013), source commit `ba037c4148f8f79b45b781fe3200def9a817fb54`; 0.4.0 is not deployed.
 - The 0.3.0 `cv-i-2` verification transaction `0x75daf13670200403477bed9beb07ea5200a83973f4bf106f296de66f12bfe0ba` is preserved `UNDETERMINED` evidence and must not be retried.
 - Observation fields accept readable WAT date/time input and convert using `Africa/Lagos` to Unix seconds for the contract; protocol timestamps remain unchanged.
 

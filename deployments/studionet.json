@@ -78,7 +78,7 @@
     "chainId": 61999,
     "rpc": "https://studio.genlayer.com/api",
     "source": {
-      "commit": "PENDING_GREEN_COMMIT",
+      "commit": "ba037c4148f8f79b45b781fe3200def9a817fb54",
       "path": "contracts/carveout.py",
       "sha256": "0af5222346cf2d0537f85ca0f2981f5368f2bb28548525110df9364ece2e7d2f"
     },
@@ -102,7 +102,13 @@
       "frontendTests": "PASS (42 tests)",
       "frontendTypecheck": "PASS",
       "productionBuild": "PASS",
-      "readOnlyIntegration": "SKIPPED (environment-gated)"
+      "readOnlyIntegration": "SKIPPED (environment-gated)",
+      "githubCi": {
+        "status": "PASS",
+        "runId": "35606141013",
+        "runUrl": "https://github.com/ometere123/carveout/actions/runs/35606141013",
+        "testedCommit": "ba037c4148f8f79b45b781fe3200def9a817fb54"
+      }
     },
     "liveLifecycle": "PENDING_FRESH_AGREEMENT_AFTER_0.4.0_DEPLOYMENT"
   },
