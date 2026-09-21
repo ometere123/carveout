@@ -25,10 +25,10 @@ export default function Open(){
     if(!form.metric.trim())issues.push("Enter the SLA metric.");
     let serviceHost="";
     try{const u=new URL(form.url);serviceHost=u.hostname.toLowerCase();if(u.protocol!=="https:"||!serviceHost||u.username||u.password||u.port||isPlaceholderHost(serviceHost))issues.push("Use a real public HTTPS service URL; reserved example/test domains are not accepted.");}catch{issues.push("Enter a valid public HTTPS service URL.");}
-    const target=Number(form.target),startHours=Number(form.startAfterHours),durationDays=Number(form.durationDays),challengeSeconds=Number(form.challenge);
+    const target=Number(form.target),startMinutes=Number(form.startAfterMinutes),durationMinutes=Number(form.durationMinutes),challengeSeconds=Number(form.challenge);
     if(!Number.isInteger(target)||target<1||target>10000)issues.push("Target must be an integer from 1 to 10,000 bps.");
-    if(!Number.isInteger(startHours)||startHours<1)issues.push("SLA start must be at least one hour in the future.");
-    if(!Number.isInteger(durationDays)||durationDays<1||startHours+durationDays*24>90*24)issues.push("SLA duration must be at least one day and the complete window must fit within 90 days.");
+    if(!Number.isInteger(startMinutes)||startMinutes<10)issues.push("SLA start must be at least 10 minutes in the future so the customer can accept at least five minutes before exposure.");
+    if(!Number.isInteger(durationMinutes)||durationMinutes<60||startMinutes+durationMinutes>90*24*60)issues.push("SLA duration must be at least 60 minutes and the complete window must fit within 90 days.");
     if(!Number.isInteger(challengeSeconds)||challengeSeconds<600||challengeSeconds>86400)issues.push("Challenge window must be 600-86,400 seconds.");
     try{
       const parsed=JSON.parse(form.sourcePolicy);
@@ -40,7 +40,7 @@ export default function Open(){
         if(new Set(hosts).size!==hosts.length)issues.push(group+" policy origins must be distinct.");
       }
       const ms=parsed?.measurement;
-      if(Array.isArray(ms)&&(new Set(ms.map((x:any)=>x.kind)).size<2||!ms.some((x:any)=>x.kind==="INDEPENDENT_PROBE")))issues.push("Measurement policy needs at least two source families, including INDEPENDENT_PROBE.");
+      if(Array.isArray(ms)&&(new Set(ms.map((x:any)=>x.kind)).size<2||!ms.some((x:any)=>x.kind==="INDEPENDENT_PROBE")))issues.push("Measurement policy needs at least two source families, including an independently operated probe outside the service provider's control.");
       if(Array.isArray(ms)&&serviceHost){const probe=ms.find((x:any)=>x.kind==="INDEPENDENT_PROBE")?.host?.toLowerCase();if(probe&&sameServiceDomain(probe,serviceHost))issues.push("The independent probe must use an origin outside the service domain.");}
     }catch{issues.push("Source policy must be valid JSON with measurement, exception and challenge arrays.");}
     try{const credit=parseGenAmount(form.credit);if(credit<1000000000000000n||credit>50n*10n**18n)issues.push("Provider bond and maximum credit must be between 0.001 and 50 GEN.");}catch(e:any){issues.push(e?.message||"Enter a valid exact GEN amount.");}
@@ -51,8 +51,8 @@ export default function Open(){
     try{
       setError("");setHash("");setCreatedId("");setPhase("signing");
       const now=Math.floor(Date.now()/1000);
-      const start=now+Number(form.startAfterHours)*3600;
-      const end=start+Number(form.durationDays)*86400;
+      const start=now+Number(form.startAfterMinutes)*60;
+      const end=start+Number(form.durationMinutes)*60;
       const credit=gen(form.credit);
       const tx=await write(wallet.address,"create_agreement",[
         customer,form.service.trim(),form.url.trim(),form.metric.trim(),Number(form.target),credit.toString(),start,end,
@@ -78,17 +78,17 @@ export default function Open(){
       <Field label="Service URL" placeholder="https://service.example (use the real public service host)" value={form.url} set={v=>update("url",v)}/>
       <div className="two"><Field label="SLA metric" placeholder="e.g. monthly availability" value={form.metric} set={v=>update("metric",v)}/><Field label="Target (basis points)" placeholder="e.g. 9995 = 99.95%" value={form.target} set={v=>update("target",v)}/></div>
       <div className="two"><Field label="Provider bond / maximum credit (GEN)" placeholder="0.001–50 GEN" value={form.credit} set={v=>update("credit",v)}/><Field label="Challenge window (seconds)" placeholder="600–86400" value={form.challenge} set={v=>update("challenge",v)}/></div>
-      <div className="two"><Field label="SLA begins after (hours)" placeholder="At least 1 hour" value={form.startAfterHours} set={v=>update("startAfterHours",v)}/><Field label="SLA duration (days)" placeholder="At least 1 day" value={form.durationDays} set={v=>update("durationDays",v)}/></div>
+      <div className="two"><Field label="SLA begins after (minutes)" placeholder="At least 10 minutes" value={form.startAfterMinutes} set={v=>update("startAfterMinutes",v)}/><Field label="SLA duration (minutes)" placeholder="At least 60 minutes" value={form.durationMinutes} set={v=>update("durationMinutes",v)}/></div>
       <div className="form-section-label">Frozen terms and evidence policy</div>
       <Area label="Exception clauses (JSON)" placeholder='[{"code":"…","title":"…","rule":"…","proof":"…"}]' value={form.exceptions} set={v=>update("exceptions",v)}/>
       <Area label="Measurement and adjudication policy" placeholder="State what evidence can establish the miss or excuse it. Unavailable evidence is not proof." value={form.policy} set={v=>update("policy",v)}/>
       <Area label="Source families, origins, and path prefixes (JSON)" placeholder={'{"measurement":[{"kind":"PROVIDER_STATUS","host":"status.your-service.com","path_prefix":"/incidents"},{"kind":"INDEPENDENT_PROBE","host":"probe.your-service.org","path_prefix":"/"}],"exception":[{"kind":"PUBLIC_NOTICE","host":"notices.your-service.org","path_prefix":"/"}],"challenge":[{"kind":"COUNTER_EVIDENCE","host":"evidence.your-service.org","path_prefix":"/"}]}'} value={form.sourcePolicy} set={v=>update("sourcePolicy",v)}/>
-      <p className="micro-note">Use real, public HTTPS origins relevant to this service. Each policy group requires 1–8 distinct origins. Measurement needs at least two source families, including an independent probe on a separate origin. The customer accepts this exact frozen policy.</p>
+      <p className="micro-note">Use real, public HTTPS origins relevant to this service. Each policy group requires 1–8 distinct origins. Measurement needs at least two source families, including an independent probe on a separate origin. The customer accepts this exact frozen policy. Proposal creation requires at least 10 minutes before SLA start; customer acceptance must happen at least 5 minutes before SLA exposure.</p>
       {validation.length>0&&<ul className="tx tx-error" role="alert">{validation.map((item,i)=><li key={i}>{item}</li>)}</ul>}
       <button className="button red" onClick={submit} disabled={phase==="signing"||phase==="finalizing"||phase==="readback"}>Fund and propose agreement</button>
       {createdId&&<p className="micro-note" role="status">Proposal persisted and verified: <Link href={"/agreements/"+createdId}>{createdId} · open agreement</Link></p>}
       <TxNotice phase={phase} hash={hash} error={error}/>
-    </div><aside className="side-note"><div className="kicker">Formation rule</div><h2>Neither party can change the agreement after acceptance.</h2><p>Creating an agreement escrows the provider bond in a proposed state. The named customer must accept the same specification at least five minutes before SLA exposure. An unaccepted proposal has a bounded bond refund.</p><p>The source policy pins evidence families to exact HTTPS hosts and path prefixes. Measurement requires distinct origins, including an independent probe.</p><p className="micro-note">The form starts blank. Nothing is sent to the contract until you submit and approve the wallet transaction.</p></aside></div>
+    </div><aside className="side-note"><div className="kicker">Formation rule</div><h2>Neither party can change the agreement after acceptance.</h2><p>Creating a proposal requires at least 10 minutes before SLA start. The named customer must accept the same specification at least five minutes before SLA exposure. An unaccepted proposal has a bounded bond refund.</p><p>The source policy pins evidence families to exact HTTPS hosts and path prefixes. Measurement requires distinct origins, including an independent probe.</p><p className="micro-note">The form starts blank. Nothing is sent to the contract until you submit and approve the wallet transaction.</p></aside></div>
   </section>
 }
 function Field({label,value,set,placeholder=""}:{label:string,value:string,set:(v:string)=>void,placeholder?:string}){const id=`field-${label.toLowerCase().replace(/[^a-z0-9]+/g,"-")}`;return <div className="field"><label htmlFor={id}>{label}</label><input id={id} value={value} placeholder={placeholder} onChange={e=>set(e.target.value)}/></div>}

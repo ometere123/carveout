@@ -8,23 +8,23 @@ export type AgreementFormDraft = {
   exceptions: string;
   policy: string;
   sourcePolicy: string;
-  startAfterHours: string;
-  durationDays: string;
+  startAfterMinutes: string;
+  durationMinutes: string;
   challenge: string;
 };
 
 export function emptyAgreementDraft(): AgreementFormDraft {
   return {
     customer: "", service: "", url: "", metric: "", target: "", credit: "",
-    exceptions: "", policy: "", sourcePolicy: "", startAfterHours: "",
-    durationDays: "", challenge: "",
+    exceptions: "", policy: "", sourcePolicy: "", startAfterMinutes: "",
+    durationMinutes: "", challenge: "",
   };
 }
 
 export function sampleAgreementDraft(): AgreementFormDraft {
   return {
     customer: "0x0000000000000000000000000000000000000001",
-    service: "GitHub API (illustrative)",
+    service: "GitHub API (illustrative — edit before proposing)",
     url: "https://api.github.com",
     metric: "Monthly API availability",
     target: "9995",
@@ -39,13 +39,13 @@ export function sampleAgreementDraft(): AgreementFormDraft {
     sourcePolicy: JSON.stringify({
       measurement: [
         { kind: "PROVIDER_STATUS", host: "status.github.com", path_prefix: "/api/v2/incidents" },
-        { kind: "INDEPENDENT_PROBE", host: "www.githubstatus.com", path_prefix: "/api/v2" },
+        { kind: "PUBLIC_TELEMETRY", host: "www.githubstatus.com", path_prefix: "/api/v2" },
       ],
       exception: [{ kind: "PUBLIC_NOTICE", host: "github.blog", path_prefix: "/" }],
       challenge: [{ kind: "COUNTER_EVIDENCE", host: "docs.github.com", path_prefix: "/" }],
     }, null, 2),
-    startAfterHours: "24",
-    durationDays: "30",
+    startAfterMinutes: "1440",
+    durationMinutes: "43200",
     challenge: "1800",
   };
 }
