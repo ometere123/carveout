@@ -21,7 +21,11 @@ test("GEN parser rejects malformed or over-precise values", () => {
 });
 
 test("injected write guard enforces Studionet and the current account", () => {
-  assert.doesNotThrow(() => assertWriteWallet("0xf22f", ["0xAbC"], "0xabc"));
-  assert.throws(() => assertWriteWallet("0xf21d", ["0xAbC"], "0xabc"), /Studionet \(61999\)/);
-  assert.throws(() => assertWriteWallet("0xf22f", ["0xdef"], "0xabc"), /account is no longer connected/);
+  const wallet = "0x1234567890123456789012345678901234567890";
+  assert.doesNotThrow(() => assertWriteWallet("0xf22f", [wallet], wallet));
+  assert.throws(() => assertWriteWallet("0xf21d", [wallet], wallet), /Studionet \(61999\)/);
+  assert.throws(() => assertWriteWallet("0xf22f", ["0x2234567890123456789012345678901234567890"], wallet), /account changed/);
+  assert.throws(() => assertWriteWallet("0xf22f", [], wallet), /account changed/);
+  assert.throws(() => assertWriteWallet("0xf22f", [wallet], "undefined"), /address is missing or invalid/);
+  assert.throws(() => assertWriteWallet("0xf22fgarbage", [wallet], wallet), /Studionet \(61999\)/);
 });
